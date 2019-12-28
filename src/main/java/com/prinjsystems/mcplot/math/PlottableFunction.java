@@ -5,6 +5,11 @@ import java.awt.Color;
 public class PlottableFunction {
     private String definition;
     private Color traceColor;
+    private boolean visible;
+
+    public PlottableFunction() {
+        visible = true;
+    }
 
     public String getDefinition() {
         return definition;
@@ -20,5 +25,13 @@ public class PlottableFunction {
 
     public void setTraceColor(Color traceColor) {
         this.traceColor = traceColor;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

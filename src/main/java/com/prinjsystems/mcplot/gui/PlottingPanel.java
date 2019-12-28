@@ -16,9 +16,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -42,8 +40,7 @@ public class PlottingPanel extends JPanel {
     }
 
     private Stroke baseStroke, traceStroke;
-    private List<PlottableFunction> functions;
-    private Map<Path2D, Color> plottedFunctions;
+    private Map<PlottableFunction, Path2D> functions;
     private AffineTransform zoomTx;
     private double cameraX, cameraY;
     private double oldRangeStart, oldRangeEnd, rangeStart, rangeEnd;
@@ -53,8 +50,7 @@ public class PlottingPanel extends JPanel {
         baseStroke = new BasicStroke(1);
         traceStroke = new BasicStroke(2);
 
-        functions = new ArrayList<>();
-        plottedFunctions = new HashMap<>();
+        functions = new HashMap<>();
 
         zoomTx = AffineTransform.getScaleInstance(1, 1);
         cameraX = 0;
@@ -100,7 +96,7 @@ public class PlottingPanel extends JPanel {
         return INSTANCE;
     }
 
-    public void setFunctions(List<PlottableFunction> functions) {
+    public void setFunctions(Map<PlottableFunction, Path2D> functions) {
         this.functions = functions;
     }
 
@@ -127,18 +123,20 @@ public class PlottingPanel extends JPanel {
         g.scale(1, -1);
 
         g.setStroke(traceStroke);
-        for (Map.Entry<Path2D, Color> pf : plottedFunctions.entrySet()) {
-            g.setColor(pf.getValue());
-            g.draw(zoomTx.createTransformedShape(pf.getKey()));
+        for (Map.Entry<PlottableFunction, Path2D> pf : functions.entrySet()) {
+            if (pf.getKey().isVisible() && pf.getValue() != null) {
+                g.setColor(pf.getKey().getTraceColor());
+                g.draw(zoomTx.createTransformedShape(pf.getValue()));
+            }
         }
     }
 
     public void plot() {
-        plottedFunctions.clear();
-        for (PlottableFunction function : functions) {
+        for (Map.Entry<PlottableFunction, Path2D> function : functions.entrySet()) {
             try {
-                Path2D path = FunctionEvaluator.plotRange(function, oldRangeStart, oldRangeEnd, PlottingSettings.getStep());
-                plottedFunctions.put(path, function.getTraceColor());
+                Path2D path = FunctionEvaluator.plotRange(function.getKey(), oldRangeStart, oldRangeEnd,
+                        PlottingSettings.getStep());
+                functions.put(function.getKey(), path);
             } catch (IllegalArgumentException e) {
                 // Do nothing for now
             }

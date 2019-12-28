@@ -5,8 +5,9 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.geom.Path2D;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -45,7 +46,7 @@ public class Workspace extends JFrame {
         gbc.anchor = GridBagConstraints.FIRST_LINE_START;
         functionsPane.add(new JPanel(), gbc);
 
-        List<PlottableFunction> functions = new ArrayList<>();
+        Map<PlottableFunction, Path2D> functions = new HashMap<>();
         plottingPanel.setFunctions(functions);
 
         AtomicInteger gridIndex = new AtomicInteger();
@@ -54,7 +55,7 @@ public class Workspace extends JFrame {
             gbc.weightx = 0;
             gbc.weighty = 0;
             FunctionCard functionCard = new FunctionCard(gridIndex.get());
-            functions.add(functionCard.getFunction());
+            functions.put(functionCard.getFunction(), null);
             functionsPane.add(functionCard, gbc, gridIndex.getAndIncrement());
             functionsPane.validate();
         });

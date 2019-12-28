@@ -6,12 +6,16 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Random;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
@@ -26,7 +30,8 @@ public class FunctionCard extends JPanel {
         super(new BorderLayout());
 
         function = new PlottableFunction();
-        function.setTraceColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
+        function.setTraceColor(new Color(random.nextInt(255), random.nextInt(255),
+                random.nextInt(255)));
 
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
@@ -72,8 +77,24 @@ public class FunctionCard extends JPanel {
         // Close and apply buttons
         JPanel buttons = new JPanel(new BorderLayout());
 
-        JButton removeFunctionCard = new JButton("X");
-        buttons.add(removeFunctionCard, BorderLayout.PAGE_START);
+        JButton functionSettings = new JButton("⋮");
+        JPopupMenu settingsMenu = new JPopupMenu();
+        JCheckBoxMenuItem visible = new JCheckBoxMenuItem(BUNDLE.getString("workspace.actions.functionVisible"));
+        visible.setState(function.isVisible());
+        visible.addActionListener(e -> {
+            function.setVisible(visible.getState());
+            PlottingPanel.getInstance().plot();
+        });
+        settingsMenu.add(visible);
+        functionSettings.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                settingsMenu.show(functionSettings, e.getX(), e.getY());
+            }
+        });
+        /*functionSettings.addActionListener(actionEvent ->
+                settingsMenu.show(functionSettings, functionSettings.getX(), functionSettings.getY()));*/
+        buttons.add(functionSettings, BorderLayout.PAGE_START);
 
         JButton apply = new JButton("✓");
         apply.setToolTipText(BUNDLE.getString("generics.apply"));
