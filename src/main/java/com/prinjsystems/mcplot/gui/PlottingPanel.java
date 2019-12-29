@@ -1,6 +1,6 @@
 package com.prinjsystems.mcplot.gui;
 
-import com.prinjsystems.mcplot.math.FunctionEvaluator;
+import com.prinjsystems.mcplot.math.FunctionEvaluatorWorkerPool;
 import com.prinjsystems.mcplot.math.PlottableFunction;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -18,6 +18,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.SubmissionPublisher;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -46,6 +47,8 @@ public class PlottingPanel extends JPanel {
     private double oldRangeStart, oldRangeEnd, rangeStart, rangeEnd;
     private double rangeStartY, rangeEndY;
 
+    private SubmissionPublisher<Map<PlottableFunction, Path2D>> publisher;
+
     private PlottingPanel() {
         baseStroke = new BasicStroke(1);
         traceStroke = new BasicStroke(2);
@@ -59,6 +62,8 @@ public class PlottingPanel extends JPanel {
         oldRangeEnd = rangeEnd = (double) getWidth() / 2;
         rangeStartY = -((double) getHeight() / 2);
         rangeEndY = (double) getHeight() / 2;
+
+        publisher = new SubmissionPublisher<>();
 
         JPopupMenu popupMenu = new JPopupMenu();
 
@@ -132,16 +137,15 @@ public class PlottingPanel extends JPanel {
     }
 
     public void plot() {
-        for (Map.Entry<PlottableFunction, Path2D> function : functions.entrySet()) {
-            try {
-                Path2D path = FunctionEvaluator.plotRange(function.getKey(), oldRangeStart, oldRangeEnd,
-                        PlottingSettings.getStep());
-                functions.put(function.getKey(), path);
-            } catch (IllegalArgumentException e) {
-                // Do nothing for now
-            }
+        publisher.submit(functions);
+    }
+
+    public void subscribeEvaluatorPool(FunctionEvaluatorWorkerPool pool) {
+        if (publisher.getNumberOfSubscribers() == 0) {
+            publisher.subscribe(pool);
+        } else {
+            throw new IllegalStateException(BUNDLE.getString("errors.invalidEvaluatorPool"));
         }
-        repaint();
     }
 
     public double getZoom() {
@@ -155,8 +159,14 @@ public class PlottingPanel extends JPanel {
         zoomTx.setToScale(zoom, zoom);
 
         updateRange();
+    }
 
-        System.out.println("New zoom: " + zoom + "x");
+    public double getRangeStart() {
+        return oldRangeStart;
+    }
+
+    public double getRangeEnd() {
+        return oldRangeEnd;
     }
 
     private void updateRange() {

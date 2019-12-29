@@ -5,8 +5,6 @@ import com.fathzer.soft.javaluator.StaticVariableSet;
 import java.awt.geom.Path2D;
 
 public class FunctionEvaluator {
-    private static final DoubleEvaluator evaluator = new DoubleEvaluator();
-
     /**
      * Returns a polygon of the specified section of a function.
      *
@@ -17,14 +15,15 @@ public class FunctionEvaluator {
      * @return Polygon containing a section of the function
      */
     public static Path2D plotRange(PlottableFunction function, double start, double end, double step) {
-        Path2D result = new Path2D.Double();
-
         String definition = function.getDefinition();
         if (definition == null || !definition.matches("[a-zA-Z]+\\(x\\)\\s*=\\s*.*")) {
             throw new IllegalArgumentException("Not a valid function!");
         } else if (start + step > end) {
             throw new IllegalArgumentException("Step is too big for selected range!");
         }
+
+        DoubleEvaluator evaluator = new DoubleEvaluator();
+        Path2D result = new Path2D.Double();
 
         // Initial point
         String actualFunction = definition.substring(definition.indexOf('=') + 1).trim();
