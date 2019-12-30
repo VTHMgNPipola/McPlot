@@ -12,7 +12,7 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 public class FunctionEvaluatorWorkerPool implements Flow.Subscriber<Map<PlottableFunction, Path2D>> {
     int workingThreads;
     private Map<PlottableFunction, Path2D> functions;
-    private List<FunctionEvaluatorWorkerThread> workers;
+    private List<FunctionEvaluatorWorker> workers;
     private Flow.Subscription subscription;
 
     public FunctionEvaluatorWorkerPool() {
@@ -40,12 +40,12 @@ public class FunctionEvaluatorWorkerPool implements Flow.Subscriber<Map<Plottabl
 
         workers.clear();
         for (PlottableFunction plottableFunction : item.keySet()) {
-            workers.add(new FunctionEvaluatorWorkerThread(this, plottableFunction));
+            workers.add(new FunctionEvaluatorWorker(this, plottableFunction));
         }
 
         workingThreads = workers.size();
         if (workingThreads > 0) {
-            for (FunctionEvaluatorWorkerThread worker : workers) {
+            for (FunctionEvaluatorWorker worker : workers) {
                 worker.start();
             }
         } else {
