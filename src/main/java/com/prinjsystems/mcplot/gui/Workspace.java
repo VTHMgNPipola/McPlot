@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -50,13 +51,20 @@ public class Workspace extends JFrame {
 
         AtomicInteger gridIndex = new AtomicInteger();
         JButton createNewFunction = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
-        createNewFunction.addActionListener(event -> {
-            gbc.weightx = 0;
-            gbc.weighty = 0;
-            FunctionCard functionCard = new FunctionCard(gridIndex.get());
-            functions.put(functionCard.getFunction(), null);
-            functionsPane.add(functionCard, gbc, gridIndex.getAndIncrement());
-            functionsPane.validate();
+        createNewFunction.addActionListener(event -> createNewFunction.getActionMap().get("create-function")
+                .actionPerformed(event));
+        createNewFunction.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl N"),
+                "create-function");
+        createNewFunction.getActionMap().put("create-function", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gbc.weightx = 0;
+                gbc.weighty = 0;
+                FunctionCard functionCard = new FunctionCard(gridIndex.get());
+                functions.put(functionCard.getFunction(), null);
+                functionsPane.add(functionCard, gbc, gridIndex.getAndIncrement());
+                functionsPane.validate();
+            }
         });
         functionsPane.add(createNewFunction, gbc, gridIndex.get());
 
