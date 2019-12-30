@@ -96,8 +96,6 @@ public class FunctionCard extends JPanel {
                 settingsMenu.show(functionSettings, e.getX(), e.getY());
             }
         });
-        /*functionSettings.addActionListener(actionEvent ->
-                settingsMenu.show(functionSettings, functionSettings.getX(), functionSettings.getY()));*/
         buttons.add(functionSettings, BorderLayout.PAGE_START);
 
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
