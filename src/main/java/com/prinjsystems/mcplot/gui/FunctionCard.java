@@ -6,9 +6,12 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Random;
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -17,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
@@ -96,12 +100,19 @@ public class FunctionCard extends JPanel {
                 settingsMenu.show(functionSettings, functionSettings.getX(), functionSettings.getY()));*/
         buttons.add(functionSettings, BorderLayout.PAGE_START);
 
+        getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                "apply");
+        getActionMap().put("apply", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                function.setDefinition(functionTextField.getText());
+                PlottingPanel.getInstance().plot();
+            }
+        });
+
         JButton apply = new JButton("✓");
         apply.setToolTipText(BUNDLE.getString("generics.apply"));
-        apply.addActionListener(event -> {
-            function.setDefinition(functionTextField.getText());
-            PlottingPanel.getInstance().plot();
-        });
+        apply.addActionListener(event -> getActionMap().get("apply").actionPerformed(event));
         buttons.add(apply, BorderLayout.PAGE_END);
 
         add(buttons, BorderLayout.LINE_END);
