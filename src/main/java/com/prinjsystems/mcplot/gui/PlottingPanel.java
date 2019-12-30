@@ -10,19 +10,21 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.SubmissionPublisher;
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
@@ -58,10 +60,6 @@ public class PlottingPanel extends JPanel {
         zoomTx = AffineTransform.getScaleInstance(1, 1);
         cameraX = 0;
         cameraY = 0;
-        oldRangeStart = rangeStart = -((double) getWidth() / 2);
-        oldRangeEnd = rangeEnd = (double) getWidth() / 2;
-        rangeStartY = -((double) getHeight() / 2);
-        rangeEndY = (double) getHeight() / 2;
 
         publisher = new SubmissionPublisher<>();
 
@@ -95,6 +93,113 @@ public class PlottingPanel extends JPanel {
                 }
             }
         });
+
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "left");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "right");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "up");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "down");
+
+        // Numpad control keys
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD4, 0),
+                "left");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD6, 0),
+                "right");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD8, 0),
+                "up");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD2, 0),
+                "down");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD7, 0),
+                "left-up");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD9, 0),
+                "right-up");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD3, 0),
+                "right-down");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0),
+                "left-down");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0),
+                "zoom-in");
+        getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0),
+                "zoom-out");
+
+        int movementSpeed = 50;
+        getActionMap().put("left", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cameraX += movementSpeed;
+                rangeStart -= movementSpeed;
+                rangeEnd -= movementSpeed;
+                updateRange();
+            }
+        });
+        getActionMap().put("right", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cameraX -= movementSpeed;
+                rangeStart += movementSpeed;
+                rangeEnd += movementSpeed;
+                updateRange();
+            }
+        });
+        getActionMap().put("up", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cameraY += movementSpeed;
+                if (cameraY - getHeight() < rangeStartY) {
+                    rangeStartY = cameraY - getHeight();
+                }
+                repaint();
+            }
+        });
+        getActionMap().put("down", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cameraY -= movementSpeed;
+                if (cameraY + getHeight() > rangeEndY) {
+                    rangeEndY = cameraY + getHeight();
+                }
+                repaint();
+            }
+        });
+        getActionMap().put("left-up", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getActionMap().get("left").actionPerformed(e);
+                getActionMap().get("up").actionPerformed(e);
+            }
+        });
+        getActionMap().put("right-up", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getActionMap().get("right").actionPerformed(e);
+                getActionMap().get("up").actionPerformed(e);
+            }
+        });
+        getActionMap().put("right-down", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getActionMap().get("right").actionPerformed(e);
+                getActionMap().get("down").actionPerformed(e);
+            }
+        });
+        getActionMap().put("left-down", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                getActionMap().get("left").actionPerformed(e);
+                getActionMap().get("down").actionPerformed(e);
+            }
+        });
+        getActionMap().put("zoom-in", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setZoom(getZoom() * 2);
+            }
+        });
+        getActionMap().put("zoom-out", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setZoom(getZoom() / 2);
+            }
+        });
     }
 
     public static PlottingPanel getInstance() {
@@ -118,12 +223,12 @@ public class PlottingPanel extends JPanel {
         g.drawLine(0, (int) rangeStartY, 0, (int) rangeEndY);
         g.drawLine((int) oldRangeStart, 0, (int) oldRangeEnd, 0);
         g.setFont(SCALE_FONT);
-        double scaleStep = findBestScaleStep();
-        for (double i = scaleStep * Math.round(oldRangeStart / scaleStep);
-             i < scaleStep * Math.round(oldRangeEnd / scaleStep); i += scaleStep) {
-            g.drawLine((int) i, -5, (int) i, 5);
-            g.drawString(i + "", (int) i - (SCALE_FONT_METRICS.stringWidth(i + "") / 2), -7);
-        }
+//        double scaleStep = findBestScaleStep();
+//        for (double i = scaleStep * Math.round(oldRangeStart / scaleStep);
+//             i < scaleStep * Math.round(oldRangeEnd / scaleStep); i += scaleStep) {
+//            g.drawLine((int) i, -5, (int) i, 5);
+//            g.drawString(i + "", (int) i - (SCALE_FONT_METRICS.stringWidth(i + "") / 2), -7);
+//        }
 
         g.scale(1, -1);
 
@@ -169,9 +274,18 @@ public class PlottingPanel extends JPanel {
         return oldRangeEnd;
     }
 
+    public void resetRanges() {
+        oldRangeStart = rangeStart = -((double) getWidth() / 2);
+        oldRangeEnd = rangeEnd = (double) getWidth() / 2;
+        rangeStartY = -((double) getHeight() / 2);
+        rangeEndY = (double) getHeight() / 2;
+    }
+
     private void updateRange() {
         if (rangeStart < oldRangeStart) {
             oldRangeStart = rangeStart;
+            plot();
+        } else if (rangeEnd > oldRangeEnd) {
             oldRangeEnd = rangeEnd;
             plot();
         } else {
@@ -208,36 +322,6 @@ public class PlottingPanel extends JPanel {
                     * (10 * (index - BEST_HIGH_SCALE_STEPS.length + 1));
         } else {
             return BEST_HIGH_SCALE_STEPS[index];
-        }
-    }
-
-    public static class PlottingPanelKeyListener extends KeyAdapter {
-        @Override
-        public void keyPressed(KeyEvent keyEvent) {
-            PlottingPanel instance = getInstance();
-            if (keyEvent.getKeyCode() == KeyEvent.VK_LEFT) {
-                instance.cameraX += 10;
-                instance.rangeStart -= 10;
-                instance.rangeEnd -= 10;
-                instance.updateRange();
-            } else if (keyEvent.getKeyCode() == KeyEvent.VK_DOWN) {
-                instance.cameraY -= 10;
-                if (instance.cameraY < instance.rangeStartY) {
-                    instance.rangeStartY = instance.cameraY;
-                }
-                instance.repaint();
-            } else if (keyEvent.getKeyCode() == KeyEvent.VK_RIGHT) {
-                instance.cameraX -= 10;
-                instance.rangeStart -= 10;
-                instance.rangeEnd -= 10;
-                instance.updateRange();
-            } else if (keyEvent.getKeyCode() == KeyEvent.VK_UP) {
-                instance.cameraY += 10;
-                if (instance.cameraY > instance.rangeEndY) {
-                    instance.rangeEndY = instance.cameraY;
-                }
-                instance.repaint();
-            }
         }
     }
 }

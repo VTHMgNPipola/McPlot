@@ -28,14 +28,13 @@ public class Workspace extends JFrame {
     public Workspace() {
         // Setup JFrame
         super(BUNDLE.getString("workspace.title"));
-        setSize(1024, 768);
+        setSize(1280, 720);
         setResizable(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         // Setup components
         PlottingPanel plottingPanel = PlottingPanel.getInstance();
-        addKeyListener(new PlottingPanel.PlottingPanelKeyListener());
 
         JTabbedPane actionsPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 
@@ -85,7 +84,7 @@ public class Workspace extends JFrame {
         Action zoomInAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                plottingPanel.setZoom(plottingPanel.getZoom() * 2);
+                plottingPanel.getActionMap().get("zoom-in").actionPerformed(actionEvent);
             }
         };
         zoomIn.getActionMap().put("zoomIn", zoomInAction);
@@ -100,18 +99,41 @@ public class Workspace extends JFrame {
         Action zoomOutAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                plottingPanel.setZoom(plottingPanel.getZoom() / 2);
+                plottingPanel.getActionMap().get("zoom-out").actionPerformed(actionEvent);
             }
         };
         zoomOut.getActionMap().put("zoomOut", zoomOutAction);
         zoomOut.addActionListener(zoomOutAction);
         toolBar.add(zoomOut);
 
+        JButton moveLeft = new JButton("⯇");
+        moveLeft.addActionListener(e -> plottingPanel.getActionMap().get("left").actionPerformed(e));
+        toolBar.add(moveLeft);
+
+        JButton moveUp = new JButton("⯅");
+        moveUp.addActionListener(e -> plottingPanel.getActionMap().get("up").actionPerformed(e));
+        toolBar.add(moveUp);
+
+        JButton moveDown = new JButton("⯆");
+        moveDown.addActionListener(e -> plottingPanel.getActionMap().get("down").actionPerformed(e));
+        toolBar.add(moveDown);
+
+        JButton moveRight = new JButton("⯈");
+        moveRight.addActionListener(e -> plottingPanel.getActionMap().get("right").actionPerformed(e));
+        toolBar.add(moveRight);
+
         add(toolBar, BorderLayout.PAGE_END);
     }
 
-    public void configure() {
-        splitPane.setDividerLocation(0.25);
+    public void configure(String[] args) {
+        splitPane.setDividerLocation(0.20);
+        PlottingPanel.getInstance().resetRanges();
         requestFocus();
+
+        for (String arg : args) {
+            if (arg.equals("-maximized") || arg.equals("-M")) {
+                setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+            }
+        }
     }
 }

@@ -17,7 +17,7 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             Workspace workspace = new Workspace();
             workspace.setVisible(true);
-            workspace.configure();
+            workspace.configure(args);
             PlottingPanel.getInstance().subscribeEvaluatorPool(pool);
         });
     }
