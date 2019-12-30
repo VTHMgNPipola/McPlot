@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.HashMap;
@@ -72,6 +74,12 @@ public class PlottingPanel extends JPanel {
 
         setComponentPopupMenu(popupMenu);
 
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                requestFocus();
+            }
+        });
         addMouseWheelListener(mouseWheelEvent -> {
             double preciseRotation = mouseWheelEvent.getPreciseWheelRotation();
             if (preciseRotation < 0) {
