@@ -1,12 +1,16 @@
 package com.prinjsystems.mcplot.gui;
 
+import com.prinjsystems.mcplot.math.FunctionEvaluator;
 import com.prinjsystems.mcplot.math.PlottableFunction;
+import com.prinjsystems.mcplot.math.Variable;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Path2D;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.AbstractAction;
@@ -40,41 +44,73 @@ public class Workspace extends JFrame {
         JTabbedPane actionsPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 
         JPanel functionsPane = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridwidth = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.anchor = GridBagConstraints.FIRST_LINE_START;
-        functionsPane.add(new JPanel(), gbc);
+        GridBagConstraints gbcFunctions = new GridBagConstraints();
+        gbcFunctions.gridwidth = 0;
+        gbcFunctions.fill = GridBagConstraints.HORIZONTAL;
+        gbcFunctions.anchor = GridBagConstraints.FIRST_LINE_START;
+        functionsPane.add(new JPanel(), gbcFunctions);
 
         Map<PlottableFunction, Path2D> functions = new HashMap<>();
         plottingPanel.setFunctions(functions);
 
-        AtomicInteger gridIndex = new AtomicInteger();
-        JButton createNewFunction = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
-        createNewFunction.addActionListener(event -> createNewFunction.getActionMap().get("create-function")
-                .actionPerformed(event));
-        createNewFunction.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl N"),
+        AtomicInteger functionGridIndex = new AtomicInteger();
+        JButton createFunction = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
+        createFunction.addActionListener(e -> createFunction.getActionMap().get("create-function")
+                .actionPerformed(e));
+        createFunction.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl N"),
                 "create-function");
-        createNewFunction.getActionMap().put("create-function", new AbstractAction() {
+        createFunction.getActionMap().put("create-function", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                gbc.weightx = 0;
-                gbc.weighty = 0;
-                FunctionCard functionCard = new FunctionCard(gridIndex.get());
+                gbcFunctions.weightx = 0;
+                gbcFunctions.weighty = 0;
+                FunctionCard functionCard = new FunctionCard(functionGridIndex.get());
                 functions.put(functionCard.getFunction(), null);
-                functionsPane.add(functionCard, gbc, gridIndex.getAndIncrement());
+                functionsPane.add(functionCard, gbcFunctions, functionGridIndex.getAndIncrement());
                 functionsPane.validate();
             }
         });
-        functionsPane.add(createNewFunction, gbc, gridIndex.get());
+        functionsPane.add(createFunction, gbcFunctions, functionGridIndex.get());
 
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        functionsPane.add(new JPanel(), gbc, gridIndex.get() + 1);
+        gbcFunctions.weightx = 1;
+        gbcFunctions.weighty = 1;
+        functionsPane.add(new JPanel(), gbcFunctions, functionGridIndex.get() + 1);
 
         actionsPane.addTab(BUNDLE.getString("workspace.actions.functions"), new JScrollPane(functionsPane));
 
-        JPanel variablesPane = new JPanel();
+        JPanel variablesPane = new JPanel(new GridBagLayout());
+        GridBagConstraints gbcVariables = new GridBagConstraints();
+        gbcVariables.gridwidth = 0;
+        gbcVariables.fill = GridBagConstraints.HORIZONTAL;
+        gbcVariables.anchor = GridBagConstraints.FIRST_LINE_START;
+        variablesPane.add(new JPanel(), gbcVariables);
+
+        List<Variable> variables = new ArrayList<>();
+        FunctionEvaluator.setVariableList(variables);
+
+        AtomicInteger variableGridIndex = new AtomicInteger();
+        JButton createVariable = new JButton(BUNDLE.getString("workspace.actions.createVariable"));
+        createVariable.addActionListener(e -> createVariable.getActionMap().get("create-variable")
+                .actionPerformed(e));
+        createVariable.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl V"),
+                "create-variable");
+        createVariable.getActionMap().put("create-variable", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gbcVariables.weightx = 0;
+                gbcVariables.weighty = 0;
+                VariableCard variableCard = new VariableCard();
+                variables.add(variableCard.getVariable());
+                variablesPane.add(variableCard, gbcVariables, variableGridIndex.getAndIncrement());
+                variablesPane.validate();
+            }
+        });
+        variablesPane.add(createVariable, gbcVariables, variableGridIndex.get());
+
+        gbcVariables.weightx = 1;
+        gbcVariables.weighty = 1;
+        variablesPane.add(new JPanel(), gbcVariables, variableGridIndex.get() + 1);
+
         actionsPane.addTab(BUNDLE.getString("workspace.actions.variables"), new JScrollPane(variablesPane));
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, actionsPane, plottingPanel);
@@ -133,6 +169,12 @@ public class Workspace extends JFrame {
         add(toolBar, BorderLayout.PAGE_END);
     }
 
+    /**
+     * Finishes setting up this frame. Should be called after {@link #setVisible(boolean)}.
+     *
+     * @param args Command line arguments. List of supported arguments: <ul><li>-maximized/-M: Starts McPlot in a
+     *             maximized frame</li></ul>
+     */
     public void configure(String[] args) {
         splitPane.setDividerLocation(0.20);
         PlottingPanel.getInstance().resetRanges();

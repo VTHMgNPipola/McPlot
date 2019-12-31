@@ -32,7 +32,7 @@ public class PlottingSettings {
 
     private static class PlottingSettingsDialog extends JDialog {
         public PlottingSettingsDialog(JFrame topJFrame) {
-            super(topJFrame, BUNDLE.getString("plotting.settings.title"));
+            super(topJFrame, BUNDLE.getString("generics.settings"));
 
             JPanel mainPanel = new JPanel(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
@@ -55,7 +55,7 @@ public class PlottingSettings {
 
             // Apply and close
             JButton apply = new JButton(BUNDLE.getString("generics.apply"));
-            apply.addActionListener(event -> {
+            apply.addActionListener(e -> {
                 step = (double) stepField.getValue();
 
                 PlottingPanel.getInstance().plot();
@@ -63,7 +63,7 @@ public class PlottingSettings {
             optionButtons.add(apply);
 
             JButton close = new JButton(BUNDLE.getString("generics.close"));
-            close.addActionListener(event -> dispose());
+            close.addActionListener(e -> dispose());
             optionButtons.add(close);
 
             add(optionButtons, BorderLayout.PAGE_END);

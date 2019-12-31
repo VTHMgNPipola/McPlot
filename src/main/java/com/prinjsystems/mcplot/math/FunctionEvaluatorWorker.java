@@ -16,6 +16,10 @@ public class FunctionEvaluatorWorker extends Thread {
         this.function = function;
     }
 
+    /**
+     * Will plot the function set to this worker and store it into the owner's "plot map", that will be a reference to
+     * {@link PlottingPanel}'s map.
+     */
     @Override
     public void run() {
         PlottingPanel instance = PlottingPanel.getInstance();

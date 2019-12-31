@@ -19,11 +19,21 @@ public class FunctionEvaluatorWorkerPool implements Flow.Subscriber<Map<Plottabl
         workers = new ArrayList<>();
     }
 
+    /**
+     * When the last worker finishes working it will call this method, that repaints {@link PlottingPanel} and request
+     * another plotting job.
+     */
     void finish() {
         PlottingPanel.getInstance().repaint();
         subscription.request(1);
     }
 
+    /**
+     * Put a function and it's plot into a map, that is a reference to {@link PlottingPanel} own map.
+     *
+     * @param function Function that was plotted.
+     * @param path     2D plot of that function.
+     */
     void putPlot(PlottableFunction function, Path2D path) {
         functions.put(function, path);
     }
@@ -34,6 +44,12 @@ public class FunctionEvaluatorWorkerPool implements Flow.Subscriber<Map<Plottabl
         subscription.request(1);
     }
 
+    /**
+     * Every time this pool receives a plotting job it will start a {@link FunctionEvaluatorWorker} for each function to
+     * be plotted, each one having its own thread, and then wait until the last one to finish calls {@link #finish()}.
+     *
+     * @param item Reference to {@link PlottingPanel} function map.
+     */
     @Override
     public void onNext(Map<PlottableFunction, Path2D> item) {
         functions = item;

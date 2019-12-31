@@ -19,7 +19,6 @@ import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
@@ -49,10 +48,10 @@ public class FunctionCard extends JPanel {
                 g.drawRect(getWidth() / 2 - squareSize / 2, getHeight() / 2 - squareSize / 2, 25, 25);
             }
         };
-        traceColorButton.setToolTipText(BUNDLE.getString("workspace.actions.selectColor"));
-        traceColorButton.addActionListener(event -> {
+        traceColorButton.setToolTipText(BUNDLE.getString("functionCard.selectColor"));
+        traceColorButton.addActionListener(e -> {
             Color selectedColor = JColorChooser.showDialog(null,
-                    BUNDLE.getString("workspace.actions.selectColor"), function.getTraceColor());
+                    BUNDLE.getString("functionCard.selectColor"), function.getTraceColor());
             if (selectedColor != null) {
                 function.setTraceColor(selectedColor);
                 PlottingPanel.getInstance().plot();
@@ -67,13 +66,14 @@ public class FunctionCard extends JPanel {
         JPanel functionPanel = new JPanel(new BorderLayout());
 
         // Function JTextField
-        JTextField functionTextField = new JTextField();
-        functionTextField.setToolTipText(BUNDLE.getString("workspace.actions.functionDefinition"));
+        JLabeledTextField functionTextField = new JLabeledTextField();
+        functionTextField.setPlaceholderText(BUNDLE.getString("functionCard.functionDefinitionPlaceholder"));
+        functionTextField.setToolTipText(BUNDLE.getString("functionCard.functionDefinitionTooltip"));
         functionTextField.setFont(monospacedFont);
         functionPanel.add(functionTextField, BorderLayout.CENTER);
 
         // JLabel
-        functionPanel.add(new JLabel(BUNDLE.getString("workspace.actions.functionId").replace("{0}",
+        functionPanel.add(new JLabel(BUNDLE.getString("functionCard.functionId").replace("{0}",
                 functionIndex + "")), BorderLayout.PAGE_START);
 
         add(functionPanel, BorderLayout.CENTER);
@@ -82,8 +82,9 @@ public class FunctionCard extends JPanel {
         JPanel buttons = new JPanel(new BorderLayout());
 
         JButton functionSettings = new JButton("⋮");
+        functionSettings.setToolTipText(BUNDLE.getString("generics.settings"));
         JPopupMenu settingsMenu = new JPopupMenu();
-        JCheckBoxMenuItem visible = new JCheckBoxMenuItem(BUNDLE.getString("workspace.actions.functionVisible"));
+        JCheckBoxMenuItem visible = new JCheckBoxMenuItem(BUNDLE.getString("functionCard.settings.functionVisible"));
         visible.setState(function.isVisible());
         visible.addActionListener(e -> {
             function.setVisible(visible.getState());
@@ -110,7 +111,7 @@ public class FunctionCard extends JPanel {
 
         JButton apply = new JButton("✓");
         apply.setToolTipText(BUNDLE.getString("generics.apply"));
-        apply.addActionListener(event -> getActionMap().get("apply").actionPerformed(event));
+        apply.addActionListener(e -> getActionMap().get("apply").actionPerformed(e));
         buttons.add(apply, BorderLayout.PAGE_END);
 
         add(buttons, BorderLayout.LINE_END);
