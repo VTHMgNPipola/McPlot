@@ -77,8 +77,8 @@ public class FunctionCard extends JPanel {
         // Function JTextField
         JLabeledTextField functionTextField = new JLabeledTextField();
         functionTextField.setText(function.getDefinition());
-        functionTextField.setPlaceholderText(BUNDLE.getString("functionCard.functionDefinitionPlaceholder"));
-        functionTextField.setToolTipText(BUNDLE.getString("functionCard.functionDefinitionTooltip"));
+        functionTextField.setPlaceholderText(BUNDLE.getString("functionCard.functionDefinition.placeholder"));
+        functionTextField.setToolTipText(BUNDLE.getString("functionCard.functionDefinition.tooltip"));
         functionTextField.setFont(monospacedFont);
         functionPanel.add(functionTextField, BorderLayout.CENTER);
 
