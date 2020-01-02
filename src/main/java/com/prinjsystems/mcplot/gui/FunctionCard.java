@@ -36,12 +36,14 @@ public class FunctionCard extends JPanel {
 
     private PlottableFunction function;
 
-    public FunctionCard(int functionIndex) {
+    public FunctionCard(int functionIndex, PlottableFunction f) {
         super(new BorderLayout());
 
-        function = new PlottableFunction();
-        function.setTraceColor(new Color(random.nextInt(255), random.nextInt(255),
-                random.nextInt(255)));
+        function = f;
+        if (function.getTraceColor() == null) {
+            function.setTraceColor(new Color(random.nextInt(255), random.nextInt(255),
+                    random.nextInt(255)));
+        }
 
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
@@ -74,6 +76,7 @@ public class FunctionCard extends JPanel {
 
         // Function JTextField
         JLabeledTextField functionTextField = new JLabeledTextField();
+        functionTextField.setText(function.getDefinition());
         functionTextField.setPlaceholderText(BUNDLE.getString("functionCard.functionDefinitionPlaceholder"));
         functionTextField.setToolTipText(BUNDLE.getString("functionCard.functionDefinitionTooltip"));
         functionTextField.setFont(monospacedFont);
@@ -174,6 +177,8 @@ public class FunctionCard extends JPanel {
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 "apply");
         getActionMap().put("apply", new AbstractAction() {
+            private static final long serialVersionUID = 9032317161350111888L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 function.setDefinition(functionTextField.getText());
@@ -191,5 +196,9 @@ public class FunctionCard extends JPanel {
 
     public PlottableFunction getFunction() {
         return function;
+    }
+
+    public void setFunction(PlottableFunction function) {
+        this.function = function;
     }
 }

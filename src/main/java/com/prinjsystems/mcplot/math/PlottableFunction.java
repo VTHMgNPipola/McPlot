@@ -1,8 +1,11 @@
 package com.prinjsystems.mcplot.math;
 
 import java.awt.Color;
+import java.io.Serializable;
 
-public class PlottableFunction {
+public class PlottableFunction implements Serializable {
+    private static final long serialVersionUID = 3706075185342072722L;
+
     private String definition;
     private double domainStart, domainEnd;
     private Color traceColor;

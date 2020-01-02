@@ -31,12 +31,9 @@ public class FunctionEvaluator {
         Path2D result = new Path2D.Double();
 
         // Checks if start and end arguments are beyond function's domain
-        System.out.printf("%f %f\n", start, function.getDomainStart());
         if (start < function.getDomainStart()) {
             start = function.getDomainStart();
-            System.out.print("Switched: ");
         }
-        System.out.printf("%f %f\n", start, function.getDomainStart());
         if (end > function.getDomainEnd()) {
             end = function.getDomainEnd();
         }

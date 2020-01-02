@@ -22,23 +22,25 @@ public class VariableCard extends JPanel {
 
     private Variable variable;
 
-    public VariableCard() {
+    public VariableCard(Variable v) {
         super(new BorderLayout());
 
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-        variable = new Variable();
+        variable = v;
 
         JPanel definitionPanel = new JPanel();
         definitionPanel.setLayout(new BoxLayout(definitionPanel, BoxLayout.Y_AXIS));
 
         JLabeledTextField nameField = new JLabeledTextField();
+        nameField.setText(variable.getName());
         nameField.setFont(monospacedFont);
         nameField.setPlaceholderText(BUNDLE.getString("variableCard.name"));
         nameField.setToolTipText(BUNDLE.getString("variableCard.nameTooltip"));
         definitionPanel.add(nameField);
 
         JLabeledTextField valueField = new JLabeledTextField();
+        valueField.setText(variable.getValue() + "");
         valueField.setFont(monospacedFont);
         valueField.setPlaceholderText(BUNDLE.getString("variableCard.value"));
         valueField.setToolTipText(BUNDLE.getString("variableCard.valueTooltip"));
@@ -55,10 +57,13 @@ public class VariableCard extends JPanel {
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 "apply");
         getActionMap().put("apply", new AbstractAction() {
+            private static final long serialVersionUID = -7271902751222030104L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 variable.setName(nameField.getText());
                 variable.setValue(EVALUATOR.evaluate(valueField.getText()));
+                valueField.setText(variable.getValue() + "");
                 PlottingPanel.getInstance().plot();
             }
         });

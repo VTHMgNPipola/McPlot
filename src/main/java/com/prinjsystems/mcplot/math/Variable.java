@@ -1,6 +1,10 @@
 package com.prinjsystems.mcplot.math;
 
-public class Variable {
+import java.io.Serializable;
+
+public class Variable implements Serializable {
+    private static final long serialVersionUID = -2185401147960943765L;
+
     private String name;
     private double value;
 

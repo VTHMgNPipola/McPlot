@@ -8,6 +8,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.geom.Path2D;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,13 +23,18 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
@@ -43,6 +54,9 @@ public class Workspace extends JFrame {
 
         JTabbedPane actionsPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 
+        /*
+        Functions pane
+         */
         JPanel functionsPane = new JPanel(new GridBagLayout());
         GridBagConstraints gbcFunctions = new GridBagConstraints();
         gbcFunctions.gridwidth = 0;
@@ -60,11 +74,13 @@ public class Workspace extends JFrame {
         createFunction.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl N"),
                 "create-function");
         createFunction.getActionMap().put("create-function", new AbstractAction() {
+            private static final long serialVersionUID = 5490534849088567L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 gbcFunctions.weightx = 0;
                 gbcFunctions.weighty = 0;
-                FunctionCard functionCard = new FunctionCard(functionGridIndex.get());
+                FunctionCard functionCard = new FunctionCard(functionGridIndex.get(), new PlottableFunction());
                 functions.put(functionCard.getFunction(), null);
                 functionsPane.add(functionCard, gbcFunctions, functionGridIndex.getAndIncrement());
                 functionsPane.validate();
@@ -78,6 +94,9 @@ public class Workspace extends JFrame {
 
         actionsPane.addTab(BUNDLE.getString("workspace.actions.functions"), new JScrollPane(functionsPane));
 
+        /*
+        Variables pane
+         */
         JPanel variablesPane = new JPanel(new GridBagLayout());
         GridBagConstraints gbcVariables = new GridBagConstraints();
         gbcVariables.gridwidth = 0;
@@ -95,11 +114,13 @@ public class Workspace extends JFrame {
         createVariable.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke("ctrl V"),
                 "create-variable");
         createVariable.getActionMap().put("create-variable", new AbstractAction() {
+            private static final long serialVersionUID = -8620701650644805231L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 gbcVariables.weightx = 0;
                 gbcVariables.weighty = 0;
-                VariableCard variableCard = new VariableCard();
+                VariableCard variableCard = new VariableCard(new Variable());
                 variables.add(variableCard.getVariable());
                 variablesPane.add(variableCard, gbcVariables, variableGridIndex.getAndIncrement());
                 variablesPane.validate();
@@ -117,6 +138,9 @@ public class Workspace extends JFrame {
         splitPane.setContinuousLayout(true);
         add(splitPane);
 
+        /*
+        Bottom toolbar
+         */
         JToolBar toolBar = new JToolBar(JToolBar.HORIZONTAL);
         toolBar.setFloatable(false);
 
@@ -126,6 +150,8 @@ public class Workspace extends JFrame {
         zoomIn.getInputMap().put(KeyStroke.getKeyStroke("+"), "zoomIn");
 
         Action zoomInAction = new AbstractAction() {
+            private static final long serialVersionUID = 2698683814900947736L;
+
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 plottingPanel.getActionMap().get("zoom-in").actionPerformed(actionEvent);
@@ -141,6 +167,8 @@ public class Workspace extends JFrame {
         zoomOut.getInputMap().put(KeyStroke.getKeyStroke("-"), "zoomOut");
 
         Action zoomOutAction = new AbstractAction() {
+            private static final long serialVersionUID = 6251288571572112778L;
+
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 plottingPanel.getActionMap().get("zoom-out").actionPerformed(actionEvent);
@@ -167,6 +195,102 @@ public class Workspace extends JFrame {
         toolBar.add(moveRight);
 
         add(toolBar, BorderLayout.PAGE_END);
+
+        /*
+        Menu bar
+         */
+        JMenuBar menuBar = new JMenuBar();
+
+        // File menu
+        JMenu fileMenu = new JMenu(BUNDLE.getString("workspace.menu.file"));
+
+        JMenuItem saveMenuItem = new JMenuItem(BUNDLE.getString("workspace.menu.file.save"));
+        saveMenuItem.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setMultiSelectionEnabled(false);
+            String fileFormat = "mcw";
+            fileChooser.setFileFilter(new FileNameExtensionFilter(BUNDLE.getString("workspace.menu.file.fileFormat"),
+                    fileFormat));
+            int option = fileChooser.showSaveDialog(this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                String selectedFile = fileChooser.getSelectedFile().getAbsolutePath();
+                File file = new File(selectedFile
+                        + (selectedFile.endsWith("." + fileFormat) ? "" : "." + fileFormat));
+                try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
+                    oos.writeObject(functions);
+                    oos.writeObject(variables);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        fileMenu.add(saveMenuItem);
+
+        JMenuItem openMenuItem = new JMenuItem(BUNDLE.getString("workspace.menu.file.open"));
+
+        openMenuItem.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            fileChooser.setMultiSelectionEnabled(false);
+            fileChooser.setFileFilter(new FileNameExtensionFilter(BUNDLE.getString("workspace.menu.file.fileFormat"),
+                    "mcw"));
+            int option = fileChooser.showOpenDialog(this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileChooser.getSelectedFile()))) {
+                    functions.clear();
+                    functions.putAll((Map<PlottableFunction, Path2D>) ois.readObject());
+
+                    variables.clear();
+                    variables.addAll((List<Variable>) ois.readObject());
+
+                    /*
+                    Updating functions pane
+                     */
+                    functionsPane.removeAll();
+                    functionGridIndex.set(0);
+                    for (PlottableFunction function : functions.keySet()) {
+                        gbcFunctions.weightx = 0;
+                        gbcFunctions.weighty = 0;
+                        FunctionCard functionCard = new FunctionCard(functionGridIndex.get(), function);
+                        functionsPane.add(functionCard, gbcFunctions, functionGridIndex.getAndIncrement());
+                    }
+
+                    functionsPane.add(createFunction, gbcFunctions, functionGridIndex.get());
+
+                    gbcFunctions.weightx = 1;
+                    gbcFunctions.weighty = 1;
+                    functionsPane.add(new JPanel(), gbcFunctions, functionGridIndex.get() + 1);
+                    functionsPane.revalidate();
+                    
+                    /*
+                    Updating variables pane
+                     */
+                    variablesPane.removeAll();
+                    variableGridIndex.set(0);
+                    for (Variable variable : variables) {
+                        gbcVariables.weightx = 0;
+                        gbcVariables.weighty = 0;
+                        VariableCard variableCard = new VariableCard(variable);
+                        variablesPane.add(variableCard, gbcVariables, variableGridIndex.getAndIncrement());
+                    }
+
+                    variablesPane.add(createVariable, gbcVariables, variableGridIndex.get());
+
+                    gbcVariables.weightx = 1;
+                    gbcVariables.weighty = 1;
+                    variablesPane.add(new JPanel(), gbcVariables, variableGridIndex.get() + 1);
+                    variablesPane.revalidate();
+                } catch (IOException | ClassNotFoundException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        fileMenu.add(openMenuItem);
+
+        menuBar.add(fileMenu);
+
+        setJMenuBar(menuBar);
     }
 
     /**
