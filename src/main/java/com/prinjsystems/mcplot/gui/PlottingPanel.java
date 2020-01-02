@@ -231,6 +231,7 @@ public class PlottingPanel extends JPanel {
         g.drawLine(0, (int) rangeStartY, 0, (int) rangeEndY);
         g.drawLine((int) oldRangeStart, 0, (int) oldRangeEnd, 0);
         g.setFont(SCALE_FONT);
+        // TODO: Find a way to accurately draw the steps
 //        double scaleStep = findBestScaleStep();
 //        for (double i = scaleStep * Math.round(oldRangeStart / scaleStep);
 //             i < scaleStep * Math.round(oldRangeEnd / scaleStep); i += scaleStep) {
@@ -306,11 +307,11 @@ public class PlottingPanel extends JPanel {
         double zoom = zoomTx.getScaleX();
         if (zoom > 32) {
             for (int i = 0; bestStep * zoom > 32; i++) {
-                bestStep = getBestHighScaleStep(i);
+                bestStep = getBestLowScaleStep(i);
             }
         } else if (zoom < 4) {
             for (int i = 0; bestStep * zoom < 4; i++) {
-                bestStep = getBestLowScaleStep(i);
+                bestStep = getBestHighScaleStep(i);
             }
         }
         return bestStep;
@@ -318,7 +319,7 @@ public class PlottingPanel extends JPanel {
 
     private double getBestLowScaleStep(int index) {
         if (index >= BEST_LOW_SCALE_STEPS.length) {
-            return BEST_LOW_SCALE_STEPS[BEST_LOW_SCALE_STEPS.length - 1] * (10 * (index - BEST_LOW_SCALE_STEPS.length + 1));
+            return BEST_LOW_SCALE_STEPS[BEST_LOW_SCALE_STEPS.length - 1] * ((index - BEST_LOW_SCALE_STEPS.length + 1) / 10);
         } else {
             return BEST_LOW_SCALE_STEPS[index];
         }

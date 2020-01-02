@@ -30,6 +30,17 @@ public class FunctionEvaluator {
         DoubleEvaluator evaluator = new DoubleEvaluator();
         Path2D result = new Path2D.Double();
 
+        // Checks if start and end arguments are beyond function's domain
+        System.out.printf("%f %f\n", start, function.getDomainStart());
+        if (start < function.getDomainStart()) {
+            start = function.getDomainStart();
+            System.out.print("Switched: ");
+        }
+        System.out.printf("%f %f\n", start, function.getDomainStart());
+        if (end > function.getDomainEnd()) {
+            end = function.getDomainEnd();
+        }
+
         // Initial point
         String actualFunction = definition.substring(definition.indexOf('=') + 1).trim();
         StaticVariableSet<Double> variables = new StaticVariableSet<>();
@@ -39,6 +50,7 @@ public class FunctionEvaluator {
         }
         result.moveTo(start, evaluator.evaluate(actualFunction, variables));
 
+        // Calculates all points
         for (double i = start + step; i < end; i += step) {
             variables.set("x", i);
             result.lineTo(i, evaluator.evaluate(actualFunction, variables));
