@@ -179,18 +179,22 @@ public class Workspace extends JFrame {
         toolBar.add(zoomOut);
 
         JButton moveLeft = new JButton("⯇");
+        moveLeft.setToolTipText(BUNDLE.getString("workspace.actions.moveLeft"));
         moveLeft.addActionListener(e -> plottingPanel.getActionMap().get("left").actionPerformed(e));
         toolBar.add(moveLeft);
 
         JButton moveUp = new JButton("⯅");
+        moveUp.setToolTipText(BUNDLE.getString("workspace.actions.moveUp"));
         moveUp.addActionListener(e -> plottingPanel.getActionMap().get("up").actionPerformed(e));
         toolBar.add(moveUp);
 
         JButton moveDown = new JButton("⯆");
+        moveDown.setToolTipText(BUNDLE.getString("workspace.actions.moveDown"));
         moveDown.addActionListener(e -> plottingPanel.getActionMap().get("down").actionPerformed(e));
         toolBar.add(moveDown);
 
         JButton moveRight = new JButton("⯈");
+        moveRight.setToolTipText(BUNDLE.getString("workspace.actions.moveRight"));
         moveRight.addActionListener(e -> plottingPanel.getActionMap().get("right").actionPerformed(e));
         toolBar.add(moveRight);
 
