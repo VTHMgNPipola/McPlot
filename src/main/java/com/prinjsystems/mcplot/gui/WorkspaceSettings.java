@@ -7,65 +7,59 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.prefs.Preferences;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
-public class PlottingSettings {
-    private static final String STEP_KEY = "step";
+public class WorkspaceSettings {
+    private static final String PLOT_ON_OPEN_KEY = "plotOnOpen";
     private static Preferences prefs;
-    private static double step;
+    private static boolean plotOnOpen;
 
     static {
         prefs = Preferences.userRoot().node(Main.PREFERENCES_PATH);
 
-        step = prefs.getDouble(STEP_KEY, 0.1);
+        plotOnOpen = prefs.getBoolean(PLOT_ON_OPEN_KEY, true);
     }
 
-    public static void showPlottingSettingsDialog(JFrame topJFrame) {
-        PlottingSettingsDialog dialog = new PlottingSettingsDialog(topJFrame);
+    public static void showWorkspaceSettingsDialog(JFrame topJFrame) {
+        WorkspaceSettingsDialog dialog = new WorkspaceSettingsDialog(topJFrame);
         dialog.setVisible(true);
     }
 
-    public static double getStep() {
-        return step;
+    public static boolean isPlotOnOpen() {
+        return plotOnOpen;
     }
 
-    private static class PlottingSettingsDialog extends JDialog {
-        public PlottingSettingsDialog(JFrame topJFrame) {
+    private static class WorkspaceSettingsDialog extends JDialog {
+        public WorkspaceSettingsDialog(JFrame topJFrame) {
             super(topJFrame, BUNDLE.getString("generics.settings"));
 
             JPanel mainPanel = new JPanel(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.anchor = GridBagConstraints.FIRST_LINE_START;
-            gbc.insets = new Insets(10, 10, 0, 10);
+            gbc.insets = new Insets(10, 10, 10, 10);
             mainPanel.add(new JPanel(), gbc);
 
-            JLabel stepLabel = new JLabel(BUNDLE.getString("plotting.settings.step"));
-            mainPanel.add(stepLabel, gbc, 0);
-
-            // Step
-            JSpinner stepField = new JSpinner(new SpinnerNumberModel(step, 0.0000001, 1000000,
-                    0.05));
-            mainPanel.add(stepField, gbc, 1);
+            // Plot on open
+            JCheckBox plotOnOpenField = new JCheckBox(BUNDLE.getString("workspace.menu.file.settings.plotOnOpen"),
+                    plotOnOpen);
+            mainPanel.add(plotOnOpenField, gbc, 0);
 
             add(mainPanel, BorderLayout.CENTER);
 
+            // Bottom buttons
             JPanel optionButtons = new JPanel();
 
             // Apply and close
             JButton apply = new JButton(BUNDLE.getString("generics.apply"));
             apply.addActionListener(e -> {
-                step = (double) stepField.getValue();
-                prefs.putDouble(STEP_KEY, step);
-
-                PlottingPanel.getInstance().plot();
+                plotOnOpen = plotOnOpenField.isSelected();
+                prefs.putBoolean(PLOT_ON_OPEN_KEY, plotOnOpen);
             });
             optionButtons.add(apply);
 

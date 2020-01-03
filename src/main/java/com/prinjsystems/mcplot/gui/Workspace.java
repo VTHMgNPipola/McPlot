@@ -285,12 +285,22 @@ public class Workspace extends JFrame {
                     gbcVariables.weighty = 1;
                     variablesPane.add(new JPanel(), gbcVariables, variableGridIndex.get() + 1);
                     variablesPane.revalidate();
+
+                    if (WorkspaceSettings.isPlotOnOpen()) {
+                        plottingPanel.plot();
+                    }
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
             }
         });
         fileMenu.add(openMenuItem);
+
+        fileMenu.addSeparator();
+
+        JMenuItem settingsMenuItem = new JMenuItem(BUNDLE.getString("generics.settings"));
+        settingsMenuItem.addActionListener(e -> WorkspaceSettings.showWorkspaceSettingsDialog(this));
+        fileMenu.add(settingsMenuItem);
 
         menuBar.add(fileMenu);
 

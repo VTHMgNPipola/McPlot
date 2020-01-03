@@ -9,6 +9,8 @@ import javax.swing.SwingUtilities;
 public class Main {
     public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("mcplot");
 
+    public static final String PREFERENCES_PATH = "com.prinjsystems.mcplot";
+
     public static void main(String[] args) {
         // Create function evaluator pool
         FunctionEvaluatorWorkerPool pool = new FunctionEvaluatorWorkerPool();
