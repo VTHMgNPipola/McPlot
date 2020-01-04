@@ -36,6 +36,8 @@ public class FunctionCard extends JPanel {
 
     private PlottableFunction function;
 
+    private JLabeledTextField functionTextField;
+
     public FunctionCard(int functionIndex, PlottableFunction f) {
         super(new BorderLayout());
 
@@ -75,7 +77,7 @@ public class FunctionCard extends JPanel {
         JPanel functionPanel = new JPanel(new BorderLayout());
 
         // Function JTextField
-        JLabeledTextField functionTextField = new JLabeledTextField();
+        functionTextField = new JLabeledTextField();
         functionTextField.setText(function.getDefinition());
         functionTextField.setPlaceholderText(BUNDLE.getString("functionCard.functionDefinition.placeholder"));
         functionTextField.setToolTipText(BUNDLE.getString("functionCard.functionDefinition.tooltip"));
@@ -181,7 +183,7 @@ public class FunctionCard extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                function.setDefinition(functionTextField.getText());
+                updateFunction();
                 PlottingPanel.getInstance().plot();
             }
         });
@@ -192,6 +194,10 @@ public class FunctionCard extends JPanel {
         buttons.add(apply, BorderLayout.PAGE_END);
 
         add(buttons, BorderLayout.LINE_END);
+    }
+
+    public void updateFunction() {
+        function.setDefinition(functionTextField.getText());
     }
 
     public PlottableFunction getFunction() {

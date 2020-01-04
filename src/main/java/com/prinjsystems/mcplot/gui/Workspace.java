@@ -67,6 +67,8 @@ public class Workspace extends JFrame {
         Map<PlottableFunction, Path2D> functions = new HashMap<>();
         plottingPanel.setFunctions(functions);
 
+        List<FunctionCard> functionCards = new ArrayList<>();
+
         AtomicInteger functionGridIndex = new AtomicInteger();
         JButton createFunction = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
         createFunction.addActionListener(e -> createFunction.getActionMap().get("create-function")
@@ -82,6 +84,7 @@ public class Workspace extends JFrame {
                 gbcFunctions.weighty = 0;
                 FunctionCard functionCard = new FunctionCard(functionGridIndex.get(), new PlottableFunction());
                 functions.put(functionCard.getFunction(), null);
+                functionCards.add(functionCard);
                 functionsPane.add(functionCard, gbcFunctions, functionGridIndex.getAndIncrement());
                 functionsPane.validate();
             }
@@ -197,6 +200,16 @@ public class Workspace extends JFrame {
         moveRight.setToolTipText(BUNDLE.getString("workspace.actions.moveRight"));
         moveRight.addActionListener(e -> plottingPanel.getActionMap().get("right").actionPerformed(e));
         toolBar.add(moveRight);
+
+        JButton plot = new JButton("↻");
+        plot.setToolTipText(BUNDLE.getString("workspace.actions.plot"));
+        plot.addActionListener(e -> {
+            for (FunctionCard functionCard : functionCards) {
+                functionCard.updateFunction();
+            }
+            plottingPanel.plot();
+        });
+        toolBar.add(plot);
 
         add(toolBar, BorderLayout.PAGE_END);
 
