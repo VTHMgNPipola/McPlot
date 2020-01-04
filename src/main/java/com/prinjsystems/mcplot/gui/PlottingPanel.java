@@ -94,9 +94,23 @@ public class PlottingPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                if (-((double) getWidth() / 2) < oldRangeStart || (double) getWidth() / 2 > oldRangeEnd) {
-                    oldRangeStart = -((double) getWidth() / 2);
-                    oldRangeEnd = (double) getWidth() / 2;
+                boolean updatedRanges = false;
+                double newRangeStart = -((double) getWidth() / 2);
+                double newRangeEnd = (double) getWidth() / 2;
+                double newRangeStartY = -((double) getHeight() / 2);
+                double newRangeEndY = (double) getHeight() / 2;
+                if (newRangeStart < oldRangeStart || newRangeEnd > oldRangeEnd) {
+                    oldRangeStart = newRangeStart;
+                    oldRangeEnd = newRangeEnd;
+                    updatedRanges = true;
+                }
+                if (newRangeStartY < rangeStartY || newRangeEndY > rangeEndY) {
+                    rangeStartY = newRangeStartY;
+                    rangeEndY = newRangeEndY;
+                    updatedRanges = true;
+                }
+
+                if (updatedRanges) {
                     plot();
                 }
             }
@@ -131,6 +145,8 @@ public class PlottingPanel extends JPanel {
 
         double movementSpeed = 50 * getZoom();
         getActionMap().put("left", new AbstractAction() {
+            private static final long serialVersionUID = 4629247154788996726L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 cameraX += movementSpeed;
@@ -140,35 +156,42 @@ public class PlottingPanel extends JPanel {
             }
         });
         getActionMap().put("right", new AbstractAction() {
+            private static final long serialVersionUID = -6519412175245515374L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 cameraX -= movementSpeed;
                 rangeStart += movementSpeed;
                 rangeEnd += movementSpeed;
+                System.out.println(rangeEnd);
                 updateRange();
             }
         });
         getActionMap().put("up", new AbstractAction() {
+            private static final long serialVersionUID = 7493982171959945656L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 cameraY += movementSpeed;
-                if (cameraY - getHeight() < rangeStartY) {
-                    rangeStartY = cameraY - getHeight();
-                }
+                rangeStartY -= movementSpeed;
+                rangeEndY -= movementSpeed;
                 repaint();
             }
         });
         getActionMap().put("down", new AbstractAction() {
+            private static final long serialVersionUID = 6417945762098090572L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 cameraY -= movementSpeed;
-                if (cameraY + getHeight() > rangeEndY) {
-                    rangeEndY = cameraY + getHeight();
-                }
+                rangeStartY += movementSpeed;
+                rangeEndY += movementSpeed;
                 repaint();
             }
         });
         getActionMap().put("left-up", new AbstractAction() {
+            private static final long serialVersionUID = -5654333907101214364L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 getActionMap().get("left").actionPerformed(e);
@@ -176,6 +199,8 @@ public class PlottingPanel extends JPanel {
             }
         });
         getActionMap().put("right-up", new AbstractAction() {
+            private static final long serialVersionUID = -4788514885885809789L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 getActionMap().get("right").actionPerformed(e);
@@ -183,6 +208,8 @@ public class PlottingPanel extends JPanel {
             }
         });
         getActionMap().put("right-down", new AbstractAction() {
+            private static final long serialVersionUID = 3479461640899981136L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 getActionMap().get("right").actionPerformed(e);
@@ -190,6 +217,8 @@ public class PlottingPanel extends JPanel {
             }
         });
         getActionMap().put("left-down", new AbstractAction() {
+            private static final long serialVersionUID = -3591950614579752641L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 getActionMap().get("left").actionPerformed(e);
@@ -197,12 +226,16 @@ public class PlottingPanel extends JPanel {
             }
         });
         getActionMap().put("zoom-in", new AbstractAction() {
+            private static final long serialVersionUID = -3663952628496064947L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 setZoom(getZoom() * 2);
             }
         });
         getActionMap().put("zoom-out", new AbstractAction() {
+            private static final long serialVersionUID = 8198157863526451469L;
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 setZoom(getZoom() / 2);
@@ -229,7 +262,7 @@ public class PlottingPanel extends JPanel {
         g.setColor(Color.BLUE);
         g.setStroke(baseStroke);
         g.drawLine(0, (int) rangeStartY, 0, (int) rangeEndY);
-        g.drawLine((int) oldRangeStart, 0, (int) oldRangeEnd, 0);
+        g.drawLine((int) (oldRangeStart * getZoom()), 0, (int) (oldRangeEnd * getZoom()), 0);
         g.setFont(SCALE_FONT);
         // TODO: Find a way to accurately draw the steps
 //        double scaleStep = findBestScaleStep();
