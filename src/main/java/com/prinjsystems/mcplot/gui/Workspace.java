@@ -323,5 +323,9 @@ public class Workspace extends JFrame {
                 setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
             }
         }
+
+        if (WorkspaceSettings.isOpenMaximized()) {
+            setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+        }
     }
 }
