@@ -94,8 +94,8 @@ public class FunctionCard extends JPanel {
         JPanel buttons = new JPanel(new BorderLayout());
 
         // Settings menu
-        JButton functionSettings = new JButton("⋮");
-        functionSettings.setToolTipText(BUNDLE.getString("generics.settings"));
+        JButton settings = new JButton("⋮");
+        settings.setToolTipText(BUNDLE.getString("generics.settings"));
         JPopupMenu settingsMenu = new JPopupMenu();
 
         JCheckBoxMenuItem visible = new JCheckBoxMenuItem(BUNDLE.getString("functionCard.settings.functionVisible"));
@@ -171,26 +171,25 @@ public class FunctionCard extends JPanel {
 
         settingsMenu.addSeparator();
 
-        JMenuItem removeFunction = new JMenuItem(BUNDLE.getString("functionCard.settings.remove"));
+        JMenuItem removeFunction = new JMenuItem(BUNDLE.getString("generics.remove"));
         removeFunction.addActionListener(e -> {
             int option = JOptionPane.showConfirmDialog(null,
                     BUNDLE.getString("generics.confirmDialog"),
                     BUNDLE.getString("generics.confirmDialog.title"),
                     JOptionPane.YES_NO_OPTION);
-
             if (option == JOptionPane.YES_OPTION) {
                 Workspace.getInstance().removeFunctionCard(this);
             }
         });
         settingsMenu.add(removeFunction);
 
-        functionSettings.addMouseListener(new MouseAdapter() {
+        settings.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                settingsMenu.show(functionSettings, e.getX(), e.getY());
+                settingsMenu.show(settings, e.getX(), e.getY());
             }
         });
-        buttons.add(functionSettings, BorderLayout.PAGE_START);
+        buttons.add(settings, BorderLayout.PAGE_START);
 
         // Apply button
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),

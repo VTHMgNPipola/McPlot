@@ -7,11 +7,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
@@ -55,6 +60,27 @@ public class VariableCard extends JPanel {
 
         JButton settings = new JButton("⋮");
         settings.setToolTipText(BUNDLE.getString("generics.settings"));
+
+        JPopupMenu settingsMenu = new JPopupMenu();
+
+        JMenuItem removeVariable = new JMenuItem(BUNDLE.getString("generics.remove"));
+        removeVariable.addActionListener(e -> {
+            int option = JOptionPane.showConfirmDialog(null,
+                    BUNDLE.getString("generics.confirmDialog"),
+                    BUNDLE.getString("generics.confirmDialog.title"),
+                    JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                Workspace.getInstance().removeVariableCard(this);
+            }
+        });
+        settingsMenu.add(removeVariable);
+
+        settings.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                settingsMenu.show(settings, e.getX(), e.getY());
+            }
+        });
         rightPanel.add(settings, BorderLayout.PAGE_START);
 
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
