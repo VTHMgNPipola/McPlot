@@ -22,6 +22,9 @@ public class VariableCard extends JPanel {
 
     private Variable variable;
 
+    private JLabeledTextField nameField;
+    private JLabeledTextField valueField;
+
     public VariableCard(Variable v) {
         super(new BorderLayout());
 
@@ -32,14 +35,14 @@ public class VariableCard extends JPanel {
         JPanel definitionPanel = new JPanel();
         definitionPanel.setLayout(new BoxLayout(definitionPanel, BoxLayout.Y_AXIS));
 
-        JLabeledTextField nameField = new JLabeledTextField();
+        nameField = new JLabeledTextField();
         nameField.setText(variable.getName());
         nameField.setFont(monospacedFont);
         nameField.setPlaceholderText(BUNDLE.getString("variableCard.name"));
         nameField.setToolTipText(BUNDLE.getString("variableCard.nameTooltip"));
         definitionPanel.add(nameField);
 
-        JLabeledTextField valueField = new JLabeledTextField();
+        valueField = new JLabeledTextField();
         valueField.setText(variable.getValue() + "");
         valueField.setFont(monospacedFont);
         valueField.setPlaceholderText(BUNDLE.getString("variableCard.value"));
@@ -61,9 +64,7 @@ public class VariableCard extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                variable.setName(nameField.getText());
-                variable.setValue(EVALUATOR.evaluate(valueField.getText()));
-                valueField.setText(variable.getValue() + "");
+                updateVariable();
                 PlottingPanel.getInstance().plot();
             }
         });
@@ -74,6 +75,12 @@ public class VariableCard extends JPanel {
         rightPanel.add(apply, BorderLayout.PAGE_END);
 
         add(rightPanel, BorderLayout.LINE_END);
+    }
+
+    public void updateVariable() {
+        variable.setName(nameField.getText());
+        variable.setValue(EVALUATOR.evaluate(valueField.getText()));
+        valueField.setText(variable.getValue() + "");
     }
 
     public Variable getVariable() {

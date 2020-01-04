@@ -39,9 +39,21 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class Workspace extends JFrame {
+    private static final Workspace INSTANCE = new Workspace();
+
     private JSplitPane splitPane;
 
-    public Workspace() {
+    private JPanel functionsPane;
+    private AtomicInteger functionGridIndex;
+    private Map<PlottableFunction, Path2D> functions;
+    private List<FunctionCard> functionCards;
+
+    private JPanel variablesPane;
+    private AtomicInteger variableGridIndex;
+    private List<Variable> variables;
+    private List<VariableCard> variableCards;
+
+    private Workspace() {
         // Setup JFrame
         super(BUNDLE.getString("workspace.title"));
         setSize(1280, 720);
@@ -57,19 +69,19 @@ public class Workspace extends JFrame {
         /*
         Functions pane
          */
-        JPanel functionsPane = new JPanel(new GridBagLayout());
+        functionsPane = new JPanel(new GridBagLayout());
         GridBagConstraints gbcFunctions = new GridBagConstraints();
         gbcFunctions.gridwidth = 0;
         gbcFunctions.fill = GridBagConstraints.HORIZONTAL;
         gbcFunctions.anchor = GridBagConstraints.FIRST_LINE_START;
         functionsPane.add(new JPanel(), gbcFunctions);
 
-        Map<PlottableFunction, Path2D> functions = new HashMap<>();
+        functions = new HashMap<>();
         plottingPanel.setFunctions(functions);
 
-        List<FunctionCard> functionCards = new ArrayList<>();
+        functionCards = new ArrayList<>();
 
-        AtomicInteger functionGridIndex = new AtomicInteger();
+        functionGridIndex = new AtomicInteger();
         JButton createFunction = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
         createFunction.addActionListener(e -> createFunction.getActionMap().get("create-function")
                 .actionPerformed(e));
@@ -100,17 +112,19 @@ public class Workspace extends JFrame {
         /*
         Variables pane
          */
-        JPanel variablesPane = new JPanel(new GridBagLayout());
+        variablesPane = new JPanel(new GridBagLayout());
         GridBagConstraints gbcVariables = new GridBagConstraints();
         gbcVariables.gridwidth = 0;
         gbcVariables.fill = GridBagConstraints.HORIZONTAL;
         gbcVariables.anchor = GridBagConstraints.FIRST_LINE_START;
         variablesPane.add(new JPanel(), gbcVariables);
 
-        List<Variable> variables = new ArrayList<>();
+        variables = new ArrayList<>();
         FunctionEvaluator.setVariableList(variables);
 
-        AtomicInteger variableGridIndex = new AtomicInteger();
+        variableCards = new ArrayList<>();
+
+        variableGridIndex = new AtomicInteger();
         JButton createVariable = new JButton(BUNDLE.getString("workspace.actions.createVariable"));
         createVariable.addActionListener(e -> createVariable.getActionMap().get("create-variable")
                 .actionPerformed(e));
@@ -125,6 +139,7 @@ public class Workspace extends JFrame {
                 gbcVariables.weighty = 0;
                 VariableCard variableCard = new VariableCard(new Variable());
                 variables.add(variableCard.getVariable());
+                variableCards.add(variableCard);
                 variablesPane.add(variableCard, gbcVariables, variableGridIndex.getAndIncrement());
                 variablesPane.validate();
             }
@@ -207,6 +222,9 @@ public class Workspace extends JFrame {
             for (FunctionCard functionCard : functionCards) {
                 functionCard.updateFunction();
             }
+            for (VariableCard variableCard : variableCards) {
+                variableCard.updateVariable();
+            }
             plottingPanel.plot();
         });
         toolBar.add(plot);
@@ -237,6 +255,7 @@ public class Workspace extends JFrame {
                 try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file))) {
                     oos.writeObject(functions);
                     oos.writeObject(variables);
+                    setTitle(BUNDLE.getString("workspace.title") + " - " + fileChooser.getSelectedFile().getName());
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -302,6 +321,8 @@ public class Workspace extends JFrame {
                     if (WorkspaceSettings.isPlotOnOpen()) {
                         plottingPanel.plot();
                     }
+
+                    setTitle(BUNDLE.getString("workspace.title") + " - " + fileChooser.getSelectedFile().getName());
                 } catch (IOException | ClassNotFoundException ex) {
                     ex.printStackTrace();
                 }
@@ -340,5 +361,27 @@ public class Workspace extends JFrame {
         if (WorkspaceSettings.isOpenMaximized()) {
             setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
         }
+    }
+
+    public static Workspace getInstance() {
+        return INSTANCE;
+    }
+
+    void removeFunctionCard(FunctionCard functionCard) {
+        functionCards.remove(functionCard);
+        functions.remove(functionCard.getFunction());
+        functionsPane.remove(functionCard);
+        functionGridIndex.getAndDecrement();
+        functionsPane.revalidate();
+        PlottingPanel.getInstance().plot();
+    }
+
+    void removeVariableCard(VariableCard variableCard) {
+        variableCards.remove(variableCard);
+        variables.remove(variableCard.getVariable());
+        variablesPane.remove(variableCard);
+        variableGridIndex.getAndDecrement();
+        variablesPane.revalidate();
+        PlottingPanel.getInstance().plot();
     }
 }

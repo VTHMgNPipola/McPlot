@@ -163,7 +163,6 @@ public class PlottingPanel extends JPanel {
                 cameraX -= movementSpeed;
                 rangeStart += movementSpeed;
                 rangeEnd += movementSpeed;
-                System.out.println(rangeEnd);
                 updateRange();
             }
         });

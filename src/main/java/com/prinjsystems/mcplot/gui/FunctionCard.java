@@ -84,15 +84,16 @@ public class FunctionCard extends JPanel {
         functionTextField.setFont(monospacedFont);
         functionPanel.add(functionTextField, BorderLayout.CENTER);
 
-        // JLabel
+        // Function label
         functionPanel.add(new JLabel(BUNDLE.getString("functionCard.functionId").replace("{0}",
                 functionIndex + "")), BorderLayout.PAGE_START);
 
         add(functionPanel, BorderLayout.CENTER);
 
-        // Close and apply buttons
+        // Settings menu and apply button
         JPanel buttons = new JPanel(new BorderLayout());
 
+        // Settings menu
         JButton functionSettings = new JButton("⋮");
         functionSettings.setToolTipText(BUNDLE.getString("generics.settings"));
         JPopupMenu settingsMenu = new JPopupMenu();
@@ -168,6 +169,21 @@ public class FunctionCard extends JPanel {
         });
         settingsMenu.add(domain);
 
+        settingsMenu.addSeparator();
+
+        JMenuItem removeFunction = new JMenuItem(BUNDLE.getString("functionCard.settings.remove"));
+        removeFunction.addActionListener(e -> {
+            int option = JOptionPane.showConfirmDialog(null,
+                    BUNDLE.getString("generics.confirmDialog"),
+                    BUNDLE.getString("generics.confirmDialog.title"),
+                    JOptionPane.YES_NO_OPTION);
+
+            if (option == JOptionPane.YES_OPTION) {
+                Workspace.getInstance().removeFunctionCard(this);
+            }
+        });
+        settingsMenu.add(removeFunction);
+
         functionSettings.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -176,6 +192,7 @@ public class FunctionCard extends JPanel {
         });
         buttons.add(functionSettings, BorderLayout.PAGE_START);
 
+        // Apply button
         getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 "apply");
         getActionMap().put("apply", new AbstractAction() {
