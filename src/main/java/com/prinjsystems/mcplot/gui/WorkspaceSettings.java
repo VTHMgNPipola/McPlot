@@ -13,19 +13,22 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class WorkspaceSettings {
-    private static final String OPEN_MAXIMIZED_KEY = "openMaximized";
-
     private static final String PLOT_ON_OPEN_KEY = "plotOnOpen";
+    private static final String LOOK_AND_FEEL_KEY = "lookAndFeel";
+    private static Preferences prefs;
+    private static final String OPEN_MAXIMIZED_KEY = "openMaximized";
     private static boolean plotOnOpen;
     private static final String LANGUAGE_KEY = "language";
-    private static Preferences prefs;
-    private static boolean openMaximized;
     private static String language;
+    private static boolean openMaximized;
+    private static String lookAndFeel;
 
     static {
         prefs = Preferences.userRoot().node(Main.PREFERENCES_PATH);
@@ -35,6 +38,8 @@ public class WorkspaceSettings {
         openMaximized = prefs.getBoolean(OPEN_MAXIMIZED_KEY, false);
 
         language = prefs.get(LANGUAGE_KEY, Locale.getDefault().toLanguageTag());
+
+        lookAndFeel = prefs.get(LOOK_AND_FEEL_KEY, "javax.swing.plaf.metal.MetalLookAndFeel");
     }
 
     public static void showWorkspaceSettingsDialog(JFrame topJFrame) {
@@ -52,6 +57,10 @@ public class WorkspaceSettings {
 
     public static String getLanguage() {
         return language;
+    }
+
+    public static String getLookAndFeel() {
+        return lookAndFeel;
     }
 
     private static class WorkspaceSettingsDialog extends JDialog {
@@ -78,34 +87,76 @@ public class WorkspaceSettings {
             mainPanel.add(openMaximizedField, gbc, 1);
 
             // Language
-            class Language {
-                public String name;
-                public String tag;
+            JLabel languageLabel = new JLabel(BUNDLE.getString("workspace.menu.file.settings.language.title"));
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            mainPanel.add(languageLabel, gbc, 2);
 
-                public Language(Locale locale) {
-                    this.name = locale.getDisplayName();
-                    this.tag = locale.toLanguageTag();
+            class StringPair {
+                public String str1;
+                public String str2;
+
+                public StringPair(String str1, String str2) {
+                    this.str1 = str1;
+                    this.str2 = str2;
+                }
+
+                public StringPair(Locale locale) {
+                    this.str1 = locale.getDisplayName();
+                    this.str2 = locale.toLanguageTag();
                 }
 
                 @Override
                 public String toString() {
-                    return name;
+                    return str1;
                 }
             }
 
-            Language[] languages = new Language[]{new Language(Locale.US),
-                    new Language(new Locale("pt", "BR"))};
-            JComboBox<Language> languageField = new JComboBox<>(languages);
-            Language selectedLanguage = null;
-            for (Language lang : languages) {
-                if (lang.tag.equals(language)) {
+            StringPair[] languages = new StringPair[]{new StringPair(Locale.US),
+                    new StringPair(new Locale("pt", "BR"))};
+            JComboBox<StringPair> languageField = new JComboBox<>(languages);
+            StringPair selectedLanguage = null;
+            for (StringPair lang : languages) {
+                if (lang.str2.equals(language)) {
                     selectedLanguage = lang;
                 }
             }
             languageField.setSelectedItem(selectedLanguage);
-            gbc.gridx = 0;
+            gbc.gridx = 1;
             gbc.gridy = 2;
-            mainPanel.add(languageField, gbc, 2);
+            mainPanel.add(languageField, gbc, 3);
+
+            // Look-and-Feel
+            JLabel lookAndFeelLabel = new JLabel(BUNDLE.getString("workspace.menu.file.settings.laf.title"));
+            gbc.gridx = 0;
+            gbc.gridy = 3;
+            mainPanel.add(lookAndFeelLabel, gbc, 4);
+
+            StringPair[] lafs = new StringPair[]{
+                    new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.metal"),
+                            "javax.swing.plaf.metal.MetalLookAndFeel"),
+                    new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.systemDefault"),
+                            UIManager.getSystemLookAndFeelClassName()),
+                    new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.motif"),
+                            "com.sun.java.swing.plaf.motif.MotifLookAndFeel"),
+                    new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.nimbus"),
+                            "javax.swing.plaf.nimbus.NimbusLookAndFeel"),
+                    new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.leopard"),
+                            "ch.randelshofer.quaqua.leopard.Quaqua15LeopardCrossPlatformLookAndFeel"),
+                    new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.tiger"),
+                            "ch.randelshofer.quaqua.tiger.Quaqua15TigerCrossPlatformLookAndFeel")
+            };
+            JComboBox<StringPair> lookAndFeelField = new JComboBox<>(lafs);
+            StringPair selectedLaf = null;
+            for (StringPair laf : lafs) {
+                if (laf.str2.equals(lookAndFeel)) {
+                    selectedLaf = laf;
+                }
+            }
+            lookAndFeelField.setSelectedItem(selectedLaf);
+            gbc.gridx = 1;
+            gbc.gridy = 3;
+            mainPanel.add(lookAndFeelField, gbc, 5);
 
             add(mainPanel, BorderLayout.CENTER);
 
@@ -121,8 +172,11 @@ public class WorkspaceSettings {
                 openMaximized = openMaximizedField.isSelected();
                 prefs.putBoolean(OPEN_MAXIMIZED_KEY, openMaximized);
 
-                language = ((Language) Objects.requireNonNull(languageField.getSelectedItem())).tag;
+                language = ((StringPair) Objects.requireNonNull(languageField.getSelectedItem())).str2;
                 prefs.put(LANGUAGE_KEY, language);
+
+                lookAndFeel = ((StringPair) Objects.requireNonNull(lookAndFeelField.getSelectedItem())).str2;
+                prefs.put(LOOK_AND_FEEL_KEY, lookAndFeel);
             });
             optionButtons.add(apply);
 
