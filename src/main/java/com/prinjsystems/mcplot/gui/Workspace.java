@@ -226,6 +226,7 @@ public class Workspace extends JFrame {
                 variableCard.updateVariable();
             }
             plottingPanel.plot();
+            plottingPanel.requestFocus();
         });
         toolBar.add(plot);
 
@@ -320,6 +321,7 @@ public class Workspace extends JFrame {
 
                     if (WorkspaceSettings.isPlotOnOpen()) {
                         plottingPanel.plot();
+                        plottingPanel.requestFocus();
                     }
 
                     setTitle(BUNDLE.getString("workspace.title") + " - " + fileChooser.getSelectedFile().getName());

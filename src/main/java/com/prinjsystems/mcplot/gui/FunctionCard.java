@@ -201,6 +201,7 @@ public class FunctionCard extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 updateFunction();
                 PlottingPanel.getInstance().plot();
+                PlottingPanel.getInstance().requestFocus();
             }
         });
 

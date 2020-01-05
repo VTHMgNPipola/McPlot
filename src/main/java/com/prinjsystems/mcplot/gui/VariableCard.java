@@ -92,6 +92,7 @@ public class VariableCard extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 updateVariable();
                 PlottingPanel.getInstance().plot();
+                PlottingPanel.getInstance().requestFocus();
             }
         });
 
