@@ -37,6 +37,7 @@ public class PlottingPanel extends JPanel {
     private static final double[] BEST_HIGH_SCALE_STEPS = new double[]{2, 5, 10, 25, 50, 100, 250, 500, 1000};
     private static final Font SCALE_FONT;
     private static final FontMetrics SCALE_FONT_METRICS;
+    private static final Color TEXT_BLUE_COLOR = new Color(0, 80, 255);
 
     static {
         INSTANCE = new PlottingPanel();
@@ -280,6 +281,15 @@ public class PlottingPanel extends JPanel {
                 g.draw(zoomTx.createTransformedShape(pf.getValue()));
             }
         }
+
+        g.scale(1, -1);
+        g.translate(-((float) getWidth() / 2 + cameraX), -((float) getHeight() / 2 + cameraY));
+        g.setStroke(baseStroke);
+        g.setColor(TEXT_BLUE_COLOR);
+        // Have to use ternary operator so it doesn't show negative 0 when the camera is at the origin
+        String cameraPositionString = "X: " + (cameraX == 0 ? 0 : -cameraX) + "  Y: " + cameraY;
+        int cpsWidth = SCALE_FONT_METRICS.stringWidth(cameraPositionString);
+        g.drawString(cameraPositionString, getWidth() - cpsWidth - 3, getHeight() - 3);
     }
 
     public void plot() {
