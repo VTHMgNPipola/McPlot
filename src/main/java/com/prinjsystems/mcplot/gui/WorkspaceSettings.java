@@ -141,10 +141,6 @@ public class WorkspaceSettings {
                             "com.sun.java.swing.plaf.motif.MotifLookAndFeel"),
                     new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.nimbus"),
                             "javax.swing.plaf.nimbus.NimbusLookAndFeel"),
-                    new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.leopard"),
-                            "ch.randelshofer.quaqua.leopard.Quaqua15LeopardCrossPlatformLookAndFeel"),
-                    new StringPair(BUNDLE.getString("workspace.menu.file.settings.laf.tiger"),
-                            "ch.randelshofer.quaqua.tiger.Quaqua15TigerCrossPlatformLookAndFeel")
             };
             JComboBox<StringPair> lookAndFeelField = new JComboBox<>(lafs);
             StringPair selectedLaf = null;
