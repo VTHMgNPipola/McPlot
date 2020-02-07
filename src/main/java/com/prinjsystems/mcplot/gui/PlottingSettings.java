@@ -66,6 +66,8 @@ public class PlottingSettings {
                 prefs.putDouble(STEP_KEY, step);
 
                 PlottingPanel.getInstance().plot();
+
+                dispose();
             });
             optionButtons.add(apply);
 

@@ -173,6 +173,8 @@ public class WorkspaceSettings {
 
                 lookAndFeel = ((StringPair) Objects.requireNonNull(lookAndFeelField.getSelectedItem())).str2;
                 prefs.put(LOOK_AND_FEEL_KEY, lookAndFeel);
+
+                dispose();
             });
             optionButtons.add(apply);
 
