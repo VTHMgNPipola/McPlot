@@ -139,6 +139,7 @@ public class PlottingPanel extends JPanel {
                 "right-down");
         getInputMap(WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD1, 0),
                 "left-down");
+        getInputMap(WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD5, 0), "center");
         getInputMap(WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0),
                 "zoom-in");
         getInputMap(WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0),
@@ -223,6 +224,20 @@ public class PlottingPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 getActionMap().get("left").actionPerformed(e);
                 getActionMap().get("down").actionPerformed(e);
+            }
+        });
+        getActionMap().put("center", new AbstractAction() {
+            private static final long serialVersionUID = -3591950614579752641L;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cameraX = 0;
+                cameraY = 0;
+                rangeStart = -(getWidth() / 2);
+                rangeEnd = getWidth() / 2;
+                rangeStartY = -(getHeight() / 2);
+                rangeEndY = getHeight() / 2;
+                updateRange();
             }
         });
         getActionMap().put("zoom-in", new AbstractAction() {
