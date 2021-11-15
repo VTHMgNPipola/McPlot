@@ -45,18 +45,19 @@ public class PlottingPanel extends JPanel {
         SCALE_FONT_METRICS = new JPanel().getFontMetrics(SCALE_FONT);
     }
 
-    private Stroke baseStroke, traceStroke;
+    private final Stroke baseStroke;
+    private final Stroke traceStroke;
     private Map<PlottableFunction, Path2D> functions;
-    private AffineTransform zoomTx;
+    private final AffineTransform zoomTx;
     private double cameraX, cameraY;
     private double oldRangeStart, oldRangeEnd, rangeStart, rangeEnd;
     private double rangeStartY, rangeEndY;
 
-    private SubmissionPublisher<Map<PlottableFunction, Path2D>> publisher;
+    private final SubmissionPublisher<Map<PlottableFunction, Path2D>> publisher;
 
     private PlottingPanel() {
         baseStroke = new BasicStroke(1);
-        traceStroke = new BasicStroke(2);
+        traceStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
         functions = new HashMap<>();
 

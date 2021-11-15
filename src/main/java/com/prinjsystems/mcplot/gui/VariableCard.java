@@ -27,8 +27,8 @@ public class VariableCard extends JPanel {
 
     private Variable variable;
 
-    private JLabeledTextField nameField;
-    private JLabeledTextField valueField;
+    private final JLabeledTextField nameField;
+    private final JLabeledTextField valueField;
 
     public VariableCard(Variable v) {
         super(new BorderLayout());
