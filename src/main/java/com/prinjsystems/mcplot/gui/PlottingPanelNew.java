@@ -12,11 +12,14 @@ import javax.swing.JPanel;
 public class PlottingPanelNew extends JPanel {
     private int cameraX, cameraY;
     private int scaleX, scaleY;
+    private final int pixelsPerStep;
 
     public PlottingPanelNew() {
         setPreferredSize(new Dimension(800, 600));
         cameraX = -getPreferredSize().width / 2;
         cameraY = -getPreferredSize().height / 2;
+
+        pixelsPerStep = 50;
 
         final boolean[] dragging = new boolean[1];
         final int[] startPos = new int[2];
@@ -77,6 +80,26 @@ public class PlottingPanelNew extends JPanel {
 
         // Camera translation
         g.translate(-cameraX, -cameraY);
+
+        // Minor grid
+        g.setColor(new Color(232, 232, 232));
+        for (int i = cameraX - (cameraX % (pixelsPerStep / 5)); i < cameraX + getWidth(); i += pixelsPerStep / 5) {
+            g.drawLine(i, cameraY, i, cameraY + getHeight());
+        }
+
+        for (int i = cameraY - (cameraY % (pixelsPerStep / 5)); i < cameraY + getHeight(); i += pixelsPerStep / 5) {
+            g.drawLine(cameraX, i, cameraX + getWidth(), i);
+        }
+
+        // Major grid
+        g.setColor(Color.lightGray);
+        for (int i = cameraX - (cameraX % pixelsPerStep); i < cameraX + getWidth(); i += pixelsPerStep) {
+            g.drawLine(i, cameraY, i, cameraY + getHeight());
+        }
+
+        for (int i = cameraY - (cameraY % pixelsPerStep); i < cameraY + getHeight(); i += pixelsPerStep) {
+            g.drawLine(cameraX, i, cameraX + getWidth(), i);
+        }
 
         // Global axis
         g.setColor(Color.black);
