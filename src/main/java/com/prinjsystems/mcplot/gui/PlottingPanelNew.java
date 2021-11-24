@@ -40,7 +40,7 @@ public class PlottingPanelNew extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
                     dragging[0] = true;
                     startPos[0] = e.getXOnScreen();
                     startPos[1] = e.getYOnScreen();
@@ -49,7 +49,7 @@ public class PlottingPanelNew extends JPanel {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
                     dragging[0] = false;
                 }
             }
