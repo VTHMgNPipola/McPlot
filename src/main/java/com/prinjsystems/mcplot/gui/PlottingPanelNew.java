@@ -9,13 +9,15 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.text.DecimalFormat;
 import javax.swing.JPanel;
 
 public class PlottingPanelNew extends JPanel {
     private int cameraX, cameraY;
     private final int scaleX = 1;
     private final int scaleY = 1;
-    private final int pixelsPerStep;
+    private final int zoom = 1;
+    private final int pixelsPerStep = 75;
 
     private final Font font;
     private final Color backgroundColor = Color.white;
@@ -23,13 +25,12 @@ public class PlottingPanelNew extends JPanel {
     private final Color majorGridColor = Color.lightGray;
     private final Color globalAxisColor = Color.black;
     private FontMetrics fontMetrics;
+    private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
     public PlottingPanelNew() {
         setPreferredSize(new Dimension(800, 600));
         cameraX = -getPreferredSize().width / 2;
         cameraY = -getPreferredSize().height / 2;
-
-        pixelsPerStep = 50;
 
         font = new Font("Monospaced", Font.PLAIN, 12);
 
@@ -115,7 +116,7 @@ public class PlottingPanelNew extends JPanel {
             if (i != 0) {
                 g.setColor(globalAxisColor);
                 g.drawLine(i, -5, i, 5);
-                String step = ((i / pixelsPerStep) / scaleX) + "";
+                String step = decimalFormat.format((((float) i / pixelsPerStep) / (scaleX * zoom)));
                 g.drawString(step, i - fontMetrics.stringWidth(step) / 2, 7 + fontMetrics.getAscent());
             }
         }
@@ -129,7 +130,7 @@ public class PlottingPanelNew extends JPanel {
             if (i != 0) {
                 g.setColor(globalAxisColor);
                 g.drawLine(-5, i, 5, i);
-                String step = ((i / pixelsPerStep) / scaleX) + "";
+                String step = decimalFormat.format(-(((float) i / pixelsPerStep) / (scaleY * zoom)));
                 g.drawString(step, -7 - fontMetrics.stringWidth(step), i + fontMetrics.getAscent() / 2);
             }
         }
