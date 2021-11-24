@@ -1,11 +1,10 @@
 package com.prinjsystems.mcplot;
 
-import com.prinjsystems.mcplot.gui.PlottingPanel;
-import com.prinjsystems.mcplot.gui.Workspace;
+import com.prinjsystems.mcplot.gui.PlottingPanelNew;
 import com.prinjsystems.mcplot.gui.WorkspaceSettings;
-import com.prinjsystems.mcplot.math.FunctionEvaluatorWorkerPool;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -23,15 +22,25 @@ public class Main {
             e.printStackTrace();
         }
 
-        // Create function evaluator pool
-        FunctionEvaluatorWorkerPool pool = new FunctionEvaluatorWorkerPool();
-
-        // Startup Swing
         SwingUtilities.invokeLater(() -> {
-            Workspace workspace = Workspace.getInstance();
-            workspace.setVisible(true);
-            workspace.configure(args);
-            PlottingPanel.getInstance().subscribeEvaluatorPool(pool);
+            PlottingPanelNew plottingPanelNew = new PlottingPanelNew();
+            JFrame frame = new JFrame("McPlot - New Plotting Panel Testing");
+            frame.setContentPane(plottingPanelNew);
+            frame.pack();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
         });
+
+//        // Create function evaluator pool
+//        FunctionEvaluatorWorkerPool pool = new FunctionEvaluatorWorkerPool();
+//
+//        // Startup Swing
+//        SwingUtilities.invokeLater(() -> {
+//            Workspace workspace = Workspace.getInstance();
+//            workspace.setVisible(true);
+//            workspace.configure(args);
+//            PlottingPanel.getInstance().subscribeEvaluatorPool(pool);
+//        });
     }
 }
