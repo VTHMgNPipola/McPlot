@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -21,6 +23,7 @@ public class PlottingPanel extends JPanel {
     private int pixelsPerStep = INITIAL_PIXELS_PER_STEP;
     private double zoom = 1;
     private int zoomPos = 0;
+    private int previousWidth, previousHeight;
 
     private final Font font;
     private final Color backgroundColor = Color.white;
@@ -134,11 +137,28 @@ public class PlottingPanel extends JPanel {
 
             repaint();
         });
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                // FIXME: Doesn't work correctly when changing size through JSplitPane
+                cameraX -= (e.getComponent().getWidth() - previousWidth) / 2;
+                cameraY -= (e.getComponent().getHeight() - previousHeight) / 2;
+
+                previousWidth = e.getComponent().getWidth();
+                previousHeight = e.getComponent().getHeight();
+
+                repaint();
+            }
+        });
     }
 
     public void init() {
         cameraX = -getWidth() / 2;
         cameraY = -getHeight() / 2;
+
+        previousWidth = getWidth();
+        previousHeight = getHeight();
     }
 
     @Override
