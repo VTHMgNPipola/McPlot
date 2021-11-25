@@ -1,7 +1,7 @@
 package com.prinjsystems.mcplot;
 
-import com.prinjsystems.mcplot.gui.PlottingPanelNew;
 import com.prinjsystems.mcplot.gui.WorkspaceSettings;
+import com.prinjsystems.mcplot.ngui.PlottingPanel;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import javax.swing.JFrame;
@@ -23,9 +23,9 @@ public class Main {
         }
 
         SwingUtilities.invokeLater(() -> {
-            PlottingPanelNew plottingPanelNew = new PlottingPanelNew();
+            PlottingPanel plottingPanel = new PlottingPanel();
             JFrame frame = new JFrame("McPlot - New Plotting Panel Testing");
-            frame.setContentPane(plottingPanelNew);
+            frame.setContentPane(plottingPanel);
             frame.pack();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLocationRelativeTo(null);

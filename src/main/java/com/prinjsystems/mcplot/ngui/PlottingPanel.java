@@ -1,4 +1,4 @@
-package com.prinjsystems.mcplot.gui;
+package com.prinjsystems.mcplot.ngui;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,7 +12,7 @@ import java.awt.event.MouseMotionListener;
 import java.text.DecimalFormat;
 import javax.swing.JPanel;
 
-public class PlottingPanelNew extends JPanel {
+public class PlottingPanel extends JPanel {
     private static final int INITIAL_PIXELS_PER_STEP = 75;
 
     private int cameraX, cameraY;
@@ -31,7 +31,7 @@ public class PlottingPanelNew extends JPanel {
     private FontMetrics fontMetrics;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
-    public PlottingPanelNew() {
+    public PlottingPanel() {
         setPreferredSize(new Dimension(800, 600));
         cameraX = -getPreferredSize().width / 2;
         cameraY = -getPreferredSize().height / 2;
