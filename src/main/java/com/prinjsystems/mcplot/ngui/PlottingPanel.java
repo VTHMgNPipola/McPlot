@@ -1,7 +1,6 @@
 package com.prinjsystems.mcplot.ngui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -32,10 +31,6 @@ public class PlottingPanel extends JPanel {
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
     public PlottingPanel() {
-        setPreferredSize(new Dimension(800, 600));
-        cameraX = -getPreferredSize().width / 2;
-        cameraY = -getPreferredSize().height / 2;
-
         font = new Font("Monospaced", Font.PLAIN, 12);
 
         final boolean[] dragging = new boolean[1];
@@ -139,6 +134,11 @@ public class PlottingPanel extends JPanel {
 
             repaint();
         });
+    }
+
+    public void init() {
+        cameraX = -getWidth() / 2;
+        cameraY = -getHeight() / 2;
     }
 
     @Override
