@@ -15,6 +15,7 @@ public class Workspace extends JFrame {
     private final WorkspaceController workspaceController;
 
     private PlottingPanel plottingPanel;
+    private JSplitPane splitPane;
 
     public Workspace() {
         super(BUNDLE.getString("workspace.title"));
@@ -30,6 +31,7 @@ public class Workspace extends JFrame {
         pack();
         setLocationRelativeTo(null);
 
+        splitPane.setDividerLocation(0.3);
         plottingPanel.init();
     }
 
@@ -66,13 +68,14 @@ public class Workspace extends JFrame {
         setContentPane(contentPane);
         contentPane.setPreferredSize(new Dimension(1024, 576));
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         contentPane.add(splitPane, BorderLayout.CENTER);
         splitPane.setContinuousLayout(true);
         splitPane.setDividerLocation(0.3);
 
-        JPanel workingPanel = new JPanel();
-        splitPane.setLeftComponent(workingPanel);
+        MathPanel mathPanel = new MathPanel();
+        splitPane.setLeftComponent(mathPanel);
+        mathPanel.init();
 
         plottingPanel = new PlottingPanel();
         splitPane.setRightComponent(plottingPanel);
