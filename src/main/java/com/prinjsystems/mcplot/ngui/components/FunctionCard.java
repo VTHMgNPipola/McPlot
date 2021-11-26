@@ -1,6 +1,7 @@
 package com.prinjsystems.mcplot.ngui.components;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.text.MessageFormat;
 import java.util.Random;
 import javax.swing.BorderFactory;
@@ -23,6 +24,7 @@ public class FunctionCard extends JPanel {
         colorChooserButton.setToolTipText(BUNDLE.getString("functionCard.selectColor"));
         colorChooserButton.setSelectedColor(new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
                 RANDOM.nextInt(255)));
+        colorChooserButton.setMaximumSize(new Dimension(40, 40));
 
         JLabeledTextField functionField = new JLabeledTextField();
         add(functionField, "pushx, growx");
