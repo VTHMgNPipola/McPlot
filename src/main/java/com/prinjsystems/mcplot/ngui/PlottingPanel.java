@@ -141,7 +141,6 @@ public class PlottingPanel extends JPanel {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                // FIXME: Doesn't work correctly when changing size through JSplitPane
                 cameraX -= (e.getComponent().getWidth() - previousWidth) / 2;
                 cameraY -= (e.getComponent().getHeight() - previousHeight) / 2;
 

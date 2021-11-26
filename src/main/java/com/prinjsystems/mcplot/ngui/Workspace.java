@@ -70,7 +70,7 @@ public class Workspace extends JFrame {
 
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         contentPane.add(splitPane, BorderLayout.CENTER);
-        splitPane.setContinuousLayout(true);
+        splitPane.setContinuousLayout(false);
         splitPane.setDividerLocation(0.3);
 
         MathPanel mathPanel = new MathPanel();
