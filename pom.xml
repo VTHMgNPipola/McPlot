@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.prinjsystems</groupId>
     <artifactId>mcplot</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
 
     <dependencies>
         <!-- Remove when NGUI is completed -->
