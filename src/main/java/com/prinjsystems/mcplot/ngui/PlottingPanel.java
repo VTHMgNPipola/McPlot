@@ -34,6 +34,8 @@ public class PlottingPanel extends JPanel {
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
     public PlottingPanel() {
+        setDoubleBuffered(true);
+
         font = new Font("Monospaced", Font.PLAIN, 12);
 
         final boolean[] dragging = new boolean[1];
