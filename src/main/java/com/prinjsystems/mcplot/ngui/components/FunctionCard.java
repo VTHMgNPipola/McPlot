@@ -21,11 +21,15 @@ public class FunctionCard extends JPanel {
                 MessageFormat.format(BUNDLE.getString("functionCard.functionId"), index)));
 
         ColorChooserButton colorChooserButton = new ColorChooserButton();
-        add(colorChooserButton, "growy");
+        add(colorChooserButton, "growy, split 2");
         colorChooserButton.setToolTipText(BUNDLE.getString("functionCard.selectColor"));
         colorChooserButton.setSelectedColor(new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
                 RANDOM.nextInt(255)));
         colorChooserButton.setMaximumSize(new Dimension(40, 40));
+
+        JCheckBox active = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"), true);
+        add(active, "pushx, growx, wrap");
+        active.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisibleTooltip"));
 
         JLabeledTextField functionField = new JLabeledTextField();
         add(functionField, "pushx, growx");
@@ -35,10 +39,5 @@ public class FunctionCard extends JPanel {
         JButton remove = new JButton("X");
         add(remove);
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
-
-        JCheckBox active = new JCheckBox();
-        add(active);
-        active.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisible"));
-        active.setSelected(true);
     }
 }
