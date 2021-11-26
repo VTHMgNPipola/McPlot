@@ -88,10 +88,10 @@ public class PlottingPanel extends JPanel {
 
         /*
          * This method changes the zoom based on the mouse wheel rotation.
-         * Firstly, it increases or decreases the amount of pixels per step on the axis lines by 10 pixels times the
-         * amount of wheel clicks registered. If the amount of pixels per step is smaller or larger than predefined
-         * values it sets it back to the original starting value and decreases or increases the zoom "position"(how
-         * many times the wheel rotated), respectively.
+         * Firstly, it increases or decreases the amount of pixels per step on the axis lines by some predefined
+         * amount of pixels times the amount of wheel clicks registered. If the amount of pixels per step is smaller
+         * or larger than predefined values it sets it back to the original starting value and decreases or increases
+         * the zoom "position" (how many times the wheel rotated), respectively.
          * It then checks if the zoom position is a valid address in an array of zoom values I considered good, and
          * if so chooses one of those.
          * If it is over the maximum address, it calculates how many times the value "circled" around the list of zoom
@@ -100,7 +100,7 @@ public class PlottingPanel extends JPanel {
          * grabbing the zoom value from the array using the effective index it calculated and multiplying the value
          * by 10 to the power of the times the zoom position circled the array.
          * If it is below the minimum address, it does the same thing but considering the zoom position as a positive
-         *  value and inverting the final zoom result (by doing 1 over whatever zoom value it got).
+         * value and inverting the final zoom result (by doing 1 over whatever zoom value it got).
          */
         addMouseWheelListener(e -> {
             // How many pixels are added or subtracted from pixelsPerStep with each wheel rotation
