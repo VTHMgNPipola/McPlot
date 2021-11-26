@@ -18,19 +18,19 @@ public class PlottingPanel extends JPanel {
     private static final int INITIAL_PIXELS_PER_STEP = 75;
 
     private int cameraX, cameraY;
-    private final int scaleX = 1;
-    private final int scaleY = 1;
+    private double scaleX = 1;
+    private double scaleY = 1;
     private final int[] zoomArray = new int[]{1, 2, 5, 10};
     private int pixelsPerStep = INITIAL_PIXELS_PER_STEP;
     private double zoom = 1;
     private int zoomPos = 0;
     private int previousWidth, previousHeight;
 
-    private final Font font;
-    private final Color backgroundColor = Color.white;
-    private final Color minorGridColor = new Color(232, 232, 232);
-    private final Color majorGridColor = Color.lightGray;
-    private final Color globalAxisColor = Color.black;
+    private Font font;
+    private Color backgroundColor = Color.white;
+    private Color minorGridColor = new Color(232, 232, 232);
+    private Color majorGridColor = Color.lightGray;
+    private Color globalAxisColor = Color.black;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
     public PlottingPanel() {
@@ -223,5 +223,70 @@ public class PlottingPanel extends JPanel {
         g.setColor(globalAxisColor);
         g.drawLine(cameraX, 0, cameraX + getWidth(), 0);
         g.drawLine(0, cameraY, 0, cameraY + getHeight());
+    }
+
+    public double getScaleX() {
+        return scaleX;
+    }
+
+    public void setScaleX(double scaleX) {
+        this.scaleX = scaleX;
+        repaint();
+    }
+
+    public double getScaleY() {
+        return scaleY;
+    }
+
+    public void setScaleY(double scaleY) {
+        this.scaleY = scaleY;
+        repaint();
+    }
+
+    @Override
+    public Font getFont() {
+        return font;
+    }
+
+    @Override
+    public void setFont(Font font) {
+        this.font = font;
+        repaint();
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        repaint();
+    }
+
+    public Color getMinorGridColor() {
+        return minorGridColor;
+    }
+
+    public void setMinorGridColor(Color minorGridColor) {
+        this.minorGridColor = minorGridColor;
+        repaint();
+    }
+
+    public Color getMajorGridColor() {
+        return majorGridColor;
+    }
+
+    public void setMajorGridColor(Color majorGridColor) {
+        this.majorGridColor = majorGridColor;
+        repaint();
+    }
+
+    public Color getGlobalAxisColor() {
+        return globalAxisColor;
+    }
+
+    public void setGlobalAxisColor(Color globalAxisColor) {
+        this.globalAxisColor = globalAxisColor;
+        repaint();
     }
 }

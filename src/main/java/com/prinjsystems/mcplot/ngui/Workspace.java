@@ -14,7 +14,7 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 import static com.prinjsystems.mcplot.Main.VERSION;
 
 public class Workspace extends JFrame {
-    private final WorkspaceController workspaceController;
+    private WorkspaceController workspaceController;
 
     private PlottingPanel plottingPanel;
     private JSplitPane splitPane;
@@ -23,13 +23,11 @@ public class Workspace extends JFrame {
         super(MessageFormat.format(BUNDLE.getString("workspace.title"), VERSION));
         setResizable(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        workspaceController = new WorkspaceController();
     }
 
     public void init() {
-        initMenu();
         initContentPane();
+        initMenu();
         pack();
         setLocationRelativeTo(null);
 
@@ -81,5 +79,6 @@ public class Workspace extends JFrame {
 
         plottingPanel = new PlottingPanel();
         splitPane.setRightComponent(plottingPanel);
+        workspaceController = new WorkspaceController(plottingPanel);
     }
 }
