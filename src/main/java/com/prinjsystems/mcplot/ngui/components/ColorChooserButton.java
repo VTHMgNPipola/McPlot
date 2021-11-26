@@ -33,7 +33,12 @@ public class ColorChooserButton extends JButton {
     protected void paintComponent(Graphics g) {
         paintComponents(g);
 
-        int squareSize = getHeight() / 2;
+        int squareSize;
+        if (getHeight() <= getWidth()) {
+            squareSize = getHeight() / 2;
+        } else {
+            squareSize = getWidth() / 2;
+        }
         g.setColor(selectedColor);
         g.fillRect((getWidth() / 2) - (squareSize / 2), (getHeight() / 2) - (squareSize / 2), squareSize,
                 squareSize);
