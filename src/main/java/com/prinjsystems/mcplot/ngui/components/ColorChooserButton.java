@@ -9,6 +9,7 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class ColorChooserButton extends JButton {
     private Color selectedColor;
+    private ColorChooserListener colorChooserListener;
 
     public ColorChooserButton() {
         addActionListener(e -> {
@@ -16,6 +17,9 @@ public class ColorChooserButton extends JButton {
                     selectedColor);
             if (color != null) {
                 selectedColor = color;
+                if (colorChooserListener != null) {
+                    colorChooserListener.colorChanged(color);
+                }
             }
             repaint();
         });
@@ -27,6 +31,13 @@ public class ColorChooserButton extends JButton {
 
     public void setSelectedColor(Color selectedColor) {
         this.selectedColor = selectedColor;
+        if (colorChooserListener != null) {
+            colorChooserListener.colorChanged(selectedColor);
+        }
+    }
+
+    public void setColorChooserListener(ColorChooserListener colorChooserListener) {
+        this.colorChooserListener = colorChooserListener;
     }
 
     @Override

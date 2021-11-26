@@ -57,23 +57,27 @@ public class SettingsFrame extends JFrame {
         ColorChooserButton backgroundColor = new ColorChooserButton();
         plottingPanelSettings.add(backgroundColor, "pushx, growy, wrap");
         backgroundColor.setSelectedColor(plottingPanel.getBackgroundColor());
+        backgroundColor.setColorChooserListener(plottingPanel::setBackgroundColor);
 
         JLabel minorGridColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.minorGridColor"));
         plottingPanelSettings.add(minorGridColorLabel);
         ColorChooserButton minorGridColor = new ColorChooserButton();
         plottingPanelSettings.add(minorGridColor, "pushx, growy, wrap");
         minorGridColor.setSelectedColor(plottingPanel.getMinorGridColor());
+        minorGridColor.setColorChooserListener(plottingPanel::setMinorGridColor);
 
         JLabel majorGridColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.majorGridColor"));
         plottingPanelSettings.add(majorGridColorLabel);
         ColorChooserButton majorGridColor = new ColorChooserButton();
         plottingPanelSettings.add(majorGridColor, "pushx, growy, wrap");
         majorGridColor.setSelectedColor(plottingPanel.getMajorGridColor());
+        majorGridColor.setColorChooserListener(plottingPanel::setMajorGridColor);
 
         JLabel globalAxisColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.globalAxisColor"));
         plottingPanelSettings.add(globalAxisColorLabel);
         ColorChooserButton globalAxisColor = new ColorChooserButton();
         plottingPanelSettings.add(globalAxisColor, "pushx, growy");
         globalAxisColor.setSelectedColor(plottingPanel.getGlobalAxisColor());
+        globalAxisColor.setColorChooserListener(plottingPanel::setGlobalAxisColor);
     }
 }
