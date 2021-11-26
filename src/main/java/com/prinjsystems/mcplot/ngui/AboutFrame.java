@@ -23,7 +23,7 @@ public class AboutFrame extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    public void initContentPane() {
+    private void initContentPane() {
         JPanel contentPane = new JPanel(new MigLayout("insets 40, flowy"));
 
         JLabel mcplot = new JLabel("McPlot");
