@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -30,7 +31,6 @@ public class PlottingPanel extends JPanel {
     private final Color minorGridColor = new Color(232, 232, 232);
     private final Color majorGridColor = Color.lightGray;
     private final Color globalAxisColor = Color.black;
-    private FontMetrics fontMetrics;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
     public PlottingPanel() {
@@ -164,7 +164,8 @@ public class PlottingPanel extends JPanel {
     protected void paintComponent(Graphics graphics) {
         Graphics2D g = (Graphics2D) graphics;
         g.setFont(font);
-        fontMetrics = g.getFontMetrics();
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+        FontMetrics fontMetrics = g.getFontMetrics();
 
         // Background
         g.setColor(backgroundColor);
