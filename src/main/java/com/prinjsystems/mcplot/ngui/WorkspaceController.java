@@ -13,5 +13,8 @@ public class WorkspaceController {
     }
 
     public void openAbout(ActionEvent event) {
+        AboutFrame aboutFrame = new AboutFrame();
+        aboutFrame.init();
+        aboutFrame.setVisible(true);
     }
 }

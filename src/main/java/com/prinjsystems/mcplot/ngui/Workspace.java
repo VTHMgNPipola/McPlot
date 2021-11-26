@@ -2,6 +2,7 @@ package com.prinjsystems.mcplot.ngui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.text.MessageFormat;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -10,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.prinjsystems.mcplot.Main.VERSION;
 
 public class Workspace extends JFrame {
     private final WorkspaceController workspaceController;
@@ -18,7 +20,7 @@ public class Workspace extends JFrame {
     private JSplitPane splitPane;
 
     public Workspace() {
-        super(BUNDLE.getString("workspace.title"));
+        super(MessageFormat.format(BUNDLE.getString("workspace.title"), VERSION));
         setResizable(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
