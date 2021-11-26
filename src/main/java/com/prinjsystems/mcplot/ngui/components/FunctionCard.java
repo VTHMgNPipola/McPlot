@@ -1,6 +1,8 @@
 package com.prinjsystems.mcplot.ngui.components;
 
+import java.awt.Color;
 import java.text.MessageFormat;
+import java.util.Random;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -9,6 +11,8 @@ import net.miginfocom.swing.MigLayout;
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class FunctionCard extends JPanel {
+    private static final Random RANDOM = new Random();
+
     public FunctionCard(int index) {
         setLayout(new MigLayout());
         setBorder(BorderFactory.createTitledBorder(
@@ -17,6 +21,8 @@ public class FunctionCard extends JPanel {
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy");
         colorChooserButton.setToolTipText(BUNDLE.getString("functionCard.selectColor"));
+        colorChooserButton.setSelectedColor(new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
+                RANDOM.nextInt(255)));
 
         JLabeledTextField functionField = new JLabeledTextField();
         add(functionField, "pushx, growx");
