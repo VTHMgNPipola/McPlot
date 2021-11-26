@@ -12,8 +12,11 @@ public class ColorChooserButton extends JButton {
 
     public ColorChooserButton() {
         addActionListener(e -> {
-            selectedColor = JColorChooser.showDialog(null, BUNDLE.getString("functionCard.selectColor"),
+            Color color = JColorChooser.showDialog(null, BUNDLE.getString("functionCard.selectColor"),
                     selectedColor);
+            if (color != null) {
+                selectedColor = color;
+            }
             repaint();
         });
     }
