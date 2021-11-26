@@ -1,14 +1,12 @@
 package com.prinjsystems.mcplot;
 
-import com.prinjsystems.mcplot.gui.PlottingPanel;
-import com.prinjsystems.mcplot.gui.Workspace;
+import com.formdev.flatlaf.FlatLightLaf;
 import com.prinjsystems.mcplot.gui.WorkspaceSettings;
-import com.prinjsystems.mcplot.math.FunctionEvaluatorWorkerPool;
+import com.prinjsystems.mcplot.ngui.Workspace;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 public class Main {
     public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("mcplot",
@@ -16,22 +14,16 @@ public class Main {
 
     public static final String PREFERENCES_PATH = "com.prinjsystems.mcplot";
 
+    public static final String VERSION = "0.1-SNAPSHOT";
+
     public static void main(String[] args) {
-        try {
-            UIManager.setLookAndFeel(WorkspaceSettings.getLookAndFeel());
-        } catch (IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        FlatLightLaf.setup();
+        JFrame.setDefaultLookAndFeelDecorated(true);
 
-        // Create function evaluator pool
-        FunctionEvaluatorWorkerPool pool = new FunctionEvaluatorWorkerPool();
-
-        // Startup Swing
         SwingUtilities.invokeLater(() -> {
-            Workspace workspace = Workspace.getInstance();
+            Workspace workspace = new Workspace();
+            workspace.init();
             workspace.setVisible(true);
-            workspace.configure(args);
-            PlottingPanel.getInstance().subscribeEvaluatorPool(pool);
         });
     }
 }

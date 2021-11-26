@@ -18,7 +18,7 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class PlottingSettings {
     private static final String STEP_KEY = "step";
-    private static Preferences prefs;
+    private static final Preferences prefs;
     private static double step;
 
     static {

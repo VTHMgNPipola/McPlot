@@ -21,7 +21,7 @@ public class FunctionEvaluator {
         String definition = function.getDefinition();
         if (definition == null || definition.isBlank()) {
             return null;
-        } else if (!definition.matches("[a-zA-Z]+[a-zA-Z0-9]*\\s*\\(x\\)\\s*=\\s*.*")) {
+        } else if (!definition.matches("[a-zA-Z]+[a-zA-Z0-9]*\\s*\\(\\s*[a-zA-Z]+\\s*\\)\\s*=\\s*.*")) {
             throw new IllegalArgumentException("Not a valid function!");
         } else if (start + step > end) {
             throw new IllegalArgumentException("Step is too big for selected range!");
@@ -39,9 +39,14 @@ public class FunctionEvaluator {
         }
 
         // Initial point
-        String actualFunction = definition.substring(definition.indexOf('=') + 1).trim();
+        String[] definitionParts = definition.split("=");
+        String functionName = definitionParts[0].trim();
+        String actualFunction = definitionParts[1].trim();
+        String variableName = functionName
+                .substring(functionName.indexOf('(') + 1, functionName.lastIndexOf(')')).trim();
+
         StaticVariableSet<Double> variables = new StaticVariableSet<>();
-        variables.set("x", start);
+        variables.set(variableName, start);
         for (Variable variable : variableList) {
             variables.set(variable.getName(), variable.getValue());
         }
@@ -49,7 +54,7 @@ public class FunctionEvaluator {
 
         // Calculates all points
         for (double i = start + step; i < end; i += step) {
-            variables.set("x", i);
+            variables.set(variableName, i);
             result.lineTo(i, evaluator.evaluate(actualFunction, variables));
         }
 

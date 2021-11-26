@@ -8,8 +8,8 @@ import javax.swing.SwingUtilities;
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class FunctionEvaluatorWorker extends Thread {
-    private FunctionEvaluatorWorkerPool owner;
-    private PlottableFunction function;
+    private final FunctionEvaluatorWorkerPool owner;
+    private final PlottableFunction function;
 
     public FunctionEvaluatorWorker(FunctionEvaluatorWorkerPool owner, PlottableFunction function) {
         this.owner = owner;

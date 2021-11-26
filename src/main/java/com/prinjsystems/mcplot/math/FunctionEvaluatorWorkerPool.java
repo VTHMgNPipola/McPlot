@@ -12,7 +12,7 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 public class FunctionEvaluatorWorkerPool implements Flow.Subscriber<Map<PlottableFunction, Path2D>> {
     int workingThreads;
     private Map<PlottableFunction, Path2D> functions;
-    private List<FunctionEvaluatorWorker> workers;
+    private final List<FunctionEvaluatorWorker> workers;
     private Flow.Subscription subscription;
 
     public FunctionEvaluatorWorkerPool() {

@@ -36,7 +36,7 @@ public class FunctionCard extends JPanel {
 
     private PlottableFunction function;
 
-    private JLabeledTextField functionTextField;
+    private final JLabeledTextField functionTextField;
 
     public FunctionCard(int functionIndex, PlottableFunction f) {
         super(new BorderLayout());

@@ -41,17 +41,17 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 public class Workspace extends JFrame {
     private static final Workspace INSTANCE = new Workspace();
 
-    private JSplitPane splitPane;
+    private final JSplitPane splitPane;
 
-    private JPanel functionsPane;
-    private AtomicInteger functionGridIndex;
-    private Map<PlottableFunction, Path2D> functions;
-    private List<FunctionCard> functionCards;
+    private final JPanel functionsPane;
+    private final AtomicInteger functionGridIndex;
+    private final Map<PlottableFunction, Path2D> functions;
+    private final List<FunctionCard> functionCards;
 
-    private JPanel variablesPane;
-    private AtomicInteger variableGridIndex;
-    private List<Variable> variables;
-    private List<VariableCard> variableCards;
+    private final JPanel variablesPane;
+    private final AtomicInteger variableGridIndex;
+    private final List<Variable> variables;
+    private final List<VariableCard> variableCards;
 
     private Workspace() {
         // Setup JFrame

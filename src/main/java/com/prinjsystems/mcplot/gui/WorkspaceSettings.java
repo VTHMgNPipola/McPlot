@@ -22,7 +22,7 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 public class WorkspaceSettings {
     private static final String PLOT_ON_OPEN_KEY = "plotOnOpen";
     private static final String LOOK_AND_FEEL_KEY = "lookAndFeel";
-    private static Preferences prefs;
+    private static final Preferences prefs;
     private static final String OPEN_MAXIMIZED_KEY = "openMaximized";
     private static boolean plotOnOpen;
     private static final String LANGUAGE_KEY = "language";
@@ -93,8 +93,8 @@ public class WorkspaceSettings {
             mainPanel.add(languageLabel, gbc, 2);
 
             class StringPair {
-                public String str1;
-                public String str2;
+                public final String str1;
+                public final String str2;
 
                 public StringPair(String str1, String str2) {
                     this.str1 = str1;

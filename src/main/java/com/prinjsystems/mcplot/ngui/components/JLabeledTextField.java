@@ -1,4 +1,4 @@
-package com.prinjsystems.mcplot.gui;
+package com.prinjsystems.mcplot.ngui.components;
 
 import java.awt.Color;
 import java.awt.FontMetrics;

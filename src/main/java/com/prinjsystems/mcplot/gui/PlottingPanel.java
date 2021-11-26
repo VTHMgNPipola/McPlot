@@ -34,10 +34,13 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 public class PlottingPanel extends JPanel {
     private static final PlottingPanel INSTANCE;
     private static final double[] BEST_LOW_SCALE_STEPS = new double[]{0.5, 0.25, 0.1, 0.05, 0.01};
-    private static final double[] BEST_HIGH_SCALE_STEPS = new double[]{2, 5, 10, 25, 50, 100, 250, 500, 1000};
+    private static final double[] BEST_HIGH_SCALE_STEPS = new double[]{1, 2, 5, 10, 25, 50, 100, 250, 500, 1000};
     private static final Font SCALE_FONT;
     private static final FontMetrics SCALE_FONT_METRICS;
     private static final Color TEXT_BLUE_COLOR = new Color(0, 80, 255);
+    private static final Color BASE_COLOR = Color.BLACK;
+    private static final Color MAJOR_GRID_COLOR = Color.GRAY;
+    private static final Color MINOR_GRID_COLOR = Color.LIGHT_GRAY;
 
     static {
         INSTANCE = new PlottingPanel();
@@ -45,18 +48,22 @@ public class PlottingPanel extends JPanel {
         SCALE_FONT_METRICS = new JPanel().getFontMetrics(SCALE_FONT);
     }
 
-    private Stroke baseStroke, traceStroke;
+    private final Stroke baseStroke;
+    private final Stroke gridStroke;
+    private final Stroke traceStroke;
     private Map<PlottableFunction, Path2D> functions;
-    private AffineTransform zoomTx;
+    private final AffineTransform zoomTx;
     private double cameraX, cameraY;
     private double oldRangeStart, oldRangeEnd, rangeStart, rangeEnd;
     private double rangeStartY, rangeEndY;
 
-    private SubmissionPublisher<Map<PlottableFunction, Path2D>> publisher;
+    private final SubmissionPublisher<Map<PlottableFunction, Path2D>> publisher;
 
     private PlottingPanel() {
         baseStroke = new BasicStroke(1);
-        traceStroke = new BasicStroke(2);
+        gridStroke = new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 10.0f,
+                new float[]{5.0f, 7.0f}, 0.0f);
+        traceStroke = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
         functions = new HashMap<>();
 
@@ -233,10 +240,10 @@ public class PlottingPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 cameraX = 0;
                 cameraY = 0;
-                rangeStart = -(getWidth() / 2);
-                rangeEnd = getWidth() / 2;
-                rangeStartY = -(getHeight() / 2);
-                rangeEndY = getHeight() / 2;
+                rangeStart = -(((double) getWidth()) / 2);
+                rangeEnd = ((double) getWidth()) / 2;
+                rangeStartY = -(((double) getHeight()) / 2);
+                rangeEndY = ((double) getHeight()) / 2;
                 updateRange();
             }
         });
@@ -274,17 +281,67 @@ public class PlottingPanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
         g.translate((float) getWidth() / 2 + cameraX, (float) getHeight() / 2 + cameraY);
 
-        g.setColor(Color.BLUE);
+        g.setColor(BASE_COLOR);
         g.setStroke(baseStroke);
-        g.drawLine(0, (int) rangeStartY, 0, (int) rangeEndY);
         g.drawLine((int) (oldRangeStart * getZoom()), 0, (int) (oldRangeEnd * getZoom()), 0);
         g.setFont(SCALE_FONT);
-        // TODO: Find a way to accurately draw the steps
-//        double scaleStep = findBestScaleStep();
-//        for (double i = scaleStep * Math.round(oldRangeStart / scaleStep);
-//             i < scaleStep * Math.round(oldRangeEnd / scaleStep); i += scaleStep) {
-//            g.drawLine((int) i, -5, (int) i, 5);
-//            g.drawString(i + "", (int) i - (SCALE_FONT_METRICS.stringWidth(i + "") / 2), -7);
+        double scaleStepRaw = findBestScaleStep();
+        double startX = -(g.getTransform().getTranslateX() * g.getTransform().getScaleX());
+        double endX = startX + getWidth();
+        double scaleStepStartX = scaleStepRaw * Math.round(startX / scaleStepRaw);
+        double scaleStepEndX = scaleStepRaw * Math.round(endX / scaleStepRaw);
+        double zoom = getZoom();
+        // X scale
+        int lines = 0;
+        for (double i = scaleStepStartX; i < scaleStepEndX; i += scaleStepRaw) {
+            lines++;
+            // Grid line
+            g.setColor(MINOR_GRID_COLOR);
+            for (int j = 0; j < 5; j++) {
+                int minorPos = (int) (i + ((scaleStepRaw / 5) * j));
+                g.drawLine(minorPos, (int) rangeStartY, minorPos, (int) rangeEndY);
+            }
+            g.setColor(MAJOR_GRID_COLOR);
+            g.drawLine((int) i, (int) rangeStartY, (int) i, (int) rangeEndY);
+            g.setColor(BASE_COLOR);
+
+            if (i == 0) {
+                g.drawLine(0, (int) rangeStartY, 0, (int) rangeEndY);
+                continue;
+            }
+
+            // Axis line
+            g.drawLine((int) i, -5, (int) i, 5);
+
+            // Legend
+            double value = i / zoom;
+            g.drawString(value + "", (int) i - (SCALE_FONT_METRICS.stringWidth(value + "") / 2), -7);
+        }
+
+        // Y scale
+//        for (double i = scaleStepStart; i < scaleStepEnd; i += scaleStepRaw) {
+//            if (i == 0) {
+//                continue;
+//            }
+//
+//            double value = -i / zoom;
+//
+//            // Axis line
+//            g.drawLine(-5, (int) i, 5, (int) i);
+//
+//            // Grid line
+//            g.setColor(MINOR_GRID_COLOR);
+//            for (int j = 0; j < 4; j++) {
+//                int minorPos = (int) (i + ((scaleStepRaw / 4) * j));
+//                g.drawLine((int) rangeStart, minorPos, (int) rangeEnd, minorPos);
+//            }
+//            g.setColor(MAJOR_GRID_COLOR);
+//            g.drawLine((int) rangeStart, (int) i, (int) rangeEnd, (int) i);
+//            g.setColor(BASE_COLOR);
+//
+//            // Legend
+//            g.drawString(value + "", -(SCALE_FONT_METRICS.stringWidth(value + "")) - 10,
+//                    (int) i + (SCALE_FONT_METRICS.getAscent() / 2));
 //        }
 
         g.scale(1, -1);
@@ -301,7 +358,7 @@ public class PlottingPanel extends JPanel {
         g.translate(-((float) getWidth() / 2 + cameraX), -((float) getHeight() / 2 + cameraY));
         g.setStroke(baseStroke);
         g.setColor(TEXT_BLUE_COLOR);
-        // Have to use ternary operator so it doesn't show negative 0 when the camera is at the origin
+        // Have to use ternary operator, so it doesn't show negative 0 when the camera is at the origin
         String cameraPositionString = "X: " + (cameraX == 0 ? 0 : -cameraX) + "  Y: " + cameraY;
         int cpsWidth = SCALE_FONT_METRICS.stringWidth(cameraPositionString);
         g.drawString(cameraPositionString, getWidth() - cpsWidth - 3, getHeight() - 3);
@@ -360,23 +417,17 @@ public class PlottingPanel extends JPanel {
     }
 
     private double findBestScaleStep() {
-        double bestStep = 1;
+        double bestStep = 50;
         double zoom = zoomTx.getScaleX();
-        if (zoom > 32) {
-            for (int i = 0; bestStep * zoom > 32; i++) {
-                bestStep = getBestLowScaleStep(i);
-            }
-        } else if (zoom < 4) {
-            for (int i = 0; bestStep * zoom < 4; i++) {
-                bestStep = getBestHighScaleStep(i);
-            }
+        for (int i = 0; bestStep * zoom < 4; i++) {
+            bestStep = getBestHighScaleStep(i);
         }
         return bestStep;
     }
 
     private double getBestLowScaleStep(int index) {
         if (index >= BEST_LOW_SCALE_STEPS.length) {
-            return BEST_LOW_SCALE_STEPS[BEST_LOW_SCALE_STEPS.length - 1] * ((index - BEST_LOW_SCALE_STEPS.length + 1) / 10);
+            return BEST_LOW_SCALE_STEPS[BEST_LOW_SCALE_STEPS.length - 1] * ((index - BEST_LOW_SCALE_STEPS.length + 1));
         } else {
             return BEST_LOW_SCALE_STEPS[index];
         }
