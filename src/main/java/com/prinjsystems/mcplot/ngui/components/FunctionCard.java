@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.text.MessageFormat;
 import java.util.Random;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
@@ -30,6 +31,10 @@ public class FunctionCard extends JPanel {
         add(functionField, "pushx, growx");
         functionField.setPlaceholderText(BUNDLE.getString("functionCard.functionDefinition.placeholder"));
         functionField.setToolTipText(BUNDLE.getString("functionCard.functionDefinition.tooltip"));
+
+        JButton remove = new JButton("X");
+        add(remove);
+        remove.setToolTipText(BUNDLE.getString("generics.remove"));
 
         JCheckBox active = new JCheckBox();
         add(active);
