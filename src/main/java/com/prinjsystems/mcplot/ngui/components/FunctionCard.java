@@ -56,7 +56,7 @@ public class FunctionCard extends JPanel {
         otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettingsTooltip"));
         otherSettings.addActionListener(e -> {
             FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(function, index);
-            functionSettingsFrame.init();
+            functionSettingsFrame.init(plottingPanel);
             functionSettingsFrame.setVisible(true);
         });
 
@@ -103,6 +103,6 @@ public class FunctionCard extends JPanel {
         double step =
                 (domainEnd - domainStart) / (plottingPanel.getWidth() / zoomX * plottingPanel.getSamplesPerCell());
         MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart - step,
-                domainEnd + step, step, constants, path -> plottingPanel.getFunctions().put(function, path));
+                domainEnd + step, step, constants, plot -> plottingPanel.getFunctions().put(function, plot));
     }
 }

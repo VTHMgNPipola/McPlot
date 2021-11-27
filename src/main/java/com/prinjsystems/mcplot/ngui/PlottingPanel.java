@@ -1,6 +1,7 @@
 package com.prinjsystems.mcplot.ngui;
 
 import com.prinjsystems.mcplot.nmath.Function;
+import com.prinjsystems.mcplot.nmath.FunctionPlot;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -36,6 +37,7 @@ public class PlottingPanel extends JPanel {
     private int previousWidth, previousHeight;
     private int samplesPerCell = 25;
     private int traceWidth;
+    private final Map<Function, FunctionPlot> functions;
 
     private Font font;
     private Color backgroundColor = Color.white;
@@ -44,8 +46,7 @@ public class PlottingPanel extends JPanel {
     private Color globalAxisColor = Color.black;
     private Stroke traceStroke;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
-
-    private final Map<Function, Path2D.Double> functions;
+    private double fillTransparency = 25;
     private MathPanel mathPanel;
 
     public PlottingPanel() {
@@ -251,9 +252,23 @@ public class PlottingPanel extends JPanel {
         g.setStroke(traceStroke);
         AffineTransform zoomTx = new AffineTransform();
         zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
-        for (Map.Entry<Function, Path2D.Double> function : functions.entrySet()) {
-            g.setColor(function.getKey().getTraceColor());
-            g.draw(zoomTx.createTransformedShape(function.getValue()));
+        for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
+            Function function = functionEntry.getKey();
+            FunctionPlot plot = functionEntry.getValue();
+            Color traceColor = function.getTraceColor();
+            if (function.isFilled()) {
+                Path2D.Double fill = (Path2D.Double) plot.getPath().clone();
+                fill.lineTo(plot.getEndX(), 0);
+                fill.lineTo(plot.getStartX(), 0);
+                fill.closePath();
+
+                Color fillColor = new Color(traceColor.getRed(), traceColor.getGreen(), traceColor.getBlue(),
+                        (int) Math.min((fillTransparency * 2.55), 255));
+                g.setColor(fillColor);
+                g.fill(zoomTx.createTransformedShape(fill));
+            }
+            g.setColor(traceColor);
+            g.draw(zoomTx.createTransformedShape(plot.getPath()));
         }
     }
 
@@ -360,7 +375,16 @@ public class PlottingPanel extends JPanel {
         repaint();
     }
 
-    public Map<Function, Path2D.Double> getFunctions() {
+    public double getFillTransparency() {
+        return fillTransparency;
+    }
+
+    public void setFillTransparency(double fillTransparency) {
+        this.fillTransparency = fillTransparency;
+        repaint();
+    }
+
+    public Map<Function, FunctionPlot> getFunctions() {
         return functions;
     }
 

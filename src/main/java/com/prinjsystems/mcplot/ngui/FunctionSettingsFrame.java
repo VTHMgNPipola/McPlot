@@ -24,13 +24,13 @@ public class FunctionSettingsFrame extends JFrame {
         this.function = function;
     }
 
-    public void init() {
-        initContentPane();
+    public void init(PlottingPanel plottingPanel) {
+        initContentPane(plottingPanel);
         pack();
         setLocationRelativeTo(null);
     }
 
-    private void initContentPane() {
+    private void initContentPane(PlottingPanel plottingPanel) {
         JPanel contentPane = new JPanel(new MigLayout("insets 15", "[]15",
                 "[]10"));
         setContentPane(contentPane);
@@ -45,6 +45,7 @@ public class FunctionSettingsFrame extends JFrame {
             public void keyReleased(KeyEvent e) {
                 String text = domainStart.getText().trim();
                 function.setDomainStart(text.equals("*") ? null : Double.parseDouble(text));
+                plottingPanel.repaint();
             }
         });
 
@@ -58,12 +59,16 @@ public class FunctionSettingsFrame extends JFrame {
             public void keyReleased(KeyEvent e) {
                 String text = domainEnd.getText().trim();
                 function.setDomainEnd(text.equals("*") ? null : Double.parseDouble(text));
+                plottingPanel.repaint();
             }
         });
 
         JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"), function.isFilled());
         contentPane.add(fillArea, "span");
         fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillAreaTooltip"));
-        fillArea.addActionListener(e -> function.setFilled(fillArea.isSelected()));
+        fillArea.addActionListener(e -> {
+            function.setFilled(fillArea.isSelected());
+            plottingPanel.repaint();
+        });
     }
 }

@@ -51,8 +51,8 @@ public class MathEvaluatorPool {
         });
     }
 
-    public Future<Path2D.Double> evaluateFunction(String function, double domainStart, double domainEnd, double step,
-                                                  List<Constant> constants, Consumer<Path2D.Double> callback) {
+    public Future<FunctionPlot> evaluateFunction(String function, double domainStart, double domainEnd, double step,
+                                                 List<Constant> constants, Consumer<FunctionPlot> callback) {
         runningFunctions++;
         return executor.submit(() -> {
             try {
@@ -78,6 +78,10 @@ public class MathEvaluatorPool {
                     return null;
                 }
 
+                FunctionPlot plot = new FunctionPlot();
+                plot.setStartX(domainStart);
+                plot.setEndX(domainEnd);
+
                 Path2D.Double path = new Path2D.Double();
                 path.moveTo(domainStart, expression.evaluate());
 
@@ -85,14 +89,15 @@ public class MathEvaluatorPool {
                     expression.setVariable(variableName, i);
                     path.lineTo(i, expression.evaluate());
                 }
+                plot.setPath(path);
 
                 runningFunctions--;
-                callback.accept(path);
+                callback.accept(plot);
                 if (runningFunctions == 0) {
                     functionsDoneTasks.forEach(Runnable::run);
                 }
 
-                return path;
+                return plot;
             } catch (Throwable e) {
                 runningFunctions--;
                 return null;

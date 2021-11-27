@@ -66,6 +66,14 @@ public class SettingsFrame extends JFrame {
         plottingPanelSettings.add(traceWidth, "growx, wrap");
         traceWidth.addChangeListener(e -> plottingPanel.setTraceWidth((int) traceWidth.getValue()));
 
+        JLabel fillTransparencyLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.fillTransparency"));
+        plottingPanelSettings.add(fillTransparencyLabel);
+        JSpinner fillTransparency = new JSpinner(new SpinnerNumberModel(plottingPanel.getFillTransparency(), 0,
+                100, 0.5));
+        plottingPanelSettings.add(fillTransparency, "growx, wrap");
+        fillTransparency.setToolTipText(BUNDLE.getString("settings.plottingPanel.fillTransparencyTooltip"));
+        fillTransparency.addChangeListener(e -> plottingPanel.setFillTransparency((double) fillTransparency.getValue()));
+
         JLabel backgroundColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.backgroundColor"));
         plottingPanelSettings.add(backgroundColorLabel);
         ColorChooserButton backgroundColor = new ColorChooserButton();
