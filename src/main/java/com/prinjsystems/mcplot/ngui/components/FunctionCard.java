@@ -4,6 +4,7 @@ import com.prinjsystems.mcplot.ngui.FunctionSettingsFrame;
 import com.prinjsystems.mcplot.ngui.PlottingPanel;
 import com.prinjsystems.mcplot.nmath.Constant;
 import com.prinjsystems.mcplot.nmath.Function;
+import com.prinjsystems.mcplot.nmath.FunctionPlot;
 import com.prinjsystems.mcplot.nmath.MathEvaluatorPool;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,6 +26,8 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class FunctionCard extends JPanel {
     private static final Random RANDOM = new Random();
+
+    private final JCheckBox visible;
 
     private final Function function;
     private final List<Constant> constants;
@@ -62,9 +65,17 @@ public class FunctionCard extends JPanel {
             functionSettingsFrame.setVisible(true);
         });
 
-        JCheckBox active = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"), true);
-        add(active, "pushx, growx, wrap");
-        active.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisibleTooltip"));
+        visible = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"), true);
+        add(visible, "pushx, growx, wrap");
+        visible.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisibleTooltip"));
+        visible.addActionListener(e -> {
+            FunctionPlot plot = plottingPanel.getFunctions().get(function);
+            if (plot != null) {
+                plot.setVisible(visible.isSelected());
+                plottingPanel.getFunctions().put(function, plot);
+                plottingPanel.repaint();
+            }
+        });
 
         JLabeledTextField functionField = new JLabeledTextField();
         add(functionField, "pushx, growx");
@@ -111,6 +122,9 @@ public class FunctionCard extends JPanel {
             domainEnd += step;
         }
         MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart, domainEnd, step,
-                constants, plot -> plottingPanel.getFunctions().put(function, plot));
+                constants, plot -> {
+                    plot.setVisible(visible.isSelected());
+                    plottingPanel.getFunctions().put(function, plot);
+                });
     }
 }

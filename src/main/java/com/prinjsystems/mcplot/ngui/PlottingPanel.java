@@ -265,6 +265,10 @@ public class PlottingPanel extends JPanel {
             Function function = functionEntry.getKey();
             FunctionPlot plot = functionEntry.getValue();
             Color traceColor = function.getTraceColor();
+            if (!plot.isVisible()) {
+                continue;
+            }
+
             if (function.isFilled()) {
                 Path2D.Double fill = (Path2D.Double) plot.getPath().clone();
                 fill.lineTo(plot.getEndX(), 0);

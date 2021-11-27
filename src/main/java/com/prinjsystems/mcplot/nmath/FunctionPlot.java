@@ -4,6 +4,7 @@ import java.awt.geom.Path2D;
 
 public class FunctionPlot {
     private Path2D.Double path;
+    private boolean visible;
     private double startX;
     private double endX;
 
@@ -13,6 +14,14 @@ public class FunctionPlot {
 
     public void setPath(Path2D.Double path) {
         this.path = path;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     public double getStartX() {
