@@ -14,6 +14,7 @@ public class Function implements Serializable {
     private Double domainStart;
     private Double domainEnd;
     private boolean filled;
+    private boolean visible;
 
     public String getDefinition() {
         return definition;
@@ -53,5 +54,13 @@ public class Function implements Serializable {
 
     public void setFilled(boolean filled) {
         this.filled = filled;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

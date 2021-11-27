@@ -5,13 +5,6 @@
     <version>0.1-SNAPSHOT</version>
 
     <dependencies>
-        <!-- Remove when NGUI is completed -->
-        <dependency>
-            <groupId>com.fathzer</groupId>
-            <artifactId>javaluator</artifactId>
-            <version>3.0.3</version>
-        </dependency>
-
         <dependency>
             <groupId>net.objecthunter</groupId>
             <artifactId>exp4j</artifactId>

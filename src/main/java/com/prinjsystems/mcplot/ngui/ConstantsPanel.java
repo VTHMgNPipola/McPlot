@@ -23,12 +23,20 @@ public class ConstantsPanel extends JPanel {
         this.constants = constants;
         index = new AtomicInteger(1);
 
-        Constant firstConstant = new Constant();
-        ConstantCard firstConstantCard = new ConstantCard(firstConstant, constants, this,
-                index.getAndIncrement());
-        add(firstConstantCard, "pushx, span, growx");
-        constants.add(firstConstant);
-        constantCards.add(firstConstantCard);
+        if (constants.size() != 0) {
+            constants.forEach(c -> {
+                ConstantCard constantCard = new ConstantCard(c, constants, this, index.getAndIncrement());
+                add(constantCard, "pushx, span, growx");
+                constantCards.add(constantCard);
+            });
+        } else {
+            Constant firstConstant = new Constant();
+            ConstantCard firstConstantCard = new ConstantCard(firstConstant, constants, this,
+                    index.getAndIncrement());
+            add(firstConstantCard, "pushx, span, growx");
+            constants.add(firstConstant);
+            constantCards.add(firstConstantCard);
+        }
 
         JButton addConstantCard = new JButton(BUNDLE.getString("workspace.actions.createConstant"));
         add(addConstantCard, "pushx, span, growx");

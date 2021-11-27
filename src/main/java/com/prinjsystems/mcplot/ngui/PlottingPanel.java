@@ -265,7 +265,7 @@ public class PlottingPanel extends JPanel {
             Function function = functionEntry.getKey();
             FunctionPlot plot = functionEntry.getValue();
             Color traceColor = function.getTraceColor();
-            if (!plot.isVisible()) {
+            if (!function.isVisible()) {
                 continue;
             }
 

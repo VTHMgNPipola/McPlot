@@ -46,10 +46,14 @@ public class FunctionCard extends JPanel {
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy, split 3");
         colorChooserButton.setToolTipText(BUNDLE.getString("functionCard.selectColor"));
-        Color startingColor = new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
-                RANDOM.nextInt(255));
-        function.setTraceColor(startingColor);
-        colorChooserButton.setSelectedColor(startingColor);
+        if (function.getTraceColor() == null) {
+            Color startingColor = new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
+                    RANDOM.nextInt(255));
+            function.setTraceColor(startingColor);
+            colorChooserButton.setSelectedColor(startingColor);
+        } else {
+            colorChooserButton.setSelectedColor(function.getTraceColor());
+        }
         colorChooserButton.setMaximumSize(new Dimension(40, 40));
         colorChooserButton.setColorChooserListener(color -> {
             function.setTraceColor(color);
@@ -65,13 +69,14 @@ public class FunctionCard extends JPanel {
             functionSettingsFrame.setVisible(true);
         });
 
-        visible = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"), true);
+        visible = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"),
+                function.isVisible());
         add(visible, "pushx, growx, wrap");
         visible.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisibleTooltip"));
         visible.addActionListener(e -> {
             FunctionPlot plot = plottingPanel.getFunctions().get(function);
             if (plot != null) {
-                plot.setVisible(visible.isSelected());
+                function.setVisible(visible.isSelected());
                 plottingPanel.getFunctions().put(function, plot);
                 plottingPanel.repaint();
             }
@@ -79,6 +84,7 @@ public class FunctionCard extends JPanel {
 
         JLabeledTextField functionField = new JLabeledTextField();
         add(functionField, "pushx, growx");
+        functionField.setText(function.getDefinition());
         functionField.setPlaceholderText(BUNDLE.getString("functionCard.functionDefinition.placeholder"));
         functionField.setToolTipText(BUNDLE.getString("functionCard.functionDefinition.tooltip"));
         functionField.addFocusListener(new FocusAdapter() {
@@ -128,10 +134,7 @@ public class FunctionCard extends JPanel {
             domainEnd += step;
         }
         MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart, domainEnd, step,
-                constants, plot -> {
-                    plot.setVisible(visible.isSelected());
-                    plottingPanel.getFunctions().put(function, plot);
-                });
+                constants, plot -> plottingPanel.getFunctions().put(function, plot));
     }
 
     public void setIndex(int index) {

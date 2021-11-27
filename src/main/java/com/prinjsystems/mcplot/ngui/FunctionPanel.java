@@ -16,23 +16,37 @@ public class FunctionPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public FunctionPanel(List<FunctionCard> functionCards, List<Constant> constants, PlottingPanel plottingPanel) {
+    public FunctionPanel(List<FunctionCard> functionCards, List<Function> functions, List<Constant> constants,
+                         PlottingPanel plottingPanel) {
         setLayout(new MigLayout());
         this.functionCards = functionCards;
         index = new AtomicInteger(1);
 
-        FunctionCard firstFunctionCard = new FunctionCard(new Function(), constants, plottingPanel, this,
-                index.getAndIncrement());
-        add(firstFunctionCard, "pushx, span, growx");
-        functionCards.add(firstFunctionCard);
+        if (functions.size() != 0) {
+            functions.forEach(f -> {
+                FunctionCard functionCard = new FunctionCard(f, constants, plottingPanel, this,
+                        index.getAndIncrement());
+                add(functionCard, "pushx, span, growx");
+                functionCards.add(functionCard);
+            });
+        } else {
+            Function firstFunction = new Function();
+            FunctionCard firstFunctionCard = new FunctionCard(firstFunction, constants, plottingPanel, this,
+                    index.getAndIncrement());
+            add(firstFunctionCard, "pushx, span, growx");
+            functionCards.add(firstFunctionCard);
+            functions.add(firstFunction);
+        }
 
         JButton addFunctionCard = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
         add(addFunctionCard, "pushx, span, growx");
         addFunctionCard.addActionListener(e -> {
-            FunctionCard functionCard = new FunctionCard(new Function(), constants, plottingPanel, this,
+            Function function = new Function();
+            FunctionCard functionCard = new FunctionCard(function, constants, plottingPanel, this,
                     index.getAndIncrement());
             add(functionCard, "pushx, span, growx", getComponentCount() - 1);
             functionCards.add(functionCard);
+            functions.add(function);
             updateUI();
         });
     }

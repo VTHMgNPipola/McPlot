@@ -9,12 +9,6 @@ public class WorkspaceController {
         this.plottingPanel = plottingPanel;
     }
 
-    public void save(ActionEvent event) {
-    }
-
-    public void open(ActionEvent event) {
-    }
-
     public void openSettings(ActionEvent event) {
         SettingsFrame settingsFrame = new SettingsFrame(plottingPanel);
         settingsFrame.init();

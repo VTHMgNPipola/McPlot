@@ -8,6 +8,9 @@ import static com.prinjsystems.mcplot.Main.PREFERENCES_PATH;
 public class PreferencesHelper {
     public static final Preferences PREFERENCES = Preferences.userRoot().node(PREFERENCES_PATH);
 
+    public static final String KEY_CURRENT_DIRECTORY_SAVE = "currentDirSave";
+    public static final String KEY_CURRENT_DIRECTORY_OPEN = "currentDirOpen";
+
     public static final String KEY_LANGUAGE = "language";
     public static final String KEY_OPEN_MAXIMIZED = "openMaximized";
 

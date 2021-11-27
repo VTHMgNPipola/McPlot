@@ -18,6 +18,7 @@ import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
 public class Workspace extends JFrame {
     private WorkspaceController workspaceController;
 
+    private MathPanel mathPanel;
     private PlottingPanel plottingPanel;
     private JSplitPane splitPane;
 
@@ -50,11 +51,11 @@ public class Workspace extends JFrame {
 
         JMenuItem save = new JMenuItem(BUNDLE.getString("workspace.menu.file.save"));
         file.add(save);
-        save.addActionListener(workspaceController::save);
+        save.addActionListener(e -> mathPanel.save());
 
         JMenuItem open = new JMenuItem(BUNDLE.getString("workspace.menu.file.open"));
         file.add(open);
-        open.addActionListener(workspaceController::open);
+        open.addActionListener(e -> mathPanel.open(plottingPanel));
 
         file.addSeparator();
 
@@ -101,7 +102,7 @@ public class Workspace extends JFrame {
         splitPane.setRightComponent(plottingPanel);
         workspaceController = new WorkspaceController(plottingPanel);
 
-        MathPanel mathPanel = new MathPanel();
+        mathPanel = new MathPanel();
         splitPane.setLeftComponent(mathPanel);
         mathPanel.init(plottingPanel);
     }
