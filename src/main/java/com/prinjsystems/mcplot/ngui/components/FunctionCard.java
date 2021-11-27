@@ -84,8 +84,12 @@ public class FunctionCard extends JPanel {
     }
 
     private void recalculateFunction(List<Constant> constants) {
-        MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), plottingPanel.getCameraX(),
-                plottingPanel.getCameraX() + plottingPanel.getWidth(), 0.1, constants, path -> {
+        double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
+        double domainStart = plottingPanel.getCameraX() / zoomX;
+        double domainEnd = (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
+        double step = plottingPanel.getWidth() / zoomX / plottingPanel.getSamplesPerGrid();
+        MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart, domainEnd, step,
+                constants, path -> {
                     plottingPanel.getFunctions().put(function, path);
                     plottingPanel.repaint();
                 });

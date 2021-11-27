@@ -49,7 +49,6 @@ public class MathEvaluatorPool {
             String variableName = functionParts[0].substring(functionParts[0].indexOf('(') + 1,
                     functionParts[0].indexOf(')'));
 
-
             Expression expression = new ExpressionBuilder(functionDefinition).variable(variableName)
                     .variables(constants.stream().filter(c -> c.getActualValue() != null && c.getName() != null)
                             .map(Constant::getName).collect(Collectors.toSet())).build();
