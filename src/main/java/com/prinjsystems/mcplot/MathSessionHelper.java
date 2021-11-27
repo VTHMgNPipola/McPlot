@@ -68,7 +68,7 @@ public class MathSessionHelper {
 
                 consumer.accept(functions, constants);
             } catch (Throwable t) {
-                JOptionPane.showMessageDialog(null, BUNDLE.getString("errors.save"),
+                JOptionPane.showMessageDialog(null, BUNDLE.getString("errors.open"),
                         BUNDLE.getString("generics.errorDialog"), JOptionPane.WARNING_MESSAGE);
             }
         }
