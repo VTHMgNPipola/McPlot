@@ -23,30 +23,40 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import static com.prinjsystems.mcplot.Main.EXECUTOR_THREAD;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_BACKGROUND_COLOR;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_GLOBAL_AXIS_COLOR;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_MAJOR_GRID_COLOR;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_MINOR_GRID_COLOR;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_SAMPLES_PER_CELL;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_SCALE_X;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_SCALE_Y;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_TRACE_WIDTH;
+import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
 
 public class PlottingPanel extends JPanel {
     private static final int INITIAL_PIXELS_PER_STEP = 75;
 
     private int cameraX, cameraY;
-    private double scaleX = 1;
-    private double scaleY = 1;
+    private double scaleX = PREFERENCES.getDouble(KEY_SCALE_X, 1);
+    private double scaleY = PREFERENCES.getDouble(KEY_SCALE_Y, 1);
     private final int[] zoomArray = new int[]{1, 2, 5, 10};
     private int pixelsPerStep = INITIAL_PIXELS_PER_STEP;
     private double zoom = 1;
     private int zoomPos = 0;
     private int previousWidth, previousHeight;
-    private int samplesPerCell = 25;
-    private int traceWidth;
+    private int samplesPerCell = PREFERENCES.getInt(KEY_SAMPLES_PER_CELL, 25);
+    private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 1);
     private final Map<Function, FunctionPlot> functions;
 
     private Font font;
-    private Color backgroundColor = Color.white;
-    private Color minorGridColor = new Color(232, 232, 232);
-    private Color majorGridColor = Color.lightGray;
-    private Color globalAxisColor = Color.black;
+    private Color backgroundColor = new Color(PREFERENCES.getInt(KEY_BACKGROUND_COLOR, Color.white.getRGB()));
+    private Color minorGridColor = new Color(PREFERENCES.getInt(KEY_MINOR_GRID_COLOR, -1513240));
+    private Color majorGridColor = new Color(PREFERENCES.getInt(KEY_MAJOR_GRID_COLOR, Color.lightGray.getRGB()));
+    private Color globalAxisColor = new Color(PREFERENCES.getInt(KEY_GLOBAL_AXIS_COLOR, Color.black.getRGB()));
     private Stroke traceStroke;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
-    private double fillTransparency = 25;
+    private double fillTransparency = PREFERENCES.getDouble(KEY_FILL_TRANSPARENCY, 25);
     private MathPanel mathPanel;
 
     public PlottingPanel() {
@@ -54,7 +64,6 @@ public class PlottingPanel extends JPanel {
         functions = new HashMap<>();
 
         font = new Font("Monospaced", Font.PLAIN, 12);
-        traceWidth = 3;
         traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
         final boolean[] dragging = new boolean[1];
@@ -286,6 +295,7 @@ public class PlottingPanel extends JPanel {
 
     public void setScaleX(double scaleX) {
         this.scaleX = scaleX;
+        PREFERENCES.putDouble(KEY_SCALE_X, scaleX);
         mathPanel.recalculateAllFunctions();
         repaint();
     }
@@ -296,6 +306,7 @@ public class PlottingPanel extends JPanel {
 
     public void setScaleY(double scaleY) {
         this.scaleY = scaleY;
+        PREFERENCES.putDouble(KEY_SCALE_Y, scaleY);
         mathPanel.recalculateAllFunctions();
         repaint();
     }
@@ -314,6 +325,7 @@ public class PlottingPanel extends JPanel {
 
     public void setSamplesPerCell(int samplesPerCell) {
         this.samplesPerCell = samplesPerCell;
+        PREFERENCES.putInt(KEY_SAMPLES_PER_CELL, samplesPerCell);
         mathPanel.recalculateAllFunctions();
         repaint();
     }
@@ -335,6 +347,7 @@ public class PlottingPanel extends JPanel {
 
     public void setBackgroundColor(Color backgroundColor) {
         this.backgroundColor = backgroundColor;
+        PREFERENCES.putInt(KEY_BACKGROUND_COLOR, backgroundColor.getRGB());
         repaint();
     }
 
@@ -344,6 +357,7 @@ public class PlottingPanel extends JPanel {
 
     public void setMinorGridColor(Color minorGridColor) {
         this.minorGridColor = minorGridColor;
+        PREFERENCES.putInt(KEY_MINOR_GRID_COLOR, minorGridColor.getRGB());
         repaint();
     }
 
@@ -353,6 +367,7 @@ public class PlottingPanel extends JPanel {
 
     public void setMajorGridColor(Color majorGridColor) {
         this.majorGridColor = majorGridColor;
+        PREFERENCES.putInt(KEY_MAJOR_GRID_COLOR, majorGridColor.getRGB());
         repaint();
     }
 
@@ -362,6 +377,7 @@ public class PlottingPanel extends JPanel {
 
     public void setGlobalAxisColor(Color globalAxisColor) {
         this.globalAxisColor = globalAxisColor;
+        PREFERENCES.putInt(KEY_GLOBAL_AXIS_COLOR, globalAxisColor.getRGB());
         repaint();
     }
 
@@ -371,6 +387,7 @@ public class PlottingPanel extends JPanel {
 
     public void setTraceWidth(int traceWidth) {
         this.traceWidth = traceWidth;
+        PREFERENCES.putInt(KEY_TRACE_WIDTH, traceWidth);
         traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
         repaint();
     }
@@ -381,6 +398,7 @@ public class PlottingPanel extends JPanel {
 
     public void setFillTransparency(double fillTransparency) {
         this.fillTransparency = fillTransparency;
+        PREFERENCES.putDouble(KEY_FILL_TRANSPARENCY, fillTransparency);
         repaint();
     }
 
