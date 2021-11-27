@@ -1,5 +1,6 @@
 package com.prinjsystems.mcplot.ngui;
 
+import com.prinjsystems.mcplot.nmath.Function;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -11,7 +12,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JPanel;
 
 public class PlottingPanel extends JPanel {
@@ -33,9 +38,11 @@ public class PlottingPanel extends JPanel {
     private Color globalAxisColor = Color.black;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
+    private final Map<Function, Path2D.Double> functions;
+
     public PlottingPanel() {
         setDoubleBuffered(true);
-
+        functions = new HashMap<>();
         font = new Font("Monospaced", Font.PLAIN, 12);
 
         final boolean[] dragging = new boolean[1];
@@ -223,6 +230,22 @@ public class PlottingPanel extends JPanel {
         g.setColor(globalAxisColor);
         g.drawLine(cameraX, 0, cameraX + getWidth(), 0);
         g.drawLine(0, cameraY, 0, cameraY + getHeight());
+
+        // Functions
+        AffineTransform zoomTx = new AffineTransform();
+        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, scaleY * pixelsPerStep * zoom);
+        for (Map.Entry<Function, Path2D.Double> function : functions.entrySet()) {
+            g.setColor(function.getKey().getTraceColor());
+            g.draw(zoomTx.createTransformedShape(function.getValue()));
+        }
+    }
+
+    public int getCameraX() {
+        return cameraX;
+    }
+
+    public int getCameraY() {
+        return cameraY;
     }
 
     public double getScaleX() {
@@ -288,5 +311,9 @@ public class PlottingPanel extends JPanel {
     public void setGlobalAxisColor(Color globalAxisColor) {
         this.globalAxisColor = globalAxisColor;
         repaint();
+    }
+
+    public Map<Function, Path2D.Double> getFunctions() {
+        return functions;
     }
 }

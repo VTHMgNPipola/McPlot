@@ -2,8 +2,8 @@ package com.prinjsystems.mcplot.nmath;
 
 import java.io.Serial;
 import java.io.Serializable;
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class Constant implements Serializable {
     @Serial
@@ -30,11 +30,16 @@ public class Constant implements Serializable {
             return false;
         }
 
-        Expression expression = new ExpressionBuilder(definition).build();
-        if (expression.validate().isValid()) {
-            this.definition = definition;
-            actualValue = expression.evaluate();
+        Future<Double> calculatedValueFuture = MathEvaluatorPool.getInstance().evaluateExpression(definition);
+        try {
+            Double calculatedValue = calculatedValueFuture.get();
+            if (calculatedValue != null) {
+                actualValue = calculatedValue;
+                this.definition = definition;
+            }
             return true;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
         return false;
     }

@@ -73,12 +73,12 @@ public class Workspace extends JFrame {
         splitPane.setContinuousLayout(false);
         splitPane.setDividerLocation(0.3);
 
-        MathPanel mathPanel = new MathPanel();
-        splitPane.setLeftComponent(mathPanel);
-        mathPanel.init();
-
         plottingPanel = new PlottingPanel();
         splitPane.setRightComponent(plottingPanel);
         workspaceController = new WorkspaceController(plottingPanel);
+
+        MathPanel mathPanel = new MathPanel();
+        splitPane.setLeftComponent(mathPanel);
+        mathPanel.init(plottingPanel);
     }
 }
