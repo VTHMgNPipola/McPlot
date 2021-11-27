@@ -24,15 +24,15 @@ public class FunctionPanel extends JPanel {
 
         if (functions.size() != 0) {
             functions.forEach(f -> {
-                FunctionCard functionCard = new FunctionCard(f, constants, plottingPanel, this,
+                FunctionCard functionCard = new FunctionCard(f, functions, constants, plottingPanel, this,
                         index.getAndIncrement());
                 add(functionCard, "pushx, span, growx");
                 functionCards.add(functionCard);
             });
         } else {
             Function firstFunction = new Function();
-            FunctionCard firstFunctionCard = new FunctionCard(firstFunction, constants, plottingPanel, this,
-                    index.getAndIncrement());
+            FunctionCard firstFunctionCard = new FunctionCard(firstFunction, functions, constants, plottingPanel,
+                    this, index.getAndIncrement());
             add(firstFunctionCard, "pushx, span, growx");
             functionCards.add(firstFunctionCard);
             functions.add(firstFunction);
@@ -42,7 +42,7 @@ public class FunctionPanel extends JPanel {
         add(addFunctionCard, "pushx, span, growx");
         addFunctionCard.addActionListener(e -> {
             Function function = new Function();
-            FunctionCard functionCard = new FunctionCard(function, constants, plottingPanel, this,
+            FunctionCard functionCard = new FunctionCard(function, functions, constants, plottingPanel, this,
                     index.getAndIncrement());
             add(functionCard, "pushx, span, growx", getComponentCount() - 1);
             functionCards.add(functionCard);

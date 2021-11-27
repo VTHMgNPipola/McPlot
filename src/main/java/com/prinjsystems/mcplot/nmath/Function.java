@@ -9,12 +9,13 @@ public class Function implements Serializable {
     private static final long serialVersionUID = -3144429444076124342L;
 
     private String definition;
-    private Color traceColor;
+    private transient String name, variableName, formationLaw;
 
+    private Color traceColor;
     private Double domainStart;
     private Double domainEnd;
     private boolean filled;
-    private boolean visible;
+    private boolean visible = true;
 
     public String getDefinition() {
         return definition;
@@ -62,5 +63,30 @@ public class Function implements Serializable {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public String getName() {
+        checkDecomposition();
+        return name;
+    }
+
+    public String getVariableName() {
+        checkDecomposition();
+        return variableName;
+    }
+
+    public String getFormationLaw() {
+        checkDecomposition();
+        return formationLaw;
+    }
+
+    private void checkDecomposition() {
+        if (name == null || variableName == null || formationLaw == null) {
+            String[] parts = definition.split("=");
+            formationLaw = parts[1].trim();
+
+            name = parts[0].substring(0, parts[0].indexOf('(')).trim();
+            variableName = parts[0].substring(parts[0].indexOf('(') + 1, parts[0].indexOf(')')).trim();
+        }
     }
 }

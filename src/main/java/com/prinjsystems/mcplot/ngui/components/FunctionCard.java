@@ -31,13 +31,15 @@ public class FunctionCard extends JPanel {
     private final JCheckBox visible;
 
     private final Function function;
+    private final List<Function> functions;
     private final List<Constant> constants;
     private final PlottingPanel plottingPanel;
 
-    public FunctionCard(Function function, List<Constant> constants, PlottingPanel plottingPanel, FunctionPanel parent,
-                        int index) {
+    public FunctionCard(Function function, List<Function> functions, List<Constant> constants,
+                        PlottingPanel plottingPanel, FunctionPanel parent, int index) {
         setLayout(new MigLayout());
         this.function = function;
+        this.functions = functions;
         this.constants = constants;
         this.plottingPanel = plottingPanel;
 
@@ -133,8 +135,8 @@ public class FunctionCard extends JPanel {
         if (function.getDomainEnd() == null) {
             domainEnd += step;
         }
-        MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart, domainEnd, step,
-                constants, plot -> plottingPanel.getFunctions().put(function, plot));
+        MathEvaluatorPool.getInstance().evaluateFunction(function, domainStart, domainEnd, step, functions, constants,
+                plot -> plottingPanel.getFunctions().put(function, plot));
     }
 
     public void setIndex(int index) {

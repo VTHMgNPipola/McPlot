@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import net.objecthunter.exp4j.Expression;
@@ -16,8 +17,10 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 public class MathEvaluatorPool {
     private static final MathEvaluatorPool INSTANCE = new MathEvaluatorPool();
-    private static final Pattern FUNCTION_PATTERN = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\([a-zA-Z]+\\)" +
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\(\s*[a-zA-Z]+\s*\\)" +
             "\s*=[^=]*");
+    private static final Pattern FUNCTION_CALL_PATTERN = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\" +
+            "(\s*[a-zA-Z]+\s*\\)");
 
     private final ExecutorService executor;
     private final List<Runnable> functionsDoneTasks;
@@ -51,25 +54,26 @@ public class MathEvaluatorPool {
         });
     }
 
-    public Future<FunctionPlot> evaluateFunction(String function, double domainStart, double domainEnd, double step,
-                                                 List<Constant> constants, Consumer<FunctionPlot> callback) {
+    public Future<FunctionPlot> evaluateFunction(Function function, double domainStart, double domainEnd, double step,
+                                                 List<Function> functions, List<Constant> constants,
+                                                 Consumer<FunctionPlot> callback) {
         runningFunctions++;
         return executor.submit(() -> {
             try {
-                if (function == null || !FUNCTION_PATTERN.matcher(function).matches() || domainEnd < domainStart) {
+                if (function == null || !FUNCTION_PATTERN.matcher(function.getDefinition()).matches() ||
+                        domainEnd < domainStart) {
                     runningFunctions--;
                     return null;
                 }
 
-                String[] functionParts = function.split("=");
-                String functionDefinition = functionParts[1];
-                String variableName = functionParts[0].substring(functionParts[0].indexOf('(') + 1,
-                        functionParts[0].indexOf(')'));
+                String variableName = function.getVariableName();
+
+                String formationLaw = processFormationLaw(function, functions);
 
                 Map<String, Double> constantMap = constants.stream()
                         .filter(c -> c.getActualValue() != null && c.getName() != null)
                         .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
-                Expression expression = new ExpressionBuilder(functionDefinition).variable(variableName)
+                Expression expression = new ExpressionBuilder(formationLaw).variable(variableName)
                         .variables(constantMap.keySet()).build();
                 expression.setVariables(constantMap);
                 expression.setVariable(variableName, domainStart);
@@ -103,5 +107,32 @@ public class MathEvaluatorPool {
                 return null;
             }
         });
+    }
+
+    private String processFormationLaw(Function function, List<Function> functions) {
+        boolean processed;
+        String formationLaw = function.getFormationLaw();
+        Map<String, Function> functionMap = functions.stream()
+                .filter(f -> !Objects.equals(f.getName(), function.getName()))
+                .collect(Collectors.toMap(Function::getName, f -> f));
+        do {
+            processed = false;
+
+            Matcher matcher = FUNCTION_CALL_PATTERN.matcher(formationLaw);
+            while (matcher.find()) {
+                String match = matcher.group();
+                Function subFunction = functionMap.get(match.substring(0, match.indexOf('(')).trim());
+                if (subFunction != null) {
+                    String subFunctionFormationLaw = subFunction.getFormationLaw();
+                    subFunctionFormationLaw = "(" + subFunctionFormationLaw.replaceAll(subFunction.getVariableName(),
+                            match.substring(match.indexOf('(') + 1, match.indexOf(')')).trim()) + ")";
+                    formationLaw = formationLaw.replace(match, subFunctionFormationLaw);
+
+                    processed = true;
+                }
+            }
+        } while (processed);
+
+        return formationLaw;
     }
 }
