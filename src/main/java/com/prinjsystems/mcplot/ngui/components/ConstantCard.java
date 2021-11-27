@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Objects;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -72,9 +73,7 @@ public class ConstantCard extends JPanel {
         value.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    updateConstantValue(constants);
-                }
+                updateConstantValue(constants);
             }
         });
     }
@@ -88,8 +87,10 @@ public class ConstantCard extends JPanel {
     }
 
     private void updateConstantValue(List<Constant> constants) {
-        constant.setDefinition(value.getText(), constants);
-        updateValueTooltip();
+        if (!Objects.equals(constant.getDefinition(), value.getText())) {
+            constant.setDefinition(value.getText(), constants);
+            updateValueTooltip();
+        }
     }
 
     public void setIndex(int index) {

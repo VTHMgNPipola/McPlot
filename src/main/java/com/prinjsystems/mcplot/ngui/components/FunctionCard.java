@@ -102,10 +102,10 @@ public class FunctionCard extends JPanel {
         functionField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER
-                        && !Objects.equals(function.getDefinition(), functionField.getText())) {
+                if (!Objects.equals(function.getDefinition(), functionField.getText())) {
                     function.setDefinition(functionField.getText());
                     recalculateFunction();
+                    plottingPanel.repaint();
                 }
             }
         });

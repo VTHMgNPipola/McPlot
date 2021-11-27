@@ -23,6 +23,7 @@ public class Function implements Serializable {
 
     public void setDefinition(String definition) {
         this.definition = definition;
+        doDecomposition();
     }
 
     public Color getTraceColor() {
@@ -80,13 +81,17 @@ public class Function implements Serializable {
         return formationLaw;
     }
 
+    private void doDecomposition() {
+        String[] parts = definition.split("=");
+        formationLaw = parts[1].trim();
+
+        name = parts[0].substring(0, parts[0].indexOf('(')).trim();
+        variableName = parts[0].substring(parts[0].indexOf('(') + 1, parts[0].indexOf(')')).trim();
+    }
+
     private void checkDecomposition() {
         if (name == null || variableName == null || formationLaw == null) {
-            String[] parts = definition.split("=");
-            formationLaw = parts[1].trim();
-
-            name = parts[0].substring(0, parts[0].indexOf('(')).trim();
-            variableName = parts[0].substring(parts[0].indexOf('(') + 1, parts[0].indexOf(')')).trim();
+            doDecomposition();
         }
     }
 }
