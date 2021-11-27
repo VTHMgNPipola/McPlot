@@ -21,14 +21,14 @@ public class ConstantsPanel extends JPanel {
         constantCount = new AtomicInteger(1);
 
         Constant firstConstant = new Constant();
-        add(new ConstantCard(firstConstant, constantCount.getAndIncrement()), "pushx, span, growx");
+        add(new ConstantCard(firstConstant, constants, constantCount.getAndIncrement()), "pushx, span, growx");
         constants.add(firstConstant);
 
         JButton addConstantCard = new JButton(BUNDLE.getString("workspace.actions.createConstant"));
         add(addConstantCard, "growx");
         addConstantCard.addActionListener(e -> {
             Constant constant = new Constant();
-            add(new ConstantCard(constant, constantCount.getAndIncrement()), "pushx, span, growx",
+            add(new ConstantCard(constant, constants, constantCount.getAndIncrement()), "pushx, span, growx",
                     getComponentCount() - 1);
             constants.add(constant);
             updateUI();

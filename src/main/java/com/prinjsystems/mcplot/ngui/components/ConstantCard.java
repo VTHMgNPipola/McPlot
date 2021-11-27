@@ -7,6 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -21,7 +22,7 @@ public class ConstantCard extends JPanel {
 
     private final JLabeledTextField value;
 
-    public ConstantCard(Constant constant, int index) {
+    public ConstantCard(Constant constant, List<Constant> constants, int index) {
         super(new MigLayout());
         this.constant = constant;
 
@@ -60,14 +61,14 @@ public class ConstantCard extends JPanel {
         value.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                updateConstantValue();
+                updateConstantValue(constants);
             }
         });
         value.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    updateConstantValue();
+                    updateConstantValue(constants);
                 }
             }
         });
@@ -81,8 +82,8 @@ public class ConstantCard extends JPanel {
         value.setToolTipText(tooltip);
     }
 
-    private void updateConstantValue() {
-        constant.setDefinition(value.getText());
+    private void updateConstantValue(List<Constant> constants) {
+        constant.setDefinition(value.getText(), constants);
         updateValueTooltip();
     }
 }

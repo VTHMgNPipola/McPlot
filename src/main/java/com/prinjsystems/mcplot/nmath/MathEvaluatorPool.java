@@ -3,6 +3,8 @@ package com.prinjsystems.mcplot.nmath;
 import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -35,9 +37,13 @@ public class MathEvaluatorPool {
         functionsDoneTasks.add(functionsDoneTask);
     }
 
-    public Future<Double> evaluateExpression(String expressionString) {
+    public Future<Double> evaluateConstant(String expressionString, String constantName, List<Constant> constants) {
         return executor.submit(() -> {
-            Expression expression = new ExpressionBuilder(expressionString).build();
+            Map<String, Double> constantMap = constants.stream()
+                    .filter(c -> c.getActualValue() != null && c.getName() != null && !Objects.equals(c.getName(),
+                            constantName)).collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
+            Expression expression = new ExpressionBuilder(expressionString).variables(constantMap.keySet()).build();
+            expression.setVariables(constantMap);
             if (expression.validate().isValid()) {
                 return expression.evaluate();
             }
@@ -60,12 +66,12 @@ public class MathEvaluatorPool {
                 String variableName = functionParts[0].substring(functionParts[0].indexOf('(') + 1,
                         functionParts[0].indexOf(')'));
 
-                Expression expression = new ExpressionBuilder(functionDefinition).variable(variableName)
-                        .variables(constants.stream().filter(c -> c.getActualValue() != null && c.getName() != null)
-                                .map(Constant::getName).collect(Collectors.toSet())).build();
-                expression.setVariables(constants.stream()
+                Map<String, Double> constantMap = constants.stream()
                         .filter(c -> c.getActualValue() != null && c.getName() != null)
-                        .collect(Collectors.toMap(Constant::getName, Constant::getActualValue)));
+                        .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
+                Expression expression = new ExpressionBuilder(functionDefinition).variable(variableName)
+                        .variables(constantMap.keySet()).build();
+                expression.setVariables(constantMap);
                 expression.setVariable(variableName, domainStart);
                 if (!expression.validate(true).isValid()) {
                     runningFunctions--;

@@ -2,6 +2,7 @@ package com.prinjsystems.mcplot.nmath;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -25,13 +26,14 @@ public class Constant implements Serializable {
         return definition;
     }
 
-    public void setDefinition(String definition) {
+    public void setDefinition(String definition, List<Constant> constants) {
         if (definition == null || definition.isBlank()) {
             return;
         }
 
         this.definition = definition;
-        Future<Double> calculatedValueFuture = MathEvaluatorPool.getInstance().evaluateExpression(definition);
+        Future<Double> calculatedValueFuture = MathEvaluatorPool.getInstance().evaluateConstant(definition, name,
+                constants);
         try {
             actualValue = calculatedValueFuture.get();
         } catch (InterruptedException | ExecutionException e) {
