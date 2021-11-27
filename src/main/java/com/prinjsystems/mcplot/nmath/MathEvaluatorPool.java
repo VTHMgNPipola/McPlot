@@ -104,6 +104,7 @@ public class MathEvaluatorPool {
                 return plot;
             } catch (Throwable e) {
                 runningFunctions--;
+                callback.accept(null);
                 return null;
             }
         });

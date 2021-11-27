@@ -83,6 +83,10 @@ public class Function implements Serializable {
 
     private void doDecomposition() {
         String[] parts = definition.split("=");
+        if (parts.length != 2) {
+            return;
+        }
+
         formationLaw = parts[1].trim();
 
         name = parts[0].substring(0, parts[0].indexOf('(')).trim();
