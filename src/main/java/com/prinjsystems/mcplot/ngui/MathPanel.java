@@ -14,7 +14,6 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class MathPanel extends JPanel {
     private List<FunctionCard> functionCards;
-    private List<Constant> constants;
 
     public MathPanel() {
         setLayout(new BorderLayout());
@@ -27,7 +26,7 @@ public class MathPanel extends JPanel {
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 
         functionCards = new ArrayList<>();
-        constants = new ArrayList<>();
+        List<Constant> constants = new ArrayList<>();
 
         FunctionPanel functionPanel = new FunctionPanel(functionCards, constants, plottingPanel);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.functions"), new JScrollPane(functionPanel));
@@ -39,6 +38,6 @@ public class MathPanel extends JPanel {
     }
 
     public void recalculateAllFunctions() {
-        functionCards.forEach(functionCard -> functionCard.recalculateFunction(constants));
+        functionCards.forEach(FunctionCard::recalculateFunction);
     }
 }

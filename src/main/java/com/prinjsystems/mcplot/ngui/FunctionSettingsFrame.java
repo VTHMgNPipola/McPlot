@@ -1,5 +1,6 @@
 package com.prinjsystems.mcplot.ngui;
 
+import com.prinjsystems.mcplot.ngui.components.FunctionCard;
 import com.prinjsystems.mcplot.nmath.Function;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -15,13 +16,15 @@ import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class FunctionSettingsFrame extends JFrame {
     private final Function function;
+    private final FunctionCard functionCard;
 
-    public FunctionSettingsFrame(Function function, int index) {
+    public FunctionSettingsFrame(Function function, FunctionCard functionCard, int index) {
         super(MessageFormat.format(BUNDLE.getString("functionSettings.title"), index));
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         this.function = function;
+        this.functionCard = functionCard;
     }
 
     public void init(PlottingPanel plottingPanel) {
@@ -45,6 +48,7 @@ public class FunctionSettingsFrame extends JFrame {
             public void keyReleased(KeyEvent e) {
                 String text = domainStart.getText().trim();
                 function.setDomainStart(text.equals("*") ? null : Double.parseDouble(text));
+                functionCard.recalculateFunction();
                 plottingPanel.repaint();
             }
         });
@@ -59,6 +63,7 @@ public class FunctionSettingsFrame extends JFrame {
             public void keyReleased(KeyEvent e) {
                 String text = domainEnd.getText().trim();
                 function.setDomainEnd(text.equals("*") ? null : Double.parseDouble(text));
+                functionCard.recalculateFunction();
                 plottingPanel.repaint();
             }
         });

@@ -27,13 +27,15 @@ public class FunctionCard extends JPanel {
     private static final Random RANDOM = new Random();
 
     private final Function function;
+    private final List<Constant> constants;
     private final PlottingPanel plottingPanel;
 
     public FunctionCard(Function function, List<Constant> constants, PlottingPanel plottingPanel,
                         int index) {
-        this.plottingPanel = plottingPanel;
         setLayout(new MigLayout());
         this.function = function;
+        this.constants = constants;
+        this.plottingPanel = plottingPanel;
 
         setBorder(BorderFactory.createTitledBorder(
                 MessageFormat.format(BUNDLE.getString("functionCard.functionId"), index)));
@@ -55,7 +57,7 @@ public class FunctionCard extends JPanel {
         add(otherSettings, "growy");
         otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettingsTooltip"));
         otherSettings.addActionListener(e -> {
-            FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(function, index);
+            FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(function, this, index);
             functionSettingsFrame.init(plottingPanel);
             functionSettingsFrame.setVisible(true);
         });
@@ -73,7 +75,7 @@ public class FunctionCard extends JPanel {
             public void focusLost(FocusEvent e) {
                 if (!Objects.equals(function.getDefinition(), functionField.getText())) {
                     function.setDefinition(functionField.getText());
-                    recalculateFunction(constants);
+                    recalculateFunction();
                     plottingPanel.repaint();
                 }
             }
@@ -84,7 +86,7 @@ public class FunctionCard extends JPanel {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER
                         && !Objects.equals(function.getDefinition(), functionField.getText())) {
                     function.setDefinition(functionField.getText());
-                    recalculateFunction(constants);
+                    recalculateFunction();
                 }
             }
         });
@@ -94,7 +96,7 @@ public class FunctionCard extends JPanel {
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
     }
 
-    public void recalculateFunction(List<Constant> constants) {
+    public void recalculateFunction() {
         double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
         double domainStart = function.getDomainStart() != null ? function.getDomainStart() :
                 plottingPanel.getCameraX() / zoomX;
