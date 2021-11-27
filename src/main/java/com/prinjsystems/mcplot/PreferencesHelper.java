@@ -9,6 +9,7 @@ public class PreferencesHelper {
     public static final Preferences PREFERENCES = Preferences.userRoot().node(PREFERENCES_PATH);
 
     public static final String KEY_LANGUAGE = "language";
+    public static final String KEY_OPEN_MAXIMIZED = "openMaximized";
 
     static {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

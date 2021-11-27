@@ -12,6 +12,8 @@ import javax.swing.JSplitPane;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 import static com.prinjsystems.mcplot.Main.VERSION;
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_OPEN_MAXIMIZED;
+import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
 
 public class Workspace extends JFrame {
     private WorkspaceController workspaceController;
@@ -33,6 +35,10 @@ public class Workspace extends JFrame {
 
         splitPane.setDividerLocation(0.3);
         plottingPanel.init();
+
+        if (PREFERENCES.getBoolean(KEY_OPEN_MAXIMIZED, false)) {
+            setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
+        }
     }
 
     private void initMenu() {

@@ -26,8 +26,6 @@ public class Main {
         FlatLightLaf.setup();
         JFrame.setDefaultLookAndFeelDecorated(true);
 
-        System.out.println(Locale.forLanguageTag(PREFERENCES.get(KEY_LANGUAGE, Language.LANGUAGES[0].getTag())).getLanguage());
-
         SwingUtilities.invokeLater(() -> {
             Workspace workspace = new Workspace();
             workspace.init();
