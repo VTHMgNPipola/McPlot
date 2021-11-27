@@ -11,6 +11,10 @@ public class Function implements Serializable {
     private String definition;
     private Color traceColor;
 
+    private Double domainStart;
+    private Double domainEnd;
+    private boolean filled;
+
     public String getDefinition() {
         return definition;
     }
@@ -25,5 +29,29 @@ public class Function implements Serializable {
 
     public void setTraceColor(Color traceColor) {
         this.traceColor = traceColor;
+    }
+
+    public Double getDomainStart() {
+        return domainStart;
+    }
+
+    public void setDomainStart(Double domainStart) {
+        this.domainStart = domainStart;
+    }
+
+    public Double getDomainEnd() {
+        return domainEnd;
+    }
+
+    public void setDomainEnd(Double domainEnd) {
+        this.domainEnd = domainEnd;
+    }
+
+    public boolean isFilled() {
+        return filled;
+    }
+
+    public void setFilled(boolean filled) {
+        this.filled = filled;
     }
 }

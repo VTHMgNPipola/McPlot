@@ -1,5 +1,6 @@
 package com.prinjsystems.mcplot.ngui.components;
 
+import com.prinjsystems.mcplot.ngui.FunctionSettingsFrame;
 import com.prinjsystems.mcplot.ngui.PlottingPanel;
 import com.prinjsystems.mcplot.nmath.Constant;
 import com.prinjsystems.mcplot.nmath.Function;
@@ -38,7 +39,7 @@ public class FunctionCard extends JPanel {
                 MessageFormat.format(BUNDLE.getString("functionCard.functionId"), index)));
 
         ColorChooserButton colorChooserButton = new ColorChooserButton();
-        add(colorChooserButton, "growy, split 2");
+        add(colorChooserButton, "growy, split 3");
         colorChooserButton.setToolTipText(BUNDLE.getString("functionCard.selectColor"));
         Color startingColor = new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
                 RANDOM.nextInt(255));
@@ -48,6 +49,15 @@ public class FunctionCard extends JPanel {
         colorChooserButton.setColorChooserListener(color -> {
             function.setTraceColor(color);
             plottingPanel.repaint();
+        });
+
+        JButton otherSettings = new JButton("...");
+        add(otherSettings, "growy");
+        otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettingsTooltip"));
+        otherSettings.addActionListener(e -> {
+            FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(function, index);
+            functionSettingsFrame.init();
+            functionSettingsFrame.setVisible(true);
         });
 
         JCheckBox active = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"), true);
@@ -86,8 +96,10 @@ public class FunctionCard extends JPanel {
 
     public void recalculateFunction(List<Constant> constants) {
         double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
-        double domainStart = plottingPanel.getCameraX() / zoomX;
-        double domainEnd = (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
+        double domainStart = function.getDomainStart() != null ? function.getDomainStart() :
+                plottingPanel.getCameraX() / zoomX;
+        double domainEnd = function.getDomainEnd() != null ? function.getDomainEnd() :
+                (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
         double step =
                 (domainEnd - domainStart) / (plottingPanel.getWidth() / zoomX * plottingPanel.getSamplesPerCell());
         MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart - step,
