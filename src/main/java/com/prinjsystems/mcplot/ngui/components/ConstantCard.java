@@ -1,5 +1,6 @@
 package com.prinjsystems.mcplot.ngui.components;
 
+import com.prinjsystems.mcplot.ngui.ConstantsPanel;
 import com.prinjsystems.mcplot.nmath.Constant;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -22,12 +23,11 @@ public class ConstantCard extends JPanel {
 
     private final JLabeledTextField value;
 
-    public ConstantCard(Constant constant, List<Constant> constants, int index) {
+    public ConstantCard(Constant constant, List<Constant> constants, ConstantsPanel parent, int index) {
         super(new MigLayout());
         this.constant = constant;
 
-        setBorder(BorderFactory.createTitledBorder(
-                MessageFormat.format(BUNDLE.getString("constantCard.constantId"), index)));
+        setIndex(index);
 
         JLabeledTextField name = new JLabeledTextField();
         add(name, "pushx, growx");
@@ -52,6 +52,11 @@ public class ConstantCard extends JPanel {
         JButton remove = new JButton("X");
         add(remove, "wrap");
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
+        remove.addActionListener(e -> {
+            constants.remove(constant);
+
+            parent.removeConstantCard(this);
+        });
 
         value = new JLabeledTextField();
         add(value, "pushx, span, growx");
@@ -85,5 +90,10 @@ public class ConstantCard extends JPanel {
     private void updateConstantValue(List<Constant> constants) {
         constant.setDefinition(value.getText(), constants);
         updateValueTooltip();
+    }
+
+    public void setIndex(int index) {
+        setBorder(BorderFactory.createTitledBorder(
+                MessageFormat.format(BUNDLE.getString("constantCard.constantId"), index)));
     }
 }

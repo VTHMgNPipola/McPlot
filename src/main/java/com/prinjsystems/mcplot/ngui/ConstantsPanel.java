@@ -2,6 +2,7 @@ package com.prinjsystems.mcplot.ngui;
 
 import com.prinjsystems.mcplot.ngui.components.ConstantCard;
 import com.prinjsystems.mcplot.nmath.Constant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JButton;
@@ -11,27 +12,43 @@ import net.miginfocom.swing.MigLayout;
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class ConstantsPanel extends JPanel {
+    private final List<ConstantCard> constantCards;
     private final List<Constant> constants;
 
-    private final AtomicInteger constantCount;
+    private AtomicInteger index;
 
     public ConstantsPanel(List<Constant> constants) {
         super(new MigLayout());
+        this.constantCards = new ArrayList<>();
         this.constants = constants;
-        constantCount = new AtomicInteger(1);
+        index = new AtomicInteger(1);
 
         Constant firstConstant = new Constant();
-        add(new ConstantCard(firstConstant, constants, constantCount.getAndIncrement()), "pushx, span, growx");
+        ConstantCard firstConstantCard = new ConstantCard(firstConstant, constants, this,
+                index.getAndIncrement());
+        add(firstConstantCard, "pushx, span, growx");
         constants.add(firstConstant);
+        constantCards.add(firstConstantCard);
 
         JButton addConstantCard = new JButton(BUNDLE.getString("workspace.actions.createConstant"));
         add(addConstantCard, "growx");
         addConstantCard.addActionListener(e -> {
             Constant constant = new Constant();
-            add(new ConstantCard(constant, constants, constantCount.getAndIncrement()), "pushx, span, growx",
-                    getComponentCount() - 1);
+            ConstantCard constantCard = new ConstantCard(constant, constants, this, index.getAndIncrement());
+            add(constantCard, "pushx, span, growx", getComponentCount() - 1);
             constants.add(constant);
+            constantCards.add(constantCard);
             updateUI();
         });
+    }
+
+    public void removeConstantCard(ConstantCard constantCard) {
+        remove(constantCard);
+        constantCards.remove(constantCard);
+
+        index = new AtomicInteger(1);
+        constantCards.forEach(fc -> fc.setIndex(index.getAndIncrement()));
+
+        updateUI();
     }
 }
