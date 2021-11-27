@@ -105,7 +105,7 @@ public class FunctionCard extends JPanel {
         double step =
                 (domainEnd - domainStart) / (plottingPanel.getWidth() / zoomX * plottingPanel.getSamplesPerCell());
         if (function.getDomainStart() == null) {
-            domainStart += step;
+            domainStart -= step;
         }
         if (function.getDomainEnd() == null) {
             domainEnd += step;
