@@ -1,12 +1,14 @@
 package com.prinjsystems.mcplot.ngui;
 
 import com.prinjsystems.mcplot.nmath.Function;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -31,12 +33,14 @@ public class PlottingPanel extends JPanel {
     private int zoomPos = 0;
     private int previousWidth, previousHeight;
     private int samplesPerCell = 25;
+    private int traceWidth;
 
     private Font font;
     private Color backgroundColor = Color.white;
     private Color minorGridColor = new Color(232, 232, 232);
     private Color majorGridColor = Color.lightGray;
     private Color globalAxisColor = Color.black;
+    private Stroke traceStroke;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
     private final Map<Function, Path2D.Double> functions;
@@ -45,7 +49,10 @@ public class PlottingPanel extends JPanel {
     public PlottingPanel() {
         setDoubleBuffered(true);
         functions = new HashMap<>();
+
         font = new Font("Monospaced", Font.PLAIN, 12);
+        traceWidth = 3;
+        traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
         final boolean[] dragging = new boolean[1];
         final int[] startPos = new int[2];
@@ -237,6 +244,7 @@ public class PlottingPanel extends JPanel {
         g.drawLine(0, cameraY, 0, cameraY + getHeight());
 
         // Functions
+        g.setStroke(traceStroke);
         AffineTransform zoomTx = new AffineTransform();
         zoomTx.setToScale(scaleX * pixelsPerStep * zoom, scaleY * pixelsPerStep * zoom);
         for (Map.Entry<Function, Path2D.Double> function : functions.entrySet()) {
@@ -335,6 +343,16 @@ public class PlottingPanel extends JPanel {
 
     public void setGlobalAxisColor(Color globalAxisColor) {
         this.globalAxisColor = globalAxisColor;
+        repaint();
+    }
+
+    public int getTraceWidth() {
+        return traceWidth;
+    }
+
+    public void setTraceWidth(int traceWidth) {
+        this.traceWidth = traceWidth;
+        traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
         repaint();
     }
 

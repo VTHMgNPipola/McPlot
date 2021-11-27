@@ -59,6 +59,12 @@ public class SettingsFrame extends JFrame {
         plottingPanelSettings.add(scaleY, "growx, wrap");
         scaleY.addChangeListener(e -> plottingPanel.setScaleY((double) scaleY.getValue()));
 
+        JLabel traceWidthLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.traceWidth"));
+        plottingPanelSettings.add(traceWidthLabel);
+        JSpinner traceWidth = new JSpinner(new SpinnerNumberModel(plottingPanel.getTraceWidth(), 1, 10, 1));
+        plottingPanelSettings.add(traceWidth, "growx, wrap");
+        traceWidth.addChangeListener(e -> plottingPanel.setTraceWidth((int) traceWidth.getValue()));
+
         JLabel backgroundColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.backgroundColor"));
         plottingPanelSettings.add(backgroundColorLabel);
         ColorChooserButton backgroundColor = new ColorChooserButton();
