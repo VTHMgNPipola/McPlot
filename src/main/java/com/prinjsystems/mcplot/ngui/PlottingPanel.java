@@ -30,7 +30,7 @@ public class PlottingPanel extends JPanel {
     private double zoom = 1;
     private int zoomPos = 0;
     private int previousWidth, previousHeight;
-    private int samplesPerGrid = 25;
+    private int samplesPerCell = 25;
 
     private Font font;
     private Color backgroundColor = Color.white;
@@ -279,12 +279,12 @@ public class PlottingPanel extends JPanel {
         return zoom;
     }
 
-    public int getSamplesPerGrid() {
-        return samplesPerGrid;
+    public int getSamplesPerCell() {
+        return samplesPerCell;
     }
 
-    public void setSamplesPerGrid(int samplesPerGrid) {
-        this.samplesPerGrid = samplesPerGrid;
+    public void setSamplesPerCell(int samplesPerCell) {
+        this.samplesPerCell = samplesPerCell;
     }
 
     @Override
