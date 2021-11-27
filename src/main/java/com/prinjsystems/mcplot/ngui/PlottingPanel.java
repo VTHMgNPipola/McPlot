@@ -246,7 +246,7 @@ public class PlottingPanel extends JPanel {
         // Functions
         g.setStroke(traceStroke);
         AffineTransform zoomTx = new AffineTransform();
-        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, scaleY * pixelsPerStep * zoom);
+        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
         for (Map.Entry<Function, Path2D.Double> function : functions.entrySet()) {
             g.setColor(function.getKey().getTraceColor());
             g.draw(zoomTx.createTransformedShape(function.getValue()));
