@@ -1,7 +1,6 @@
 package com.prinjsystems.mcplot;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.prinjsystems.mcplot.gui.WorkspaceSettings;
 import com.prinjsystems.mcplot.ngui.Workspace;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -10,9 +9,12 @@ import java.util.concurrent.Executors;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import static com.prinjsystems.mcplot.PreferencesHelper.KEY_LANGUAGE;
+import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
+
 public class Main {
     public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("mcplot",
-            Locale.forLanguageTag(WorkspaceSettings.getLanguage()));
+            Locale.forLanguageTag(PREFERENCES.get(KEY_LANGUAGE, Language.LANGUAGES[0].getTag())));
 
     public static final String PREFERENCES_PATH = "com.prinjsystems.mcplot";
 
@@ -23,6 +25,8 @@ public class Main {
     public static void main(String[] args) {
         FlatLightLaf.setup();
         JFrame.setDefaultLookAndFeelDecorated(true);
+
+        System.out.println(Locale.forLanguageTag(PREFERENCES.get(KEY_LANGUAGE, Language.LANGUAGES[0].getTag())).getLanguage());
 
         SwingUtilities.invokeLater(() -> {
             Workspace workspace = new Workspace();
