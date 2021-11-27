@@ -82,9 +82,7 @@ public class ConstantCard extends JPanel {
     }
 
     private void updateConstantValue() {
-        boolean success = constant.setDefinition(value.getText());
-        if (success) {
-            updateValueTooltip();
-        }
+        constant.setDefinition(value.getText());
+        updateValueTooltip();
     }
 }

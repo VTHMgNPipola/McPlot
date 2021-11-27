@@ -25,23 +25,19 @@ public class Constant implements Serializable {
         return definition;
     }
 
-    public boolean setDefinition(String definition) {
+    public void setDefinition(String definition) {
         if (definition == null || definition.isBlank()) {
-            return false;
+            return;
         }
 
+        this.definition = definition;
         Future<Double> calculatedValueFuture = MathEvaluatorPool.getInstance().evaluateExpression(definition);
         try {
-            Double calculatedValue = calculatedValueFuture.get();
-            if (calculatedValue != null) {
-                actualValue = calculatedValue;
-                this.definition = definition;
-            }
-            return true;
+            actualValue = calculatedValueFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            actualValue = null;
         }
-        return false;
     }
 
     public Double getActualValue() {
