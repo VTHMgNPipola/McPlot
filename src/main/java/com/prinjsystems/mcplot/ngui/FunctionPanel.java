@@ -27,7 +27,7 @@ public class FunctionPanel extends JPanel {
         functionCards.add(firstFunctionCard);
 
         JButton addFunctionCard = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
-        add(addFunctionCard, "growx");
+        add(addFunctionCard, "pushx, span, growx");
         addFunctionCard.addActionListener(e -> {
             FunctionCard functionCard = new FunctionCard(new Function(), constants, plottingPanel, this,
                     index.getAndIncrement());

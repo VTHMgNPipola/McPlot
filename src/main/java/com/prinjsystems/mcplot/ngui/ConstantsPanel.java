@@ -31,7 +31,7 @@ public class ConstantsPanel extends JPanel {
         constantCards.add(firstConstantCard);
 
         JButton addConstantCard = new JButton(BUNDLE.getString("workspace.actions.createConstant"));
-        add(addConstantCard, "growx");
+        add(addConstantCard, "pushx, span, growx");
         addConstantCard.addActionListener(e -> {
             Constant constant = new Constant();
             ConstantCard constantCard = new ConstantCard(constant, constants, this, index.getAndIncrement());
