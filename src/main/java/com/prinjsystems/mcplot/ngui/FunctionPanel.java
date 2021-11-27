@@ -12,27 +12,25 @@ import net.miginfocom.swing.MigLayout;
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class FunctionPanel extends JPanel {
-    private final List<Function> functions;
 
     private final AtomicInteger functionCount;
 
-    public FunctionPanel(List<Function> functions, List<Constant> constants, PlottingPanel plottingPanel) {
+    public FunctionPanel(List<FunctionCard> functionCards, List<Constant> constants, PlottingPanel plottingPanel) {
         setLayout(new MigLayout());
-        this.functions = functions;
         functionCount = new AtomicInteger(1);
 
-        Function firstFunction = new Function();
-        add(new FunctionCard(firstFunction, constants, plottingPanel, functionCount.getAndIncrement()),
-                "pushx, span, growx");
-        functions.add(firstFunction);
+        FunctionCard firstFunctionCard = new FunctionCard(new Function(), constants, plottingPanel,
+                functionCount.getAndIncrement());
+        add(firstFunctionCard, "pushx, span, growx");
+        functionCards.add(firstFunctionCard);
 
         JButton addFunctionCard = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
         add(addFunctionCard, "growx");
         addFunctionCard.addActionListener(e -> {
-            Function function = new Function();
-            add(new FunctionCard(function, constants, plottingPanel, functionCount.getAndIncrement()),
-                    "pushx, span, growx", getComponentCount() - 1);
-            functions.add(function);
+            FunctionCard functionCard = new FunctionCard(new Function(), constants, plottingPanel,
+                    functionCount.getAndIncrement());
+            add(functionCard, "pushx, span, growx", getComponentCount() - 1);
+            functionCards.add(functionCard);
             updateUI();
         });
     }

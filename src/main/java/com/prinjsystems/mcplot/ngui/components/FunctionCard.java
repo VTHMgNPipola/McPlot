@@ -64,6 +64,7 @@ public class FunctionCard extends JPanel {
                 if (!Objects.equals(function.getDefinition(), functionField.getText())) {
                     function.setDefinition(functionField.getText());
                     recalculateFunction(constants);
+                    plottingPanel.repaint();
                 }
             }
         });
@@ -74,6 +75,7 @@ public class FunctionCard extends JPanel {
                         && !Objects.equals(function.getDefinition(), functionField.getText())) {
                     function.setDefinition(functionField.getText());
                     recalculateFunction(constants);
+                    plottingPanel.repaint();
                 }
             }
         });
@@ -83,15 +85,13 @@ public class FunctionCard extends JPanel {
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
     }
 
-    private void recalculateFunction(List<Constant> constants) {
+    public void recalculateFunction(List<Constant> constants) {
         double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
         double domainStart = plottingPanel.getCameraX() / zoomX;
         double domainEnd = (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
-        double step = plottingPanel.getWidth() / zoomX / plottingPanel.getSamplesPerGrid();
+        double step =
+                (domainEnd - domainStart) / (plottingPanel.getWidth() / zoomX * plottingPanel.getSamplesPerGrid());
         MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart, domainEnd, step,
-                constants, path -> {
-                    plottingPanel.getFunctions().put(function, path);
-                    plottingPanel.repaint();
-                });
+                constants, path -> plottingPanel.getFunctions().put(function, path));
     }
 }

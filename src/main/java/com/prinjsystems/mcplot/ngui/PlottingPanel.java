@@ -40,6 +40,7 @@ public class PlottingPanel extends JPanel {
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
 
     private final Map<Function, Path2D.Double> functions;
+    private MathPanel mathPanel;
 
     public PlottingPanel() {
         setDoubleBuffered(true);
@@ -90,6 +91,7 @@ public class PlottingPanel extends JPanel {
                     startPos[1] = currentMouseY;
                 }
 
+                mathPanel.recalculateAllFunctions();
                 repaint();
             }
         });
@@ -145,6 +147,7 @@ public class PlottingPanel extends JPanel {
                 zoom = (double) 1 / (zoomArray[arrayPos] * Math.pow(10, timesCircled));
             }
 
+            mathPanel.recalculateAllFunctions();
             repaint();
         });
 
@@ -157,6 +160,7 @@ public class PlottingPanel extends JPanel {
                 previousWidth = e.getComponent().getWidth();
                 previousHeight = e.getComponent().getHeight();
 
+                mathPanel.recalculateAllFunctions();
                 repaint();
             }
         });
@@ -332,5 +336,9 @@ public class PlottingPanel extends JPanel {
 
     public Map<Function, Path2D.Double> getFunctions() {
         return functions;
+    }
+
+    public void setMathPanel(MathPanel mathPanel) {
+        this.mathPanel = mathPanel;
     }
 }
