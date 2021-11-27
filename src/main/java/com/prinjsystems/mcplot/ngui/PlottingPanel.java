@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JPanel;
 
+import static com.prinjsystems.mcplot.Main.EXECUTOR_THREAD;
+
 public class PlottingPanel extends JPanel {
     private static final int INITIAL_PIXELS_PER_STEP = 75;
 
@@ -119,7 +121,7 @@ public class PlottingPanel extends JPanel {
          * If it is below the minimum address, it does the same thing but considering the zoom position as a positive
          * value and inverting the final zoom result (by doing 1 over whatever zoom value it got).
          */
-        addMouseWheelListener(e -> {
+        addMouseWheelListener(e -> EXECUTOR_THREAD.submit(() -> {
             // How many pixels are added or subtracted from pixelsPerStep with each wheel rotation
             final int ZOOM_PER_CLICK = 10;
 
@@ -156,19 +158,21 @@ public class PlottingPanel extends JPanel {
 
             mathPanel.recalculateAllFunctions();
             repaint();
-        });
+        }));
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                cameraX -= (e.getComponent().getWidth() - previousWidth) / 2;
-                cameraY -= (e.getComponent().getHeight() - previousHeight) / 2;
+                EXECUTOR_THREAD.submit(() -> {
+                    cameraX -= (e.getComponent().getWidth() - previousWidth) / 2;
+                    cameraY -= (e.getComponent().getHeight() - previousHeight) / 2;
 
-                previousWidth = e.getComponent().getWidth();
-                previousHeight = e.getComponent().getHeight();
+                    previousWidth = e.getComponent().getWidth();
+                    previousHeight = e.getComponent().getHeight();
 
-                mathPanel.recalculateAllFunctions();
-                repaint();
+                    mathPanel.recalculateAllFunctions();
+                    repaint();
+                });
             }
         });
     }
