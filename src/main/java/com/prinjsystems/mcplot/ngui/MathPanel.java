@@ -22,7 +22,7 @@ public class MathPanel extends JPanel {
 
     public void init(PlottingPanel plottingPanel) {
         plottingPanel.setMathPanel(this);
-        MathEvaluatorPool.getInstance().setFunctionsDoneTask(plottingPanel::repaint);
+        MathEvaluatorPool.getInstance().addFunctionsDoneTask(plottingPanel::repaint);
 
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 

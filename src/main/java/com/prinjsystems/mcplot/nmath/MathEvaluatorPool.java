@@ -1,6 +1,7 @@
 package com.prinjsystems.mcplot.nmath;
 
 import java.awt.geom.Path2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,15 +14,15 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 
 public class MathEvaluatorPool {
     private static final MathEvaluatorPool INSTANCE = new MathEvaluatorPool();
-
-    private final Pattern functionPattern;
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\([a-zA-Z]+\\)" +
+            "\s*=[^=]*");
 
     private final ExecutorService executor;
+    private final List<Runnable> functionsDoneTasks;
     private int runningFunctions;
-    private Runnable functionsDoneTask;
 
     private MathEvaluatorPool() {
-        functionPattern = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\([a-zA-Z]+\\)\s*=[^=]*");
+        functionsDoneTasks = new ArrayList<>();
         executor = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
         runningFunctions = 0;
     }
@@ -30,8 +31,8 @@ public class MathEvaluatorPool {
         return INSTANCE;
     }
 
-    public void setFunctionsDoneTask(Runnable functionsDoneTask) {
-        this.functionsDoneTask = functionsDoneTask;
+    public void addFunctionsDoneTask(Runnable functionsDoneTask) {
+        functionsDoneTasks.add(functionsDoneTask);
     }
 
     public Future<Double> evaluateExpression(String expressionString) {
@@ -49,7 +50,7 @@ public class MathEvaluatorPool {
         runningFunctions++;
         return executor.submit(() -> {
             try {
-                if (function == null || !functionPattern.matcher(function).matches() || domainEnd < domainStart) {
+                if (function == null || !FUNCTION_PATTERN.matcher(function).matches() || domainEnd < domainStart) {
                     runningFunctions--;
                     return null;
                 }
@@ -82,7 +83,7 @@ public class MathEvaluatorPool {
                 runningFunctions--;
                 callback.accept(path);
                 if (runningFunctions == 0) {
-                    functionsDoneTask.run();
+                    functionsDoneTasks.forEach(Runnable::run);
                 }
 
                 return path;
