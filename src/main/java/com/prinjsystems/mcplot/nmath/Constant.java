@@ -35,7 +35,6 @@ public class Constant implements Serializable {
         try {
             actualValue = calculatedValueFuture.get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
             actualValue = null;
         }
     }
