@@ -1,5 +1,6 @@
 package com.prinjsystems.mcplot.ngui.components;
 
+import com.prinjsystems.mcplot.ngui.FunctionPanel;
 import com.prinjsystems.mcplot.ngui.FunctionSettingsFrame;
 import com.prinjsystems.mcplot.ngui.PlottingPanel;
 import com.prinjsystems.mcplot.nmath.Constant;
@@ -33,15 +34,14 @@ public class FunctionCard extends JPanel {
     private final List<Constant> constants;
     private final PlottingPanel plottingPanel;
 
-    public FunctionCard(Function function, List<Constant> constants, PlottingPanel plottingPanel,
+    public FunctionCard(Function function, List<Constant> constants, PlottingPanel plottingPanel, FunctionPanel parent,
                         int index) {
         setLayout(new MigLayout());
         this.function = function;
         this.constants = constants;
         this.plottingPanel = plottingPanel;
 
-        setBorder(BorderFactory.createTitledBorder(
-                MessageFormat.format(BUNDLE.getString("functionCard.functionId"), index)));
+        setIndex(index);
 
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy, split 3");
@@ -105,6 +105,12 @@ public class FunctionCard extends JPanel {
         JButton remove = new JButton("X");
         add(remove);
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
+        remove.addActionListener(e -> {
+            plottingPanel.getFunctions().remove(function);
+            plottingPanel.repaint();
+
+            parent.removeFunctionCard(this);
+        });
     }
 
     public void recalculateFunction() {
@@ -126,5 +132,10 @@ public class FunctionCard extends JPanel {
                     plot.setVisible(visible.isSelected());
                     plottingPanel.getFunctions().put(function, plot);
                 });
+    }
+
+    public void setIndex(int index) {
+        setBorder(BorderFactory.createTitledBorder(
+                MessageFormat.format(BUNDLE.getString("functionCard.functionId"), index)));
     }
 }

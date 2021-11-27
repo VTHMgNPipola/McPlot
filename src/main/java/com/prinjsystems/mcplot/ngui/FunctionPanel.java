@@ -12,26 +12,38 @@ import net.miginfocom.swing.MigLayout;
 import static com.prinjsystems.mcplot.Main.BUNDLE;
 
 public class FunctionPanel extends JPanel {
+    private final List<FunctionCard> functionCards;
 
-    private final AtomicInteger functionCount;
+    private AtomicInteger index;
 
     public FunctionPanel(List<FunctionCard> functionCards, List<Constant> constants, PlottingPanel plottingPanel) {
         setLayout(new MigLayout());
-        functionCount = new AtomicInteger(1);
+        this.functionCards = functionCards;
+        index = new AtomicInteger(1);
 
-        FunctionCard firstFunctionCard = new FunctionCard(new Function(), constants, plottingPanel,
-                functionCount.getAndIncrement());
+        FunctionCard firstFunctionCard = new FunctionCard(new Function(), constants, plottingPanel, this,
+                index.getAndIncrement());
         add(firstFunctionCard, "pushx, span, growx");
         functionCards.add(firstFunctionCard);
 
         JButton addFunctionCard = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
         add(addFunctionCard, "growx");
         addFunctionCard.addActionListener(e -> {
-            FunctionCard functionCard = new FunctionCard(new Function(), constants, plottingPanel,
-                    functionCount.getAndIncrement());
+            FunctionCard functionCard = new FunctionCard(new Function(), constants, plottingPanel, this,
+                    index.getAndIncrement());
             add(functionCard, "pushx, span, growx", getComponentCount() - 1);
             functionCards.add(functionCard);
             updateUI();
         });
+    }
+
+    public void removeFunctionCard(FunctionCard functionCard) {
+        remove(functionCard);
+        functionCards.remove(functionCard);
+
+        index = new AtomicInteger(1);
+        functionCards.forEach(fc -> fc.setIndex(index.getAndIncrement()));
+
+        updateUI();
     }
 }
