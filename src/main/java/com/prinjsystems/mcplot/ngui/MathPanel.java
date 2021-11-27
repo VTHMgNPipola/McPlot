@@ -60,6 +60,7 @@ public class MathPanel extends JPanel {
 
     public void open(PlottingPanel plottingPanel) {
         MathSessionHelper.openSession((f, c) -> {
+            plottingPanel.getFunctions().clear();
             init(plottingPanel, f, c);
             updateUI();
             recalculateAllFunctions();
