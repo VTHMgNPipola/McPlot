@@ -38,6 +38,13 @@ public class SettingsFrame extends JFrame {
         tabbedPane.addTab(BUNDLE.getString("settings.plottingPanel.title"),
                 new JScrollPane(plottingPanelSettings));
 
+        JLabel samplesPerCellLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.samplesPerCell"));
+        plottingPanelSettings.add(samplesPerCellLabel);
+        JSpinner samplesPerCell = new JSpinner(new SpinnerNumberModel(plottingPanel.getSamplesPerCell(), 1,
+                999, 1));
+        plottingPanelSettings.add(samplesPerCell, "growx, wrap");
+        samplesPerCell.addChangeListener(e -> plottingPanel.setSamplesPerCell((int) samplesPerCell.getValue()));
+
         JLabel scaleXLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleX"));
         plottingPanelSettings.add(scaleXLabel);
         JSpinner scaleX = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleX(), 0.0001, 999,

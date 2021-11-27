@@ -259,6 +259,7 @@ public class PlottingPanel extends JPanel {
 
     public void setScaleX(double scaleX) {
         this.scaleX = scaleX;
+        mathPanel.recalculateAllFunctions();
         repaint();
     }
 
@@ -268,6 +269,7 @@ public class PlottingPanel extends JPanel {
 
     public void setScaleY(double scaleY) {
         this.scaleY = scaleY;
+        mathPanel.recalculateAllFunctions();
         repaint();
     }
 
@@ -285,6 +287,8 @@ public class PlottingPanel extends JPanel {
 
     public void setSamplesPerCell(int samplesPerCell) {
         this.samplesPerCell = samplesPerCell;
+        mathPanel.recalculateAllFunctions();
+        repaint();
     }
 
     @Override
