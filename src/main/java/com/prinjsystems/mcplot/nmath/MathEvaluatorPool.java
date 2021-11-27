@@ -17,14 +17,21 @@ public class MathEvaluatorPool {
     private final Pattern functionPattern;
 
     private final ExecutorService executor;
+    private int runningFunctions;
+    private Runnable functionsDoneTask;
 
     private MathEvaluatorPool() {
         functionPattern = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\([a-zA-Z]+\\)\s*=[^=]*");
         executor = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
+        runningFunctions = 0;
     }
 
     public static MathEvaluatorPool getInstance() {
         return INSTANCE;
+    }
+
+    public void setFunctionsDoneTask(Runnable functionsDoneTask) {
+        this.functionsDoneTask = functionsDoneTask;
     }
 
     public Future<Double> evaluateExpression(String expressionString) {
@@ -39,36 +46,50 @@ public class MathEvaluatorPool {
 
     public Future<Path2D.Double> evaluateFunction(String function, double domainStart, double domainEnd, double step,
                                                   List<Constant> constants, Consumer<Path2D.Double> callback) {
+        runningFunctions++;
         return executor.submit(() -> {
-            if (function == null || !functionPattern.matcher(function).matches() || domainEnd < domainStart) {
+            try {
+                if (function == null || !functionPattern.matcher(function).matches() || domainEnd < domainStart) {
+                    runningFunctions--;
+                    return null;
+                }
+
+                String[] functionParts = function.split("=");
+                String functionDefinition = functionParts[1];
+                String variableName = functionParts[0].substring(functionParts[0].indexOf('(') + 1,
+                        functionParts[0].indexOf(')'));
+
+                Expression expression = new ExpressionBuilder(functionDefinition).variable(variableName)
+                        .variables(constants.stream().filter(c -> c.getActualValue() != null && c.getName() != null)
+                                .map(Constant::getName).collect(Collectors.toSet())).build();
+                expression.setVariables(constants.stream()
+                        .filter(c -> c.getActualValue() != null && c.getName() != null)
+                        .collect(Collectors.toMap(Constant::getName, Constant::getActualValue)));
+                expression.setVariable(variableName, domainStart);
+                if (!expression.validate(true).isValid()) {
+                    runningFunctions--;
+                    return null;
+                }
+
+                Path2D.Double path = new Path2D.Double();
+                path.moveTo(domainStart, expression.evaluate());
+
+                for (double i = domainStart + step; i <= domainEnd; i += step) {
+                    expression.setVariable(variableName, i);
+                    path.lineTo(i, expression.evaluate());
+                }
+
+                runningFunctions--;
+                callback.accept(path);
+                if (runningFunctions == 0) {
+                    functionsDoneTask.run();
+                }
+
+                return path;
+            } catch (Throwable e) {
+                runningFunctions--;
                 return null;
             }
-
-            String[] functionParts = function.split("=");
-            String functionDefinition = functionParts[1];
-            String variableName = functionParts[0].substring(functionParts[0].indexOf('(') + 1,
-                    functionParts[0].indexOf(')'));
-
-            Expression expression = new ExpressionBuilder(functionDefinition).variable(variableName)
-                    .variables(constants.stream().filter(c -> c.getActualValue() != null && c.getName() != null)
-                            .map(Constant::getName).collect(Collectors.toSet())).build();
-            expression.setVariables(constants.stream().filter(c -> c.getActualValue() != null && c.getName() != null)
-                    .collect(Collectors.toMap(Constant::getName, Constant::getActualValue)));
-            expression.setVariable(variableName, domainStart);
-            if (!expression.validate(true).isValid()) {
-                return null;
-            }
-
-            Path2D.Double path = new Path2D.Double();
-            path.moveTo(domainStart, expression.evaluate());
-
-            for (double i = domainStart + step; i <= domainEnd; i += step) {
-                expression.setVariable(variableName, i);
-                path.lineTo(i, expression.evaluate());
-            }
-
-            callback.accept(path);
-            return path;
         });
     }
 }

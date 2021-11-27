@@ -96,10 +96,10 @@ public class PlottingPanel extends JPanel {
 
                     startPos[0] = currentMouseX;
                     startPos[1] = currentMouseY;
-                }
 
-                mathPanel.recalculateAllFunctions();
-                repaint();
+                    mathPanel.recalculateAllFunctions();
+                    repaint();
+                }
             }
         });
 

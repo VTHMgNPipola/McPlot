@@ -75,7 +75,6 @@ public class FunctionCard extends JPanel {
                         && !Objects.equals(function.getDefinition(), functionField.getText())) {
                     function.setDefinition(functionField.getText());
                     recalculateFunction(constants);
-                    plottingPanel.repaint();
                 }
             }
         });
