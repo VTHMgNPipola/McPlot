@@ -102,7 +102,13 @@ public class FunctionCard extends JPanel {
                 (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
         double step =
                 (domainEnd - domainStart) / (plottingPanel.getWidth() / zoomX * plottingPanel.getSamplesPerCell());
-        MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart - step,
-                domainEnd + step, step, constants, plot -> plottingPanel.getFunctions().put(function, plot));
+        if (function.getDomainStart() == null) {
+            domainStart += step;
+        }
+        if (function.getDomainEnd() == null) {
+            domainEnd += step;
+        }
+        MathEvaluatorPool.getInstance().evaluateFunction(function.getDefinition(), domainStart, domainEnd, step,
+                constants, plot -> plottingPanel.getFunctions().put(function, plot));
     }
 }
