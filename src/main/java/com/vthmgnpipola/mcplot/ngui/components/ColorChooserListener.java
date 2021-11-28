@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui.components;
+package com.vthmgnpipola.mcplot.ngui.components;
 
 import java.awt.Color;
 

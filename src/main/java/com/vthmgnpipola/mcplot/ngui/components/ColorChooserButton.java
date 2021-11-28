@@ -16,14 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui.components;
+package com.vthmgnpipola.mcplot.ngui.components;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class ColorChooserButton extends JButton {
     private Color selectedColor;

@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui;
+package com.vthmgnpipola.mcplot.ngui;
 
-import com.prinjsystems.mcplot.ngui.components.ConstantCard;
-import com.prinjsystems.mcplot.nmath.Constant;
+import com.vthmgnpipola.mcplot.ngui.components.ConstantCard;
+import com.vthmgnpipola.mcplot.nmath.Constant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,7 +27,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class ConstantsPanel extends JPanel {
     private final List<ConstantCard> constantCards;

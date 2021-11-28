@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.nmath;
+package com.vthmgnpipola.mcplot.nmath;
 
 import java.awt.Color;
 import java.io.Serial;

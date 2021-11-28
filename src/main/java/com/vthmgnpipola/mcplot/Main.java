@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot;
+package com.vthmgnpipola.mcplot;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.prinjsystems.mcplot.ngui.Workspace;
+import com.vthmgnpipola.mcplot.ngui.Workspace;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -27,14 +27,12 @@ import java.util.concurrent.Executors;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_LANGUAGE;
-import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
-
 public class Main {
     public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("mcplot",
-            Locale.forLanguageTag(PREFERENCES.get(KEY_LANGUAGE, Language.LANGUAGES[0].getTag())));
+            Locale.forLanguageTag(PreferencesHelper.PREFERENCES.get(PreferencesHelper.KEY_LANGUAGE,
+                    Language.LANGUAGES[0].getTag())));
 
-    public static final String PREFERENCES_PATH = "com.prinjsystems.mcplot";
+    public static final String PREFERENCES_PATH = "com.vthmgnpipola.mcplot";
 
     public static final String VERSION = "0.1-SNAPSHOT";
 

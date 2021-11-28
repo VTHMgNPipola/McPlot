@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui;
+package com.vthmgnpipola.mcplot.ngui;
 
-import com.prinjsystems.mcplot.MathSessionHelper;
-import com.prinjsystems.mcplot.ngui.components.FunctionCard;
-import com.prinjsystems.mcplot.nmath.Constant;
-import com.prinjsystems.mcplot.nmath.Function;
-import com.prinjsystems.mcplot.nmath.MathEvaluatorPool;
+import com.vthmgnpipola.mcplot.MathSessionHelper;
+import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
+import com.vthmgnpipola.mcplot.nmath.Constant;
+import com.vthmgnpipola.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class MathPanel extends JPanel {
     private List<Function> functions;

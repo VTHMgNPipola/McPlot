@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui;
+package com.vthmgnpipola.mcplot.ngui;
 
-import com.prinjsystems.mcplot.ngui.components.FunctionCard;
-import com.prinjsystems.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
+import com.vthmgnpipola.mcplot.nmath.Function;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
@@ -30,7 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import net.miginfocom.swing.MigLayout;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionSettingsFrame extends JFrame {
     private final Function function;

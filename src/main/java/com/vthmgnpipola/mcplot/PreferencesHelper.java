@@ -16,12 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot;
+package com.vthmgnpipola.mcplot;
 
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-import static com.prinjsystems.mcplot.Main.PREFERENCES_PATH;
+import static com.vthmgnpipola.mcplot.Main.PREFERENCES_PATH;
 
 public class PreferencesHelper {
     public static final Preferences PREFERENCES = Preferences.userRoot().node(PREFERENCES_PATH);

@@ -16,9 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui.components;
+package com.vthmgnpipola.mcplot.ngui.components;
 
-import com.prinjsystems.mcplot.Language;
+import com.vthmgnpipola.mcplot.Language;
 import java.util.Locale;
 import java.util.Objects;
 import javax.swing.JCheckBox;
@@ -27,10 +27,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_LANGUAGE;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_OPEN_MAXIMIZED;
-import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_LANGUAGE;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_OPEN_MAXIMIZED;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
 
 public class GeneralSettingsPanel extends JPanel {
     public GeneralSettingsPanel() {

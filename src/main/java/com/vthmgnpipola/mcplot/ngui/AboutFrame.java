@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui;
+package com.vthmgnpipola.mcplot.ngui;
 
 import java.awt.Font;
 import java.text.MessageFormat;
@@ -25,8 +25,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
-import static com.prinjsystems.mcplot.Main.VERSION;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.VERSION;
 
 public class AboutFrame extends JFrame {
     public AboutFrame() {

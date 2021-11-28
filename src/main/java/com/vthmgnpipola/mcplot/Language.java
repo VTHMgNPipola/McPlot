@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot;
+package com.vthmgnpipola.mcplot;
 
 public class Language {
     public static final Language[] LANGUAGES = new Language[]{new Language("English (US)", "en-US"),

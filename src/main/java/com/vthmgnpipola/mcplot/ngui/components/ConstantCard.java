@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui.components;
+package com.vthmgnpipola.mcplot.ngui.components;
 
-import com.prinjsystems.mcplot.ngui.ConstantsPanel;
-import com.prinjsystems.mcplot.nmath.Constant;
+import com.vthmgnpipola.mcplot.ngui.ConstantsPanel;
+import com.vthmgnpipola.mcplot.nmath.Constant;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -34,8 +34,8 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
-import static com.prinjsystems.mcplot.Main.EXECUTOR_THREAD;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
 
 public class ConstantCard extends JPanel {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#####");

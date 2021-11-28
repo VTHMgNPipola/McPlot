@@ -18,7 +18,7 @@
 
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.prinjsystems</groupId>
+    <groupId>com.vthmgnpipola</groupId>
     <artifactId>mcplot</artifactId>
     <version>0.1-SNAPSHOT</version>
 
@@ -60,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.prinjsystems.mcplot.Main</mainClass>
+                            <mainClass>com.vthmgnpipola.mcplot.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

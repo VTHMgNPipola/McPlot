@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui;
+package com.vthmgnpipola.mcplot.ngui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -28,10 +28,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
-import static com.prinjsystems.mcplot.Main.VERSION;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_OPEN_MAXIMIZED;
-import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.VERSION;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_OPEN_MAXIMIZED;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
 
 public class Workspace extends JFrame {
     private MathPanel mathPanel;

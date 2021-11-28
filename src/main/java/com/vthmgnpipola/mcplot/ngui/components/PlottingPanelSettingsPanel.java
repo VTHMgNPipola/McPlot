@@ -16,16 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui.components;
+package com.vthmgnpipola.mcplot.ngui.components;
 
-import com.prinjsystems.mcplot.ngui.PlottingPanel;
+import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import net.miginfocom.swing.MigLayout;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class PlottingPanelSettingsPanel extends JPanel {
     public PlottingPanelSettingsPanel(PlottingPanel plottingPanel) {

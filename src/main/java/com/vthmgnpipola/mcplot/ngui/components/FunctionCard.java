@@ -16,15 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui.components;
+package com.vthmgnpipola.mcplot.ngui.components;
 
-import com.prinjsystems.mcplot.ngui.FunctionPanel;
-import com.prinjsystems.mcplot.ngui.FunctionSettingsFrame;
-import com.prinjsystems.mcplot.ngui.PlottingPanel;
-import com.prinjsystems.mcplot.nmath.Constant;
-import com.prinjsystems.mcplot.nmath.Function;
-import com.prinjsystems.mcplot.nmath.FunctionPlot;
-import com.prinjsystems.mcplot.nmath.MathEvaluatorPool;
+import com.vthmgnpipola.mcplot.ngui.FunctionPanel;
+import com.vthmgnpipola.mcplot.ngui.FunctionSettingsFrame;
+import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
+import com.vthmgnpipola.mcplot.nmath.Constant;
+import com.vthmgnpipola.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
+import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
@@ -41,7 +41,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionCard extends JPanel {
     private static final Random RANDOM = new Random();

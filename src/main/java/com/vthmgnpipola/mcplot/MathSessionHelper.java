@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot;
+package com.vthmgnpipola.mcplot;
 
-import com.prinjsystems.mcplot.nmath.Constant;
-import com.prinjsystems.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.nmath.Constant;
+import com.vthmgnpipola.mcplot.nmath.Function;
 import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,10 +31,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_CURRENT_DIRECTORY_OPEN;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_CURRENT_DIRECTORY_SAVE;
-import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class MathSessionHelper {
     private static final JFileChooser FILE_CHOOSER = new JFileChooser();
@@ -46,7 +43,7 @@ public class MathSessionHelper {
     }
 
     public static void saveSession(List<Function> functions, List<Constant> constants) {
-        String saveDirectory = PREFERENCES.get(KEY_CURRENT_DIRECTORY_SAVE, null);
+        String saveDirectory = PreferencesHelper.PREFERENCES.get(PreferencesHelper.KEY_CURRENT_DIRECTORY_SAVE, null);
         if (saveDirectory != null) {
             FILE_CHOOSER.setCurrentDirectory(new File(saveDirectory));
         }
@@ -58,7 +55,7 @@ public class MathSessionHelper {
                 chosenPath += "." + EXTENSION;
             }
 
-            PREFERENCES.put(KEY_CURRENT_DIRECTORY_SAVE, chosenPath);
+            PreferencesHelper.PREFERENCES.put(PreferencesHelper.KEY_CURRENT_DIRECTORY_SAVE, chosenPath);
             try (ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(Path.of(chosenPath)))) {
                 oos.writeObject(constants);
                 oos.writeObject(functions);
@@ -71,7 +68,7 @@ public class MathSessionHelper {
 
     @SuppressWarnings("unchecked")
     public static void openSession(BiConsumer<List<Function>, List<Constant>> consumer) {
-        String openDirectory = PREFERENCES.get(KEY_CURRENT_DIRECTORY_OPEN, null);
+        String openDirectory = PreferencesHelper.PREFERENCES.get(PreferencesHelper.KEY_CURRENT_DIRECTORY_OPEN, null);
         if (openDirectory != null) {
             FILE_CHOOSER.setCurrentDirectory(new File(openDirectory));
         }
@@ -79,7 +76,7 @@ public class MathSessionHelper {
         int state = FILE_CHOOSER.showOpenDialog(null);
         if (state == JFileChooser.APPROVE_OPTION) {
             String chosenPath = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
-            PREFERENCES.put(KEY_CURRENT_DIRECTORY_OPEN, chosenPath);
+            PreferencesHelper.PREFERENCES.put(PreferencesHelper.KEY_CURRENT_DIRECTORY_OPEN, chosenPath);
             try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Path.of(chosenPath)))) {
                 List<Constant> constants = (List<Constant>) ois.readObject();
                 List<Function> functions = (List<Function>) ois.readObject();

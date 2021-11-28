@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui;
+package com.vthmgnpipola.mcplot.ngui;
 
-import com.prinjsystems.mcplot.nmath.Function;
-import com.prinjsystems.mcplot.nmath.FunctionPlot;
+import com.vthmgnpipola.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -40,17 +40,17 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JPanel;
 
-import static com.prinjsystems.mcplot.Main.EXECUTOR_THREAD;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_BACKGROUND_COLOR;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_GLOBAL_AXIS_COLOR;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_MAJOR_GRID_COLOR;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_MINOR_GRID_COLOR;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_SAMPLES_PER_CELL;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_SCALE_X;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_SCALE_Y;
-import static com.prinjsystems.mcplot.PreferencesHelper.KEY_TRACE_WIDTH;
-import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
+import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_BACKGROUND_COLOR;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GLOBAL_AXIS_COLOR;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAJOR_GRID_COLOR;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MINOR_GRID_COLOR;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SAMPLES_PER_CELL;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SCALE_X;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SCALE_Y;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_TRACE_WIDTH;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
 
 public class PlottingPanel extends JPanel {
     private static final int INITIAL_PIXELS_PER_STEP = 75;
@@ -64,7 +64,7 @@ public class PlottingPanel extends JPanel {
     private int zoomPos = 0;
     private int previousWidth, previousHeight;
     private int samplesPerCell = PREFERENCES.getInt(KEY_SAMPLES_PER_CELL, 25);
-    private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 1);
+    private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 3);
     private final AffineTransform zoomTx;
     private final Map<Function, FunctionPlot> functions;
 

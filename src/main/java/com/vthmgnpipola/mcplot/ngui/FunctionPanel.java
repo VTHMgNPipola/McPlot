@@ -16,18 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui;
+package com.vthmgnpipola.mcplot.ngui;
 
-import com.prinjsystems.mcplot.ngui.components.FunctionCard;
-import com.prinjsystems.mcplot.nmath.Constant;
-import com.prinjsystems.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
+import com.vthmgnpipola.mcplot.nmath.Constant;
+import com.vthmgnpipola.mcplot.nmath.Function;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionPanel extends JPanel {
     private final List<FunctionCard> functionCards;

@@ -16,15 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.prinjsystems.mcplot.ngui;
+package com.vthmgnpipola.mcplot.ngui;
 
-import com.prinjsystems.mcplot.ngui.components.GeneralSettingsPanel;
-import com.prinjsystems.mcplot.ngui.components.PlottingPanelSettingsPanel;
+import com.vthmgnpipola.mcplot.ngui.components.GeneralSettingsPanel;
+import com.vthmgnpipola.mcplot.ngui.components.PlottingPanelSettingsPanel;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class SettingsFrame extends JFrame {
     private final PlottingPanel plottingPanel;
