@@ -289,7 +289,7 @@ public class PlottingPanel extends JPanel {
             Function function = functionEntry.getKey();
             FunctionPlot plot = functionEntry.getValue();
             Color traceColor = function.getTraceColor();
-            if (!function.isVisible() || plot == null) {
+            if (!function.isVisible() || plot == null || plot.isCalculating()) {
                 continue;
             }
 

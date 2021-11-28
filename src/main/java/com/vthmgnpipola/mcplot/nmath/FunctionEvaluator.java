@@ -96,6 +96,7 @@ public class FunctionEvaluator {
     }
 
     public void evaluate() {
+        plot.setCalculating(true);
         double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
         double domainStart = function.getDomainStart() != null ? function.getDomainStart() :
                 plottingPanel.getCameraX() / zoomX;
@@ -110,8 +111,7 @@ public class FunctionEvaluator {
             domainEnd += step;
         }
         MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
-                parent.getConstantValues(), plot -> {
-                });
+                parent.getConstantValues(), plot -> plot.setCalculating(false));
     }
 
     private String processFormationLaw() {
