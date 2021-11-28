@@ -72,8 +72,7 @@ public class MathEvaluatorPool {
         runningFunctions++;
         return executor.submit(() -> {
             try {
-                if (function == null ||
-                        domainEnd < domainStart) {
+                if (function == null || domainEnd < domainStart) {
                     runningFunctions--;
                     return null;
                 }
@@ -89,7 +88,7 @@ public class MathEvaluatorPool {
                 plot.setStartX(domainStart);
                 plot.setEndX(domainEnd);
 
-                Path2D.Double path = plot.getPath();
+                Path2D.Double path = new Path2D.Double(Path2D.WIND_NON_ZERO, (int) ((domainEnd - domainStart) / step));
                 path.reset();
                 path.moveTo(domainStart, expression.evaluate());
 

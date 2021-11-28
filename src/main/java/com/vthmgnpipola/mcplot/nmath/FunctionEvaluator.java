@@ -84,19 +84,7 @@ public class FunctionEvaluator {
         plottingPanel.repaint();
     }
 
-    public void processExpression() {
-        if (!FUNCTION_PATTERN.matcher(function.getDefinition()).matches()) {
-            return;
-        }
-
-        String formationLaw = processFormationLaw();
-
-        expression = new ExpressionBuilder(formationLaw).variable(function.getVariableName())
-                .variables(parent.getConstantValues().keySet()).build();
-    }
-
     public void evaluate() {
-        plot.setCalculating(true);
         double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
         double domainStart = function.getDomainStart() != null ? function.getDomainStart() :
                 plottingPanel.getCameraX() / zoomX;
@@ -111,7 +99,19 @@ public class FunctionEvaluator {
             domainEnd += step;
         }
         MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
-                parent.getConstantValues(), plot -> plot.setCalculating(false));
+                parent.getConstantValues(), plot -> {
+                });
+    }
+
+    public void processExpression() {
+        if (!FUNCTION_PATTERN.matcher(function.getDefinition()).matches()) {
+            return;
+        }
+
+        String formationLaw = processFormationLaw();
+
+        expression = new ExpressionBuilder(formationLaw).variable(function.getVariableName())
+                .variables(parent.getConstantValues().keySet()).build();
     }
 
     private String processFormationLaw() {

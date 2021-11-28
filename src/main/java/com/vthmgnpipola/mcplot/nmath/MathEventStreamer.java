@@ -96,12 +96,14 @@ public class MathEventStreamer {
     }
 
     public void functionUpdate() {
-        Main.EXECUTOR_THREAD.submit(() -> {
+        try {
             functionEvaluators.forEach(fe -> {
                 fe.processExpression();
                 fe.evaluate();
             });
             plottingPanel.repaint();
-        });
+        } catch (Throwable t) {
+            // For now all the exceptions from the expression processing and evaluation are going to be ignored
+        }
     }
 }

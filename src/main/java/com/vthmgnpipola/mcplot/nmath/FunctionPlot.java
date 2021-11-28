@@ -21,23 +21,9 @@ package com.vthmgnpipola.mcplot.nmath;
 import java.awt.geom.Path2D;
 
 public class FunctionPlot {
-    private boolean calculating;
-
     private Path2D.Double path;
     private double startX;
     private double endX;
-
-    public FunctionPlot() {
-        path = new Path2D.Double();
-    }
-
-    public boolean isCalculating() {
-        return calculating;
-    }
-
-    public void setCalculating(boolean calculating) {
-        this.calculating = calculating;
-    }
 
     public Path2D.Double getPath() {
         return path;
