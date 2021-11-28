@@ -90,8 +90,8 @@ public class FunctionEvaluator {
                 plottingPanel.getCameraX() / zoomX;
         double domainEnd = function.getDomainEnd() != null ? function.getDomainEnd() :
                 (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
-        double step =
-                (domainEnd - domainStart) / (plottingPanel.getWidth() / zoomX * plottingPanel.getSamplesPerCell());
+        double step = Math.min(plottingPanel.getMaxStep(),
+                (domainEnd - domainStart) / (plottingPanel.getWidth() * zoomX) * plottingPanel.getSamplesPerCell());
         if (function.getDomainStart() == null) {
             domainStart -= step;
         }

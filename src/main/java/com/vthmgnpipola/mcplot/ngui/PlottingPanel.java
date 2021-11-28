@@ -45,6 +45,7 @@ import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_BACKGROUND_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GLOBAL_AXIS_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAJOR_GRID_COLOR;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAX_STEP;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MINOR_GRID_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SAMPLES_PER_CELL;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SCALE_X;
@@ -64,6 +65,7 @@ public class PlottingPanel extends JPanel {
     private int zoomPos = 0;
     private int previousWidth, previousHeight;
     private int samplesPerCell = PREFERENCES.getInt(KEY_SAMPLES_PER_CELL, 25);
+    private double maxStep = PREFERENCES.getDouble(KEY_MAX_STEP, 0.5);
     private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 3);
     private final AffineTransform zoomTx;
     private final Map<Function, FunctionPlot> functions;
@@ -326,7 +328,6 @@ public class PlottingPanel extends JPanel {
         PREFERENCES.putDouble(KEY_SCALE_X, scaleX);
         zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
         mathPanel.recalculateAllFunctions();
-        repaint();
     }
 
     public double getScaleY() {
@@ -338,7 +339,6 @@ public class PlottingPanel extends JPanel {
         PREFERENCES.putDouble(KEY_SCALE_Y, scaleY);
         zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
         mathPanel.recalculateAllFunctions();
-        repaint();
     }
 
     public int getPixelsPerStep() {
@@ -357,7 +357,16 @@ public class PlottingPanel extends JPanel {
         this.samplesPerCell = samplesPerCell;
         PREFERENCES.putInt(KEY_SAMPLES_PER_CELL, samplesPerCell);
         mathPanel.recalculateAllFunctions();
-        repaint();
+    }
+
+    public double getMaxStep() {
+        return maxStep;
+    }
+
+    public void setMaxStep(double maxStep) {
+        this.maxStep = maxStep;
+        PREFERENCES.putDouble(KEY_MAX_STEP, maxStep);
+        mathPanel.recalculateAllFunctions();
     }
 
     @Override

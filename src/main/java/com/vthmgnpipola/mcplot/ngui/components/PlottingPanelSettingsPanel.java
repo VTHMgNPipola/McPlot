@@ -39,6 +39,14 @@ public class PlottingPanelSettingsPanel extends JPanel {
         samplesPerCell.setToolTipText(BUNDLE.getString("settings.plottingPanel.samplesPerCellTooltip"));
         samplesPerCell.addChangeListener(e -> plottingPanel.setSamplesPerCell((int) samplesPerCell.getValue()));
 
+        JLabel maxStepLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.maxStep"));
+        add(maxStepLabel);
+        JSpinner maxStep = new JSpinner(new SpinnerNumberModel(plottingPanel.getMaxStep(), 0.00001,
+                999, 0.01));
+        add(maxStep, "growx, wrap");
+        maxStep.setToolTipText(BUNDLE.getString("settings.plottingPanel.maxStepTooltip"));
+        maxStep.addChangeListener(e -> plottingPanel.setMaxStep((double) maxStep.getValue()));
+
         JLabel scaleXLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleX"));
         add(scaleXLabel);
         JSpinner scaleX = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleX(), 0.0001, 999,

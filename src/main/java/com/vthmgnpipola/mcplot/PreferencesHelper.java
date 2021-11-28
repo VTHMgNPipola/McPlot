@@ -33,6 +33,7 @@ public class PreferencesHelper {
     public static final String KEY_OPEN_MAXIMIZED = "openMaximized";
 
     public static final String KEY_SAMPLES_PER_CELL = "samplesPerCell";
+    public static final String KEY_MAX_STEP = "maxStep";
     public static final String KEY_SCALE_X = "scaleX";
     public static final String KEY_SCALE_Y = "scaleY";
     public static final String KEY_TRACE_WIDTH = "traceWidth";
