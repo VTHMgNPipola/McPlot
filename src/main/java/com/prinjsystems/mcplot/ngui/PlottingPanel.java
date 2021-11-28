@@ -47,16 +47,18 @@ public class PlottingPanel extends JPanel {
     private int previousWidth, previousHeight;
     private int samplesPerCell = PREFERENCES.getInt(KEY_SAMPLES_PER_CELL, 25);
     private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 1);
+    private final AffineTransform zoomTx;
     private final Map<Function, FunctionPlot> functions;
 
     private Font font;
+    private double fillTransparency = PREFERENCES.getDouble(KEY_FILL_TRANSPARENCY, 25);
     private Color backgroundColor = new Color(PREFERENCES.getInt(KEY_BACKGROUND_COLOR, Color.white.getRGB()));
     private Color minorGridColor = new Color(PREFERENCES.getInt(KEY_MINOR_GRID_COLOR, -1513240));
     private Color majorGridColor = new Color(PREFERENCES.getInt(KEY_MAJOR_GRID_COLOR, Color.lightGray.getRGB()));
     private Color globalAxisColor = new Color(PREFERENCES.getInt(KEY_GLOBAL_AXIS_COLOR, Color.black.getRGB()));
     private Stroke traceStroke;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
-    private double fillTransparency = PREFERENCES.getDouble(KEY_FILL_TRANSPARENCY, 25);
+    private FontMetrics fontMetrics;
     private MathPanel mathPanel;
 
     public PlottingPanel() {
@@ -65,6 +67,8 @@ public class PlottingPanel extends JPanel {
 
         font = new Font("Monospaced", Font.PLAIN, 12);
         traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        zoomTx = new AffineTransform();
+        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
 
         final boolean[] dragging = new boolean[1];
         final int[] startPos = new int[2];
@@ -166,6 +170,7 @@ public class PlottingPanel extends JPanel {
                 zoom = (double) 1 / (zoomArray[arrayPos] * Math.pow(10, timesCircled));
             }
 
+            zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
             mathPanel.recalculateAllFunctions();
             repaint();
         }));
@@ -200,7 +205,10 @@ public class PlottingPanel extends JPanel {
         Graphics2D g = (Graphics2D) graphics;
         g.setFont(font);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-        FontMetrics fontMetrics = g.getFontMetrics();
+
+        if (fontMetrics == null) {
+            fontMetrics = g.getFontMetrics();
+        }
 
         // Background
         g.setColor(backgroundColor);
@@ -259,8 +267,6 @@ public class PlottingPanel extends JPanel {
 
         // Functions
         g.setStroke(traceStroke);
-        AffineTransform zoomTx = new AffineTransform();
-        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
         for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
             Function function = functionEntry.getKey();
             FunctionPlot plot = functionEntry.getValue();
@@ -300,6 +306,7 @@ public class PlottingPanel extends JPanel {
     public void setScaleX(double scaleX) {
         this.scaleX = scaleX;
         PREFERENCES.putDouble(KEY_SCALE_X, scaleX);
+        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
         mathPanel.recalculateAllFunctions();
         repaint();
     }
@@ -311,6 +318,7 @@ public class PlottingPanel extends JPanel {
     public void setScaleY(double scaleY) {
         this.scaleY = scaleY;
         PREFERENCES.putDouble(KEY_SCALE_Y, scaleY);
+        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
         mathPanel.recalculateAllFunctions();
         repaint();
     }
@@ -342,6 +350,7 @@ public class PlottingPanel extends JPanel {
     @Override
     public void setFont(Font font) {
         this.font = font;
+        fontMetrics = null;
         repaint();
     }
 
