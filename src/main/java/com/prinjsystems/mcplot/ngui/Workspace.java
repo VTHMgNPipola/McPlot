@@ -16,8 +16,6 @@ import static com.prinjsystems.mcplot.PreferencesHelper.KEY_OPEN_MAXIMIZED;
 import static com.prinjsystems.mcplot.PreferencesHelper.PREFERENCES;
 
 public class Workspace extends JFrame {
-    private WorkspaceController workspaceController;
-
     private MathPanel mathPanel;
     private PlottingPanel plottingPanel;
     private JSplitPane splitPane;
@@ -79,13 +77,21 @@ public class Workspace extends JFrame {
 
         JMenuItem settings = new JMenuItem(BUNDLE.getString("generics.settings"));
         file.add(settings);
-        settings.addActionListener(workspaceController::openSettings);
+        settings.addActionListener(e -> {
+            SettingsFrame settingsFrame = new SettingsFrame(plottingPanel);
+            settingsFrame.init();
+            settingsFrame.setVisible(true);
+        });
 
         file.addSeparator();
 
         JMenuItem about = new JMenuItem(BUNDLE.getString("workspace.menu.file.about"));
         file.add(about);
-        about.addActionListener(workspaceController::openAbout);
+        about.addActionListener(e -> {
+            AboutFrame aboutFrame = new AboutFrame();
+            aboutFrame.init();
+            aboutFrame.setVisible(true);
+        });
     }
 
     private void initContentPane() {
@@ -100,7 +106,6 @@ public class Workspace extends JFrame {
 
         plottingPanel = new PlottingPanel();
         splitPane.setRightComponent(plottingPanel);
-        workspaceController = new WorkspaceController(plottingPanel);
 
         mathPanel = new MathPanel();
         splitPane.setLeftComponent(mathPanel);
