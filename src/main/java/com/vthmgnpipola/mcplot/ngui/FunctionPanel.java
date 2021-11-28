@@ -36,40 +36,47 @@ public class FunctionPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public FunctionPanel(List<Function> initial, MathEventStreamer eventStreamer,
+    public FunctionPanel(List<Function> functions, MathEventStreamer eventStreamer,
                          PlottingPanel plottingPanel) {
         setLayout(new MigLayout());
         this.functionCards = new ArrayList<>();
         index = new AtomicInteger(1);
 
-        if (initial != null && initial.size() != 0) {
-            initial.forEach(f -> {
+        if (functions.size() != 0) {
+            functions.forEach(f -> {
                 FunctionEvaluator functionEvaluator = new FunctionEvaluator(f, eventStreamer, plottingPanel);
+                eventStreamer.registerFunctionEvaluator(functionEvaluator);
+
                 FunctionCard functionCard = new FunctionCard(functionEvaluator, eventStreamer, plottingPanel,
                         this, index.getAndIncrement());
                 add(functionCard, "pushx, span, growx");
                 functionCards.add(functionCard);
-                eventStreamer.registerFunctionEvaluator(functionEvaluator);
             });
         } else {
-            FunctionEvaluator firstFunctionEvaluator = new FunctionEvaluator(new Function(), eventStreamer,
+            Function firstFunction = new Function();
+            FunctionEvaluator firstFunctionEvaluator = new FunctionEvaluator(firstFunction, eventStreamer,
                     plottingPanel);
+            eventStreamer.registerFunctionEvaluator(firstFunctionEvaluator);
+
             FunctionCard firstFunctionCard = new FunctionCard(firstFunctionEvaluator, eventStreamer, plottingPanel,
                     this, index.getAndIncrement());
             add(firstFunctionCard, "pushx, span, growx");
+            functions.add(firstFunction);
             functionCards.add(firstFunctionCard);
-            eventStreamer.registerFunctionEvaluator(firstFunctionEvaluator);
         }
 
         JButton addFunctionCard = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
         add(addFunctionCard, "pushx, span, growx");
         addFunctionCard.addActionListener(e -> {
-            FunctionEvaluator functionEvaluator = new FunctionEvaluator(new Function(), eventStreamer, plottingPanel);
+            Function function = new Function();
+            FunctionEvaluator functionEvaluator = new FunctionEvaluator(function, eventStreamer, plottingPanel);
+            eventStreamer.registerFunctionEvaluator(functionEvaluator);
+
             FunctionCard functionCard = new FunctionCard(functionEvaluator, eventStreamer, plottingPanel, this,
                     index.getAndIncrement());
             add(functionCard, "pushx, span, growx", getComponentCount() - 1);
+            functions.add(function);
             functionCards.add(functionCard);
-            eventStreamer.registerFunctionEvaluator(functionEvaluator);
             updateUI();
         });
     }

@@ -68,7 +68,7 @@ public class MathEventStreamer {
         functionEvaluators.remove(functionEvaluator);
         functions.remove(functionEvaluator.getFunction());
 
-        functionUpdate();
+        functionUpdate(true);
     }
 
     public List<Constant> getConstants() {
@@ -90,20 +90,24 @@ public class MathEventStreamer {
                     .filter(c -> c.getActualValue() != null && c.getName() != null)
                     .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
 
-            functionEvaluators.forEach(FunctionEvaluator::evaluate);
-            plottingPanel.repaint();
-        });
-    }
-
-    public void functionUpdate() {
-        try {
             functionEvaluators.forEach(fe -> {
                 fe.processExpression();
                 fe.evaluate();
             });
             plottingPanel.repaint();
-        } catch (Throwable t) {
-            // For now all the exceptions from the expression processing and evaluation are going to be ignored
-        }
+        });
+    }
+
+    public void functionUpdate(boolean processExpressions) {
+        Main.EXECUTOR_THREAD.submit(() -> {
+            functionEvaluators.forEach(fe -> {
+                if (processExpressions) {
+                    fe.processExpression();
+                }
+
+                fe.evaluate();
+            });
+            plottingPanel.repaint();
+        });
     }
 }

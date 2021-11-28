@@ -36,38 +36,45 @@ public class ConstantsPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public ConstantsPanel(List<Constant> initial, MathEventStreamer eventStreamer) {
+    public ConstantsPanel(List<Constant> constants, MathEventStreamer eventStreamer) {
         super(new MigLayout());
         this.constantCards = new ArrayList<>();
         index = new AtomicInteger(1);
 
-        if (initial != null && initial.size() != 0) {
-            initial.forEach(c -> {
+        if (constants.size() != 0) {
+            constants.forEach(c -> {
                 ConstantEvaluator constantEvaluator = new ConstantEvaluator(c, eventStreamer);
+                eventStreamer.registerConstantEvaluator(constantEvaluator);
+
                 ConstantCard constantCard = new ConstantCard(constantEvaluator, eventStreamer, this,
                         index.getAndIncrement());
                 add(constantCard, "pushx, span, growx");
                 constantCards.add(constantCard);
-                eventStreamer.registerConstantEvaluator(constantEvaluator);
             });
         } else {
-            ConstantEvaluator firstConstantEvaluator = new ConstantEvaluator(new Constant(), eventStreamer);
+            Constant firstConstant = new Constant();
+            ConstantEvaluator firstConstantEvaluator = new ConstantEvaluator(firstConstant, eventStreamer);
+            eventStreamer.registerConstantEvaluator(firstConstantEvaluator);
+
             ConstantCard firstConstantCard = new ConstantCard(firstConstantEvaluator, eventStreamer, this,
                     index.getAndIncrement());
             add(firstConstantCard, "pushx, span, growx");
+            constants.add(firstConstant);
             constantCards.add(firstConstantCard);
-            eventStreamer.registerConstantEvaluator(firstConstantEvaluator);
         }
 
         JButton addConstantCard = new JButton(BUNDLE.getString("workspace.actions.createConstant"));
         add(addConstantCard, "pushx, span, growx");
         addConstantCard.addActionListener(e -> {
-            ConstantEvaluator constantEvaluator = new ConstantEvaluator(new Constant(), eventStreamer);
+            Constant constant = new Constant();
+            ConstantEvaluator constantEvaluator = new ConstantEvaluator(constant, eventStreamer);
+            eventStreamer.registerConstantEvaluator(constantEvaluator);
+
             ConstantCard constantCard = new ConstantCard(constantEvaluator, eventStreamer, this,
                     index.getAndIncrement());
             add(constantCard, "pushx, span, growx", getComponentCount() - 1);
+            constants.add(constant);
             constantCards.add(constantCard);
-            eventStreamer.registerConstantEvaluator(constantEvaluator);
             updateUI();
         });
     }

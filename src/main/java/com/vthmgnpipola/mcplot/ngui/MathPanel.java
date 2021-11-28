@@ -68,7 +68,8 @@ public class MathPanel extends JPanel {
     }
 
     public void recalculateAllFunctions() {
-        eventStreamer.functionUpdate();
+        // TODO: Discover why the math gets entirely wrong when this is false
+        eventStreamer.functionUpdate(true);
     }
 
     public void save() {
@@ -80,7 +81,7 @@ public class MathPanel extends JPanel {
             plottingPanel.getFunctions().clear();
             init(plottingPanel, f, c);
             updateUI();
-            recalculateAllFunctions();
+            eventStreamer.constantUpdate();
         });
     }
 }

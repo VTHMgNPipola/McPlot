@@ -56,17 +56,17 @@ public class FunctionEvaluator {
 
     public void setDefinition(String definition) {
         function.setDefinition(definition);
-        parent.functionUpdate();
+        parent.functionUpdate(true);
     }
 
     public void setDomainStart(Double domainStart) {
         function.setDomainStart(domainStart);
-        parent.functionUpdate();
+        parent.functionUpdate(false);
     }
 
     public void setDomainEnd(Double domainEnd) {
         function.setDomainEnd(domainEnd);
-        parent.functionUpdate();
+        parent.functionUpdate(false);
     }
 
     public void setTraceColor(Color traceColor) {
