@@ -19,8 +19,9 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
-import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
+import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JButton;
@@ -34,37 +35,38 @@ public class FunctionPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public FunctionPanel(List<FunctionCard> functionCards, List<Function> functions, List<Constant> constants,
+    public FunctionPanel(List<FunctionCard> functionCards, MathEventStreamer eventStreamer,
                          PlottingPanel plottingPanel) {
         setLayout(new MigLayout());
         this.functionCards = functionCards;
         index = new AtomicInteger(1);
 
-        if (functions.size() != 0) {
-            functions.forEach(f -> {
-                FunctionCard functionCard = new FunctionCard(f, functions, constants, plottingPanel, this,
-                        index.getAndIncrement());
-                add(functionCard, "pushx, span, growx");
-                functionCards.add(functionCard);
-            });
+        if (false/*functions.size() != 0*/) {
+//            functions.forEach(f -> {
+//                FunctionCard functionCard = new FunctionCard(f, eventStreamer, plottingPanel, this,
+//                        index.getAndIncrement());
+//                add(functionCard, "pushx, span, growx");
+//                functionCards.add(functionCard);
+//            });
         } else {
-            Function firstFunction = new Function();
-            FunctionCard firstFunctionCard = new FunctionCard(firstFunction, functions, constants, plottingPanel,
+            FunctionEvaluator firstFunctionEvaluator = new FunctionEvaluator(new Function(), eventStreamer,
+                    plottingPanel);
+            FunctionCard firstFunctionCard = new FunctionCard(firstFunctionEvaluator, eventStreamer, plottingPanel,
                     this, index.getAndIncrement());
             add(firstFunctionCard, "pushx, span, growx");
             functionCards.add(firstFunctionCard);
-            functions.add(firstFunction);
+            eventStreamer.registerFunctionEvaluator(firstFunctionEvaluator);
         }
 
         JButton addFunctionCard = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
         add(addFunctionCard, "pushx, span, growx");
         addFunctionCard.addActionListener(e -> {
-            Function function = new Function();
-            FunctionCard functionCard = new FunctionCard(function, functions, constants, plottingPanel, this,
+            FunctionEvaluator functionEvaluator = new FunctionEvaluator(new Function(), eventStreamer, plottingPanel);
+            FunctionCard functionCard = new FunctionCard(functionEvaluator, eventStreamer, plottingPanel, this,
                     index.getAndIncrement());
             add(functionCard, "pushx, span, growx", getComponentCount() - 1);
             functionCards.add(functionCard);
-            functions.add(function);
+            eventStreamer.registerFunctionEvaluator(functionEvaluator);
             updateUI();
         });
     }

@@ -23,6 +23,7 @@ import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
+import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,8 @@ public class MathPanel extends JPanel {
 
     private List<FunctionCard> functionCards;
 
+    private MathEventStreamer eventStreamer;
+
     public MathPanel() {
         setLayout(new BorderLayout());
     }
@@ -49,6 +52,7 @@ public class MathPanel extends JPanel {
     public void init(PlottingPanel plottingPanel, List<Function> functions, List<Constant> constants) {
         removeAll();
 
+        eventStreamer = new MathEventStreamer(plottingPanel);
         plottingPanel.setMathPanel(this);
         MathEvaluatorPool.getInstance().addFunctionsDoneTask(plottingPanel::repaint);
 
@@ -59,17 +63,17 @@ public class MathPanel extends JPanel {
 
         functionCards = new ArrayList<>();
 
-        FunctionPanel functionPanel = new FunctionPanel(functionCards, functions, constants, plottingPanel);
+        FunctionPanel functionPanel = new FunctionPanel(functionCards, eventStreamer, plottingPanel);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.functions"), new JScrollPane(functionPanel));
 
-        ConstantsPanel constantsPanel = new ConstantsPanel(constants);
+        ConstantsPanel constantsPanel = new ConstantsPanel(eventStreamer);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.constants"), new JScrollPane(constantsPanel));
 
         add(tabbedPane, BorderLayout.CENTER);
     }
 
     public void recalculateAllFunctions() {
-        functionCards.forEach(FunctionCard::recalculateFunction);
+        eventStreamer.functionUpdate();
     }
 
     public void save() {

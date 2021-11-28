@@ -21,10 +21,9 @@ package com.vthmgnpipola.mcplot.ngui.components;
 import com.vthmgnpipola.mcplot.ngui.FunctionPanel;
 import com.vthmgnpipola.mcplot.ngui.FunctionSettingsFrame;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
-import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
-import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
-import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
+import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
+import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
@@ -32,7 +31,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import javax.swing.BorderFactory;
@@ -48,20 +46,18 @@ public class FunctionCard extends JPanel {
 
     private final JCheckBox visible;
 
-    private final Function function;
-    private final List<Function> functions;
-    private final List<Constant> constants;
+    private final FunctionEvaluator functionEvaluator;
     private final PlottingPanel plottingPanel;
 
-    public FunctionCard(Function function, List<Function> functions, List<Constant> constants,
+    public FunctionCard(FunctionEvaluator functionEvaluator, MathEventStreamer eventStreamer,
                         PlottingPanel plottingPanel, FunctionPanel parent, int index) {
         setLayout(new MigLayout());
-        this.function = function;
-        this.functions = functions;
-        this.constants = constants;
+        this.functionEvaluator = functionEvaluator;
         this.plottingPanel = plottingPanel;
 
         setIndex(index);
+
+        Function function = functionEvaluator.getFunction();
 
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy, split 3");
@@ -69,22 +65,20 @@ public class FunctionCard extends JPanel {
         if (function.getTraceColor() == null) {
             Color startingColor = new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
                     RANDOM.nextInt(255));
-            function.setTraceColor(startingColor);
+            functionEvaluator.setTraceColor(startingColor);
             colorChooserButton.setSelectedColor(startingColor);
         } else {
             colorChooserButton.setSelectedColor(function.getTraceColor());
         }
         colorChooserButton.setMaximumSize(new Dimension(40, 40));
-        colorChooserButton.setColorChooserListener(color -> {
-            function.setTraceColor(color);
-            plottingPanel.repaint();
-        });
+        colorChooserButton.setColorChooserListener(functionEvaluator::setTraceColor);
 
         JButton otherSettings = new JButton("...");
         add(otherSettings, "growy");
         otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettingsTooltip"));
         otherSettings.addActionListener(e -> {
-            FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(function, this, index);
+            FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(functionEvaluator,
+                    this, index);
             functionSettingsFrame.init(plottingPanel);
             functionSettingsFrame.setVisible(true);
         });
@@ -93,14 +87,7 @@ public class FunctionCard extends JPanel {
                 function.isVisible());
         add(visible, "pushx, growx, wrap");
         visible.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisibleTooltip"));
-        visible.addActionListener(e -> {
-            FunctionPlot plot = plottingPanel.getFunctions().get(function);
-            if (plot != null) {
-                function.setVisible(visible.isSelected());
-                plottingPanel.getFunctions().put(function, plot);
-                plottingPanel.repaint();
-            }
-        });
+        visible.addActionListener(e -> functionEvaluator.setVisible(visible.isSelected()));
 
         JLabeledTextField functionField = new JLabeledTextField();
         add(functionField, "pushx, growx");
@@ -111,8 +98,7 @@ public class FunctionCard extends JPanel {
             @Override
             public void focusLost(FocusEvent e) {
                 if (!Objects.equals(function.getDefinition(), functionField.getText())) {
-                    function.setDefinition(functionField.getText());
-                    recalculateFunction();
+                    functionEvaluator.setDefinition(functionField.getText());
                     plottingPanel.repaint();
                 }
             }
@@ -121,8 +107,7 @@ public class FunctionCard extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (!Objects.equals(function.getDefinition(), functionField.getText())) {
-                    function.setDefinition(functionField.getText());
-                    recalculateFunction();
+                    functionEvaluator.setDefinition(functionField.getText());
                     plottingPanel.repaint();
                 }
             }
@@ -132,29 +117,10 @@ public class FunctionCard extends JPanel {
         add(remove);
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
-            plottingPanel.getFunctions().remove(function);
-            plottingPanel.repaint();
+            eventStreamer.removeFunctionEvaluator(functionEvaluator);
 
             parent.removeFunctionCard(this);
         });
-    }
-
-    public void recalculateFunction() {
-        double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
-        double domainStart = function.getDomainStart() != null ? function.getDomainStart() :
-                plottingPanel.getCameraX() / zoomX;
-        double domainEnd = function.getDomainEnd() != null ? function.getDomainEnd() :
-                (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
-        double step =
-                (domainEnd - domainStart) / (plottingPanel.getWidth() / zoomX * plottingPanel.getSamplesPerCell());
-        if (function.getDomainStart() == null) {
-            domainStart -= step;
-        }
-        if (function.getDomainEnd() == null) {
-            domainEnd += step;
-        }
-        MathEvaluatorPool.getInstance().evaluateFunction(function, domainStart, domainEnd, step, functions, constants,
-                plot -> plottingPanel.getFunctions().put(function, plot));
     }
 
     public void setIndex(int index) {

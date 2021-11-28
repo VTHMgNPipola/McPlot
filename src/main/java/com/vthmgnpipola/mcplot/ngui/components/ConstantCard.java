@@ -19,16 +19,14 @@
 package com.vthmgnpipola.mcplot.ngui.components;
 
 import com.vthmgnpipola.mcplot.ngui.ConstantsPanel;
-import com.vthmgnpipola.mcplot.nmath.Constant;
+import com.vthmgnpipola.mcplot.nmath.ConstantEvaluator;
+import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -40,32 +38,33 @@ import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
 public class ConstantCard extends JPanel {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#####");
 
-    private final Constant constant;
+    private final ConstantEvaluator constantEvaluator;
 
     private final JLabeledTextField value;
 
-    public ConstantCard(Constant constant, List<Constant> constants, ConstantsPanel parent, int index) {
+    public ConstantCard(ConstantEvaluator constantEvaluator, MathEventStreamer eventStreamer, ConstantsPanel parent,
+                        int index) {
         super(new MigLayout());
-        this.constant = constant;
+        this.constantEvaluator = constantEvaluator;
 
         setIndex(index);
 
         JLabeledTextField name = new JLabeledTextField();
         add(name, "pushx, growx");
-        name.setText(constant.getName());
+        name.setText(constantEvaluator.constant().getName());
         name.setPlaceholderText(BUNDLE.getString("constantCard.name"));
         name.setToolTipText(BUNDLE.getString("constantCard.nameTooltip"));
         name.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                constant.setName(name.getText());
+                constantEvaluator.setName(name.getText());
             }
         });
         name.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    constant.setName(name.getText());
+                    constantEvaluator.setName(name.getText());
                 }
             }
         });
@@ -74,59 +73,44 @@ public class ConstantCard extends JPanel {
         add(remove, "wrap");
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
-            constants.remove(constant);
+            eventStreamer.removeConstantEvaluator(constantEvaluator);
 
             parent.removeConstantCard(this);
         });
 
         value = new JLabeledTextField();
         add(value, "pushx, span, growx");
-        value.setText(constant.getDefinition());
+        value.setText(constantEvaluator.constant().getDefinition());
         value.setPlaceholderText(BUNDLE.getString("constantCard.value"));
         updateValueTooltip();
         value.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                updateConstantValue(constants);
+                updateValue();
             }
         });
         value.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                updateConstantValue(constants);
+                updateValue();
             }
         });
     }
 
     private void updateValueTooltip() {
         String tooltip = BUNDLE.getString("constantCard.valueTooltip");
-        if (constant.getActualValue() != null) {
-            tooltip = String.format("(%s) %s", DECIMAL_FORMAT.format(constant.getActualValue()), tooltip);
+        if (constantEvaluator.constant().getActualValue() != null) {
+            tooltip = String.format("(%s) %s", DECIMAL_FORMAT.format(constantEvaluator.constant().getActualValue()),
+                    tooltip);
         }
         value.setToolTipText(tooltip);
     }
 
-    private void updateConstantValue(List<Constant> constants) {
-        if (!Objects.equals(constant.getDefinition(), value.getText())) {
-            EXECUTOR_THREAD.submit(() -> {
-                constant.setDefinition(value.getText(), constants);
-
-                // TODO: Update cards for other updated constants
-                AtomicBoolean updated = new AtomicBoolean(false);
-                do {
-                    updated.set(false);
-                    constants.forEach(c -> {
-                        Double value = c.getActualValue();
-                        c.updateValue(constants);
-                        if (!Objects.equals(value, c.getActualValue())) {
-                            updated.set(true);
-                        }
-                    });
-                } while (updated.get());
-
-                updateValueTooltip();
-            });
-        }
+    private void updateValue() {
+        EXECUTOR_THREAD.submit(() -> {
+            constantEvaluator.setDefinition(value.getText());
+            updateValueTooltip();
+        });
     }
 
     public void setIndex(int index) {

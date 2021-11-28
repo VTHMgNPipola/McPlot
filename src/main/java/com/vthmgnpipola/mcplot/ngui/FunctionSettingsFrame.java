@@ -20,6 +20,7 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
 import com.vthmgnpipola.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
@@ -33,15 +34,15 @@ import net.miginfocom.swing.MigLayout;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionSettingsFrame extends JFrame {
-    private final Function function;
+    private final FunctionEvaluator functionEvaluator;
     private final FunctionCard functionCard;
 
-    public FunctionSettingsFrame(Function function, FunctionCard functionCard, int index) {
+    public FunctionSettingsFrame(FunctionEvaluator functionEvaluator, FunctionCard functionCard, int index) {
         super(MessageFormat.format(BUNDLE.getString("functionSettings.title"), index));
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        this.function = function;
+        this.functionEvaluator = functionEvaluator;
         this.functionCard = functionCard;
     }
 
@@ -52,6 +53,8 @@ public class FunctionSettingsFrame extends JFrame {
     }
 
     private void initContentPane(PlottingPanel plottingPanel) {
+        Function function = functionEvaluator.getFunction();
+
         JPanel contentPane = new JPanel(new MigLayout("insets 15", "[]15",
                 "[]10"));
         setContentPane(contentPane);
@@ -65,9 +68,7 @@ public class FunctionSettingsFrame extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 String text = domainStart.getText().trim();
-                function.setDomainStart(text.equals("*") ? null : Double.parseDouble(text));
-                functionCard.recalculateFunction();
-                plottingPanel.repaint();
+                functionEvaluator.setDomainStart(text.equals("*") ? null : Double.parseDouble(text));
             }
         });
 
@@ -80,18 +81,13 @@ public class FunctionSettingsFrame extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 String text = domainEnd.getText().trim();
-                function.setDomainEnd(text.equals("*") ? null : Double.parseDouble(text));
-                functionCard.recalculateFunction();
-                plottingPanel.repaint();
+                functionEvaluator.setDomainEnd(text.equals("*") ? null : Double.parseDouble(text));
             }
         });
 
         JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"), function.isFilled());
         contentPane.add(fillArea, "span");
         fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillAreaTooltip"));
-        fillArea.addActionListener(e -> {
-            function.setFilled(fillArea.isSelected());
-            plottingPanel.repaint();
-        });
+        fillArea.addActionListener(e -> functionEvaluator.setFilled(fillArea.isSelected()));
     }
 }

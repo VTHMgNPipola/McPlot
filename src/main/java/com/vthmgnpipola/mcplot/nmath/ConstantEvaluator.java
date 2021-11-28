@@ -18,34 +18,29 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
-import java.io.Serial;
-import java.io.Serializable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-public class Constant implements Serializable {
-    @Serial
-    private static final long serialVersionUID = -8235664400532015308L;
-
-    private String name;
-    private String definition;
-    Double actualValue;
-
-    public String getName() {
-        return name;
-    }
-
+public record ConstantEvaluator(Constant constant,
+                                MathEventStreamer parent) {
     public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDefinition() {
-        return definition;
+        constant.setName(name);
+        parent.constantUpdate();
     }
 
     public void setDefinition(String definition) {
-        this.definition = definition;
+        constant.setDefinition(definition);
+        parent.constantUpdate();
     }
 
-    public Double getActualValue() {
-        return actualValue;
+    public void evaluate() {
+        Future<Double> calculatedValueFuture = MathEvaluatorPool.getInstance()
+                .evaluateConstant(constant.getDefinition(), constant.getName(), parent.getConstants());
+
+        try {
+            constant.actualValue = calculatedValueFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            constant.actualValue = null;
+        }
     }
 }

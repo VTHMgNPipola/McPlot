@@ -20,6 +20,8 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.ConstantCard;
 import com.vthmgnpipola.mcplot.nmath.Constant;
+import com.vthmgnpipola.mcplot.nmath.ConstantEvaluator;
+import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,39 +33,38 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class ConstantsPanel extends JPanel {
     private final List<ConstantCard> constantCards;
-    private final List<Constant> constants;
 
     private AtomicInteger index;
 
-    public ConstantsPanel(List<Constant> constants) {
+    public ConstantsPanel(MathEventStreamer eventStreamer) {
         super(new MigLayout());
         this.constantCards = new ArrayList<>();
-        this.constants = constants;
         index = new AtomicInteger(1);
 
-        if (constants.size() != 0) {
-            constants.forEach(c -> {
-                ConstantCard constantCard = new ConstantCard(c, constants, this, index.getAndIncrement());
-                add(constantCard, "pushx, span, growx");
-                constantCards.add(constantCard);
-            });
+        if (false/*constants.size() != 0*/) {
+//            constants.forEach(c -> {
+//                ConstantCard constantCard = new ConstantCard(c, eventStreamer, this, index.getAndIncrement());
+//                add(constantCard, "pushx, span, growx");
+//                constantCards.add(constantCard);
+//            });
         } else {
-            Constant firstConstant = new Constant();
-            ConstantCard firstConstantCard = new ConstantCard(firstConstant, constants, this,
+            ConstantEvaluator firstConstantEvaluator = new ConstantEvaluator(new Constant(), eventStreamer);
+            ConstantCard firstConstantCard = new ConstantCard(firstConstantEvaluator, eventStreamer, this,
                     index.getAndIncrement());
             add(firstConstantCard, "pushx, span, growx");
-            constants.add(firstConstant);
             constantCards.add(firstConstantCard);
+            eventStreamer.registerConstantEvaluator(firstConstantEvaluator);
         }
 
         JButton addConstantCard = new JButton(BUNDLE.getString("workspace.actions.createConstant"));
         add(addConstantCard, "pushx, span, growx");
         addConstantCard.addActionListener(e -> {
-            Constant constant = new Constant();
-            ConstantCard constantCard = new ConstantCard(constant, constants, this, index.getAndIncrement());
+            ConstantEvaluator constantEvaluator = new ConstantEvaluator(new Constant(), eventStreamer);
+            ConstantCard constantCard = new ConstantCard(constantEvaluator, eventStreamer, this,
+                    index.getAndIncrement());
             add(constantCard, "pushx, span, growx", getComponentCount() - 1);
-            constants.add(constant);
             constantCards.add(constantCard);
+            eventStreamer.registerConstantEvaluator(constantEvaluator);
             updateUI();
         });
     }

@@ -25,6 +25,10 @@ public class FunctionPlot {
     private double startX;
     private double endX;
 
+    public FunctionPlot() {
+        path = new Path2D.Double();
+    }
+
     public Path2D.Double getPath() {
         return path;
     }
