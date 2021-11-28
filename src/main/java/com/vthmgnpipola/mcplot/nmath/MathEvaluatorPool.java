@@ -130,7 +130,7 @@ public class MathEvaluatorPool {
 
     private String processFormationLaw(Function function, List<Function> functions) {
         boolean processed;
-        String formationLaw = function.getFormationLaw();
+        StringBuilder formationLaw = new StringBuilder(function.getFormationLaw());
         Map<String, Function> functionMap = functions.stream()
                 .filter(f -> !Objects.equals(f.getName(), function.getName()))
                 .collect(Collectors.toMap(Function::getName, f -> f));
@@ -145,13 +145,13 @@ public class MathEvaluatorPool {
                     String subFunctionFormationLaw = subFunction.getFormationLaw();
                     subFunctionFormationLaw = "(" + subFunctionFormationLaw.replaceAll(subFunction.getVariableName(),
                             match.substring(match.indexOf('(') + 1, match.indexOf(')')).trim()) + ")";
-                    formationLaw = formationLaw.replace(match, subFunctionFormationLaw);
+                    formationLaw.replace(matcher.start(), matcher.end(), subFunctionFormationLaw);
 
                     processed = true;
                 }
             }
         } while (processed);
 
-        return formationLaw;
+        return formationLaw.toString();
     }
 }
