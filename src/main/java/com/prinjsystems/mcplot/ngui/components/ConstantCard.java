@@ -10,12 +10,14 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 import static com.prinjsystems.mcplot.Main.BUNDLE;
+import static com.prinjsystems.mcplot.Main.EXECUTOR_THREAD;
 
 public class ConstantCard extends JPanel {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.#####");
@@ -88,8 +90,24 @@ public class ConstantCard extends JPanel {
 
     private void updateConstantValue(List<Constant> constants) {
         if (!Objects.equals(constant.getDefinition(), value.getText())) {
-            constant.setDefinition(value.getText(), constants);
-            updateValueTooltip();
+            EXECUTOR_THREAD.submit(() -> {
+                constant.setDefinition(value.getText(), constants);
+
+                // TODO: Update cards for other updated constants
+                AtomicBoolean updated = new AtomicBoolean(false);
+                do {
+                    updated.set(false);
+                    constants.forEach(c -> {
+                        Double value = c.getActualValue();
+                        c.updateValue(constants);
+                        if (!Objects.equals(value, c.getActualValue())) {
+                            updated.set(true);
+                        }
+                    });
+                } while (updated.get());
+
+                updateValueTooltip();
+            });
         }
     }
 

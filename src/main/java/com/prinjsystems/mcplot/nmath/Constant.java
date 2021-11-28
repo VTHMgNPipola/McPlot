@@ -32,6 +32,14 @@ public class Constant implements Serializable {
         }
 
         this.definition = definition;
+        updateValue(constants);
+    }
+
+    public Double getActualValue() {
+        return actualValue;
+    }
+
+    public void updateValue(List<Constant> constants) {
         Future<Double> calculatedValueFuture = MathEvaluatorPool.getInstance().evaluateConstant(definition, name,
                 constants);
         try {
@@ -39,9 +47,5 @@ public class Constant implements Serializable {
         } catch (InterruptedException | ExecutionException e) {
             actualValue = null;
         }
-    }
-
-    public Double getActualValue() {
-        return actualValue;
     }
 }
