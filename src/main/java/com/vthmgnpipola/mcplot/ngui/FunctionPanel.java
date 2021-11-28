@@ -22,6 +22,7 @@ import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.JButton;
@@ -35,19 +36,21 @@ public class FunctionPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public FunctionPanel(List<FunctionCard> functionCards, MathEventStreamer eventStreamer,
+    public FunctionPanel(List<Function> initial, MathEventStreamer eventStreamer,
                          PlottingPanel plottingPanel) {
         setLayout(new MigLayout());
-        this.functionCards = functionCards;
+        this.functionCards = new ArrayList<>();
         index = new AtomicInteger(1);
 
-        if (false/*functions.size() != 0*/) {
-//            functions.forEach(f -> {
-//                FunctionCard functionCard = new FunctionCard(f, eventStreamer, plottingPanel, this,
-//                        index.getAndIncrement());
-//                add(functionCard, "pushx, span, growx");
-//                functionCards.add(functionCard);
-//            });
+        if (initial != null && initial.size() != 0) {
+            initial.forEach(f -> {
+                FunctionEvaluator functionEvaluator = new FunctionEvaluator(f, eventStreamer, plottingPanel);
+                FunctionCard functionCard = new FunctionCard(functionEvaluator, eventStreamer, plottingPanel,
+                        this, index.getAndIncrement());
+                add(functionCard, "pushx, span, growx");
+                functionCards.add(functionCard);
+                eventStreamer.registerFunctionEvaluator(functionEvaluator);
+            });
         } else {
             FunctionEvaluator firstFunctionEvaluator = new FunctionEvaluator(new Function(), eventStreamer,
                     plottingPanel);

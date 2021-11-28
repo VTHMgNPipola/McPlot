@@ -36,17 +36,20 @@ public class ConstantsPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public ConstantsPanel(MathEventStreamer eventStreamer) {
+    public ConstantsPanel(List<Constant> initial, MathEventStreamer eventStreamer) {
         super(new MigLayout());
         this.constantCards = new ArrayList<>();
         index = new AtomicInteger(1);
 
-        if (false/*constants.size() != 0*/) {
-//            constants.forEach(c -> {
-//                ConstantCard constantCard = new ConstantCard(c, eventStreamer, this, index.getAndIncrement());
-//                add(constantCard, "pushx, span, growx");
-//                constantCards.add(constantCard);
-//            });
+        if (initial != null && initial.size() != 0) {
+            initial.forEach(c -> {
+                ConstantEvaluator constantEvaluator = new ConstantEvaluator(c, eventStreamer);
+                ConstantCard constantCard = new ConstantCard(constantEvaluator, eventStreamer, this,
+                        index.getAndIncrement());
+                add(constantCard, "pushx, span, growx");
+                constantCards.add(constantCard);
+                eventStreamer.registerConstantEvaluator(constantEvaluator);
+            });
         } else {
             ConstantEvaluator firstConstantEvaluator = new ConstantEvaluator(new Constant(), eventStreamer);
             ConstantCard firstConstantCard = new ConstantCard(firstConstantEvaluator, eventStreamer, this,

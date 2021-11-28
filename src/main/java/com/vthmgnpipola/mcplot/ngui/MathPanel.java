@@ -19,7 +19,6 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.MathSessionHelper;
-import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
@@ -36,8 +35,6 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 public class MathPanel extends JPanel {
     private List<Function> functions;
     private List<Constant> constants;
-
-    private List<FunctionCard> functionCards;
 
     private MathEventStreamer eventStreamer;
 
@@ -61,12 +58,10 @@ public class MathPanel extends JPanel {
         this.functions = functions;
         this.constants = constants;
 
-        functionCards = new ArrayList<>();
-
-        FunctionPanel functionPanel = new FunctionPanel(functionCards, eventStreamer, plottingPanel);
+        FunctionPanel functionPanel = new FunctionPanel(functions, eventStreamer, plottingPanel);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.functions"), new JScrollPane(functionPanel));
 
-        ConstantsPanel constantsPanel = new ConstantsPanel(eventStreamer);
+        ConstantsPanel constantsPanel = new ConstantsPanel(constants, eventStreamer);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.constants"), new JScrollPane(constantsPanel));
 
         add(tabbedPane, BorderLayout.CENTER);
