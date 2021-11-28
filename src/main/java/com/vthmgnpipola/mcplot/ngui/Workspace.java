@@ -110,6 +110,12 @@ public class Workspace extends JFrame {
             aboutFrame.init();
             aboutFrame.setVisible(true);
         });
+
+        file.addSeparator();
+
+        JMenuItem exit = new JMenuItem(BUNDLE.getString("workspace.menu.file.exit"));
+        file.add(exit);
+        exit.addActionListener(e -> System.exit(0));
     }
 
     private void initContentPane() {
