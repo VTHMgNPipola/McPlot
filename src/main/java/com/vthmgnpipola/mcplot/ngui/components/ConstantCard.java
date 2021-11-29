@@ -52,7 +52,7 @@ public class ConstantCard extends JPanel {
 
         JLabeledTextField name = new JLabeledTextField();
         add(name, "pushx, growx");
-        name.setText(constantEvaluator.constant().getName());
+        name.setText(constantEvaluator.getConstant().getName());
         name.setPlaceholderText(BUNDLE.getString("constantCard.name"));
         name.setToolTipText(BUNDLE.getString("constantCard.nameTooltip"));
         name.addFocusListener(new FocusAdapter() {
@@ -81,7 +81,7 @@ public class ConstantCard extends JPanel {
 
         value = new JSecondaryTextField();
         add(value, "pushx, span, growx");
-        value.setText(constantEvaluator.constant().getDefinition());
+        value.setText(constantEvaluator.getConstant().getDefinition());
         value.setPlaceholderText(BUNDLE.getString("constantCard.value"));
         value.setToolTipText(BUNDLE.getString("constantCard.valueTooltip"));
         updateValueTooltip();
@@ -101,8 +101,8 @@ public class ConstantCard extends JPanel {
 
     public void updateValueTooltip() {
         value.setSecondaryText(null);
-        if (constantEvaluator.constant().getActualValue() != null) {
-            value.setSecondaryText(" = " + DECIMAL_FORMAT.format(constantEvaluator.constant().getActualValue()));
+        if (constantEvaluator.getConstant().getActualValue() != null) {
+            value.setSecondaryText(" = " + DECIMAL_FORMAT.format(constantEvaluator.getConstant().getActualValue()));
         }
         value.repaint();
     }

@@ -30,10 +30,15 @@ public class Function implements Serializable {
     private transient String name, variableName, formationLaw;
 
     private Color traceColor;
-    private Double domainStart;
-    private Double domainEnd;
+    private Constant domainStart;
+    private Constant domainEnd;
     private boolean filled;
     private boolean visible = true;
+
+    public Function() {
+        domainStart = new Constant();
+        domainEnd = new Constant();
+    }
 
     public String getDefinition() {
         return definition;
@@ -52,19 +57,19 @@ public class Function implements Serializable {
         this.traceColor = traceColor;
     }
 
-    public Double getDomainStart() {
+    public Constant getDomainStart() {
         return domainStart;
     }
 
-    public void setDomainStart(Double domainStart) {
+    public void setDomainStart(Constant domainStart) {
         this.domainStart = domainStart;
     }
 
-    public Double getDomainEnd() {
+    public Constant getDomainEnd() {
         return domainEnd;
     }
 
-    public void setDomainEnd(Double domainEnd) {
+    public void setDomainEnd(Constant domainEnd) {
         this.domainEnd = domainEnd;
     }
 

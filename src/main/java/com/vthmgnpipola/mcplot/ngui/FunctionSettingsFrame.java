@@ -61,27 +61,29 @@ public class FunctionSettingsFrame extends JFrame {
 
         JLabel domainStartLabel = new JLabel(BUNDLE.getString("functionSettings.domainStart"));
         contentPane.add(domainStartLabel);
-        JTextField domainStart = new JTextField(function.getDomainStart() != null ?
-                function.getDomainStart().toString() : "*");
+        JTextField domainStart = new JTextField(function.getDomainStart().getActualValue() != null ?
+                function.getDomainStart().getDefinition() : "*");
         contentPane.add(domainStart, "growx, wrap");
+        domainStart.setToolTipText(BUNDLE.getString("functionSettings.domainStartTooltip"));
         domainStart.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 String text = domainStart.getText().trim();
-                functionEvaluator.setDomainStart(text.equals("*") ? null : Double.parseDouble(text));
+                functionEvaluator.setDomainStart(text.equals("*") ? null : text);
             }
         });
 
         JLabel domainEndLabel = new JLabel(BUNDLE.getString("functionSettings.domainEnd"));
         contentPane.add(domainEndLabel);
-        JTextField domainEnd = new JTextField(function.getDomainEnd() != null ?
-                function.getDomainEnd().toString() : "*");
+        JTextField domainEnd = new JTextField(function.getDomainEnd().getActualValue() != null ?
+                function.getDomainEnd().getDefinition() : "*");
         contentPane.add(domainEnd, "growx, wrap");
+        domainEnd.setToolTipText(BUNDLE.getString("functionSettings.domainEndTooltip"));
         domainEnd.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 String text = domainEnd.getText().trim();
-                functionEvaluator.setDomainEnd(text.equals("*") ? null : Double.parseDouble(text));
+                functionEvaluator.setDomainEnd(text.equals("*") ? null : text);
             }
         });
 

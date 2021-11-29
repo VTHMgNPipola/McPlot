@@ -34,7 +34,7 @@ public final class ConstantEvaluator {
         this.parent = parent;
     }
 
-    public Constant constant() {
+    public Constant getConstant() {
         return constant;
     }
 
@@ -63,19 +63,26 @@ public final class ConstantEvaluator {
         } catch (InterruptedException | ExecutionException e) {
             constant.actualValue = null;
         }
-        updateAction.run();
+
+        if (updateAction != null) {
+            updateAction.run();
+        }
     }
 
     private String processDefinition() {
         boolean processed;
         List<Constant> constants = parent.getConstants();
         String definition = constant.getDefinition();
+        if (definition == null) {
+            return null;
+        }
+
         do {
             processed = false;
 
             for (Constant c : constants) {
-                if (!c.getName().equals(constant.getName()) && definition.contains(c.getName())) {
-                    definition = definition.replace(c.getName(), c.getDefinition());
+                if (c.getName() != null && !c.getName().equals(constant.getName()) && definition.contains(c.getName())) {
+                    definition = definition.replace(c.getName(), "(" + c.getDefinition() + ")");
                     processed = true;
                 }
             }

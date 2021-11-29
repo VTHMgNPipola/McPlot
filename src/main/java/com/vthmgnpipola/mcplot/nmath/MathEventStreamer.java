@@ -49,12 +49,12 @@ public class MathEventStreamer {
 
     public void registerConstantEvaluator(ConstantEvaluator constantEvaluator) {
         constantEvaluators.add(constantEvaluator);
-        constants.add(constantEvaluator.constant());
+        constants.add(constantEvaluator.getConstant());
     }
 
     public void removeConstantEvaluator(ConstantEvaluator constantEvaluator) {
         constantEvaluators.remove(constantEvaluator);
-        constants.remove(constantEvaluator.constant());
+        constants.remove(constantEvaluator.getConstant());
 
         constantUpdate();
     }
@@ -84,7 +84,7 @@ public class MathEventStreamer {
     }
 
     public void constantUpdate() {
-        Main.EXECUTOR_THREAD.submit(() -> {
+        Main.EXECUTOR_THREAD.execute(() -> {
             constantEvaluators.forEach(ConstantEvaluator::evaluate);
             constantValues = constants.stream()
                     .filter(c -> c.getActualValue() != null && c.getName() != null)

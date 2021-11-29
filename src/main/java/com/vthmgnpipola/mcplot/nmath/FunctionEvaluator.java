@@ -38,6 +38,9 @@ public class FunctionEvaluator {
     private final MathEventStreamer parent;
     private final PlottingPanel plottingPanel;
 
+    private final ConstantEvaluator domainStartEvaluator;
+    private final ConstantEvaluator domainEndEvaluator;
+
     private final FunctionPlot plot;
     private Expression expression;
 
@@ -45,6 +48,12 @@ public class FunctionEvaluator {
         this.function = function;
         this.parent = parent;
         this.plottingPanel = plottingPanel;
+
+        domainStartEvaluator = new ConstantEvaluator(function.getDomainStart(), parent);
+        parent.registerConstantEvaluator(domainStartEvaluator);
+
+        domainEndEvaluator = new ConstantEvaluator(function.getDomainEnd(), parent);
+        parent.registerConstantEvaluator(domainEndEvaluator);
 
         plot = new FunctionPlot();
         plottingPanel.getFunctions().put(function, plot);
@@ -59,14 +68,12 @@ public class FunctionEvaluator {
         parent.functionUpdate(true);
     }
 
-    public void setDomainStart(Double domainStart) {
-        function.setDomainStart(domainStart);
-        parent.functionUpdate(false);
+    public void setDomainStart(String domainStart) {
+        domainStartEvaluator.setDefinition(domainStart);
     }
 
-    public void setDomainEnd(Double domainEnd) {
-        function.setDomainEnd(domainEnd);
-        parent.functionUpdate(false);
+    public void setDomainEnd(String domainEnd) {
+        domainEndEvaluator.setDefinition(domainEnd);
     }
 
     public void setTraceColor(Color traceColor) {
@@ -86,9 +93,10 @@ public class FunctionEvaluator {
 
     public void evaluate() {
         double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
-        double domainStart = function.getDomainStart() != null ? function.getDomainStart() :
-                plottingPanel.getCameraX() / zoomX;
-        double domainEnd = function.getDomainEnd() != null ? function.getDomainEnd() :
+        double domainStart = function.getDomainStart().getActualValue() != null ?
+                function.getDomainStart().getActualValue() : plottingPanel.getCameraX() / zoomX;
+        double domainEnd = function.getDomainEnd().getActualValue() != null ?
+                function.getDomainEnd().getActualValue() :
                 (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
         double step = Math.min(plottingPanel.getMaxStep(), (domainEnd - domainStart) /
                 ((double) (plottingPanel.getWidth() / plottingPanel.getPixelsPerStep()) *
