@@ -105,15 +105,20 @@ public class FunctionEvaluator {
     }
 
     public void processExpression() {
-        if (!FUNCTION_PATTERN.matcher(function.getDefinition()).matches()) {
+        if (function == null || function.getDefinition() == null ||
+                !FUNCTION_PATTERN.matcher(function.getDefinition()).matches()) {
             expression = null;
             return;
         }
 
-        String formationLaw = processFormationLaw();
+        try {
+            String formationLaw = processFormationLaw();
 
-        expression = new ExpressionBuilder(formationLaw).variable(function.getVariableName())
-                .variables(parent.getConstantValues().keySet()).build();
+            expression = new ExpressionBuilder(formationLaw).variable(function.getVariableName())
+                    .variables(parent.getConstantValues().keySet()).build();
+        } catch (Exception e) {
+            expression = null;
+        }
     }
 
     private String processFormationLaw() {
