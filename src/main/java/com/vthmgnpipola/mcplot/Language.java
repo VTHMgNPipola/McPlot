@@ -18,6 +18,11 @@
 
 package com.vthmgnpipola.mcplot;
 
+/**
+ * POJO for usage in {@link javax.swing.JComboBox}es for defining the application language. This class exists so the
+ * application can infer the selected language using the selected item from the {@code JComboBox} directly, instead
+ * of having to iterate on an array with the name strings.
+ */
 public class Language {
     public static final Language[] LANGUAGES = new Language[]{new Language("English (US)", "en-US"),
             new Language("Português (BR)", "pt-BR")};

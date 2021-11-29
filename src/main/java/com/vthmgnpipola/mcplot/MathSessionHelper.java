@@ -33,6 +33,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
+/**
+ * Utility class for saving and loading serialized data to and from files.
+ */
 public class MathSessionHelper {
     private static final JFileChooser FILE_CHOOSER = new JFileChooser();
     private static final String EXTENSION = "mcp";

@@ -23,6 +23,10 @@ import java.util.prefs.Preferences;
 
 import static com.vthmgnpipola.mcplot.Main.PREFERENCES_PATH;
 
+/**
+ * Utility class for retrieving and defining settings in a {@link Preferences} object. Constants for all of the used
+ * settings are also defined in this class.
+ */
 public class PreferencesHelper {
     public static final Preferences PREFERENCES = Preferences.userRoot().node(PREFERENCES_PATH);
 
@@ -45,6 +49,7 @@ public class PreferencesHelper {
     public static final String KEY_GLOBAL_AXIS_COLOR = "globalAxisColor";
 
     static {
+        // This makes sure that when the application shuts down all the preferences are saved
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
                 PREFERENCES.sync();
