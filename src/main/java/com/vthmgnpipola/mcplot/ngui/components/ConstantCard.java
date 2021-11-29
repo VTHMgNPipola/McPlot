@@ -46,6 +46,7 @@ public class ConstantCard extends JPanel {
                         int index) {
         super(new MigLayout());
         this.constantEvaluator = constantEvaluator;
+        constantEvaluator.setUpdateAction(this::updateValueTooltip);
 
         setIndex(index);
 

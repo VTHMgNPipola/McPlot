@@ -22,8 +22,26 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-public record ConstantEvaluator(Constant constant,
-                                MathEventStreamer parent) {
+public final class ConstantEvaluator {
+    private final Constant constant;
+    private final MathEventStreamer parent;
+
+    private Runnable updateAction;
+
+    public ConstantEvaluator(Constant constant,
+                             MathEventStreamer parent) {
+        this.constant = constant;
+        this.parent = parent;
+    }
+
+    public Constant constant() {
+        return constant;
+    }
+
+    public void setUpdateAction(Runnable updateAction) {
+        this.updateAction = updateAction;
+    }
+
     public void setName(String name) {
         constant.setName(name);
         parent.constantUpdate();
@@ -45,6 +63,7 @@ public record ConstantEvaluator(Constant constant,
         } catch (InterruptedException | ExecutionException e) {
             constant.actualValue = null;
         }
+        updateAction.run();
     }
 
     private String processDefinition() {
