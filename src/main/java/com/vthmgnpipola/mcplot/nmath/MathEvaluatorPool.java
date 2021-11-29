@@ -22,12 +22,10 @@ import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -52,14 +50,11 @@ public class MathEvaluatorPool {
         functionsDoneTasks.add(functionsDoneTask);
     }
 
-    public Future<Double> evaluateConstant(String expressionString, String constantName, List<Constant> constants) {
+    public Future<Double> evaluateConstant(String definition, Map<String, Double> constants) {
         return executor.submit(() -> {
-            Map<String, Double> constantMap = constants.stream()
-                    .filter(c -> c.getActualValue() != null && c.getName() != null && !Objects.equals(c.getName(),
-                            constantName)).collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
-            Expression expression = new ExpressionBuilder(expressionString).variables(constantMap.keySet()).build();
-            expression.setVariables(constantMap);
-            if (expression.validate().isValid()) {
+            Expression expression = new ExpressionBuilder(definition).variables(constants.keySet()).build();
+            expression.setVariables(constants);
+            if (expression.validate(true).isValid()) {
                 return expression.evaluate();
             }
             return null;
@@ -72,7 +67,9 @@ public class MathEvaluatorPool {
         runningFunctions++;
         return executor.submit(() -> {
             try {
-                if (function == null || domainEnd < domainStart) {
+                if (function == null || expression == null || domainEnd < domainStart) {
+                    plot.setPath(null);
+
                     runningFunctions--;
                     return null;
                 }

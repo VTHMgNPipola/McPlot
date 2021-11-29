@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -34,13 +35,33 @@ public record ConstantEvaluator(Constant constant,
     }
 
     public void evaluate() {
+        String definition = processDefinition();
+
         Future<Double> calculatedValueFuture = MathEvaluatorPool.getInstance()
-                .evaluateConstant(constant.getDefinition(), constant.getName(), parent.getConstants());
+                .evaluateConstant(definition, parent.getConstantValues());
 
         try {
             constant.actualValue = calculatedValueFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             constant.actualValue = null;
         }
+    }
+
+    private String processDefinition() {
+        boolean processed;
+        List<Constant> constants = parent.getConstants();
+        String definition = constant.getDefinition();
+        do {
+            processed = false;
+
+            for (Constant c : constants) {
+                if (!c.getName().equals(constant.getName()) && definition.contains(c.getName())) {
+                    definition = definition.replace(c.getName(), c.getDefinition());
+                    processed = true;
+                }
+            }
+        } while (processed);
+
+        return definition;
     }
 }

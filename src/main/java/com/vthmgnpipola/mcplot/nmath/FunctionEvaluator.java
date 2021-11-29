@@ -106,6 +106,7 @@ public class FunctionEvaluator {
 
     public void processExpression() {
         if (!FUNCTION_PATTERN.matcher(function.getDefinition()).matches()) {
+            expression = null;
             return;
         }
 
