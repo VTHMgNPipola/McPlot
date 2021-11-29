@@ -43,11 +43,8 @@ public class JLabeledTextField extends JTextField {
             Graphics2D g = (Graphics2D) graphics;
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g.setColor(placeholderColor);
-            // This gigantic thing will basically get how much is missing and add it to the position. It will pick the
-            // absolute value of how far it is from the vertical center of the text field, and then add it to the
-            // vertical center of the text field to get the position.
-            double placeholderY = (double) (getHeight() / 2)
-                    + Math.abs((double) (getHeight() / 2) - (fontMetrics.getAscent() + getInsets().top));
+
+            double placeholderY = (double) fontMetrics.getAscent() + getInsets().top;
             g.drawString(placeholderText, getInsets().left, (int) placeholderY);
         }
     }
