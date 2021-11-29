@@ -28,22 +28,21 @@ import javax.swing.JTextField;
 
 public class JLabeledTextField extends JTextField {
     private String placeholderText;
-    private Color placeholderColor = Color.gray;
-    private FontMetrics fontMetrics;
+    protected Color placeholderColor = Color.gray;
+    protected FontMetrics fontMetrics;
 
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
+        if (fontMetrics == null) {
+            fontMetrics = graphics.getFontMetrics();
+        }
+
         if (getText().isEmpty() && placeholderText != null) {
             Graphics2D g = (Graphics2D) graphics;
-            g.setRenderingHint(
-                    RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g.setColor(placeholderColor);
-            if (fontMetrics == null) {
-                fontMetrics = g.getFontMetrics();
-            }
             // This gigantic thing will basically get how much is missing and add it to the position. It will pick the
             // absolute value of how far it is from the vertical center of the text field, and then add it to the
             // vertical center of the text field to get the position.

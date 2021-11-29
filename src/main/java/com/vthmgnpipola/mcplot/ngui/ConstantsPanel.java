@@ -79,6 +79,10 @@ public class ConstantsPanel extends JPanel {
         });
     }
 
+    public void updateTooltips() {
+        constantCards.forEach(ConstantCard::updateValueTooltip);
+    }
+
     public void removeConstantCard(ConstantCard constantCard) {
         remove(constantCard);
         constantCards.remove(constantCard);

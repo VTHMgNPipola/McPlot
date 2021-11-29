@@ -40,7 +40,7 @@ public class ConstantCard extends JPanel {
 
     private final ConstantEvaluator constantEvaluator;
 
-    private final JLabeledTextField value;
+    private final JSecondaryTextField value;
 
     public ConstantCard(ConstantEvaluator constantEvaluator, MathEventStreamer eventStreamer, ConstantsPanel parent,
                         int index) {
@@ -78,38 +78,38 @@ public class ConstantCard extends JPanel {
             parent.removeConstantCard(this);
         });
 
-        value = new JLabeledTextField();
+        value = new JSecondaryTextField();
         add(value, "pushx, span, growx");
         value.setText(constantEvaluator.constant().getDefinition());
         value.setPlaceholderText(BUNDLE.getString("constantCard.value"));
+        value.setToolTipText(BUNDLE.getString("constantCard.valueTooltip"));
         updateValueTooltip();
         value.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                updateValue();
+                updateValue(parent);
             }
         });
         value.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                updateValue();
+                updateValue(parent);
             }
         });
     }
 
-    private void updateValueTooltip() {
-        String tooltip = BUNDLE.getString("constantCard.valueTooltip");
+    public void updateValueTooltip() {
+        value.setSecondaryText(null);
         if (constantEvaluator.constant().getActualValue() != null) {
-            tooltip = String.format("(%s) %s", DECIMAL_FORMAT.format(constantEvaluator.constant().getActualValue()),
-                    tooltip);
+            value.setSecondaryText(" = " + DECIMAL_FORMAT.format(constantEvaluator.constant().getActualValue()));
         }
-        value.setToolTipText(tooltip);
+        value.repaint();
     }
 
-    private void updateValue() {
+    private void updateValue(ConstantsPanel parent) {
         EXECUTOR_THREAD.submit(() -> {
             constantEvaluator.setDefinition(value.getText());
-            updateValueTooltip();
+            parent.updateTooltips();
         });
     }
 
