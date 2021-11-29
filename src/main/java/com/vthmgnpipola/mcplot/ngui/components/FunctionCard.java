@@ -18,8 +18,8 @@
 
 package com.vthmgnpipola.mcplot.ngui.components;
 
-import com.vthmgnpipola.mcplot.ngui.FunctionPanel;
 import com.vthmgnpipola.mcplot.ngui.FunctionSettingsFrame;
+import com.vthmgnpipola.mcplot.ngui.FunctionsPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
@@ -50,7 +50,7 @@ public class FunctionCard extends JPanel {
     private final PlottingPanel plottingPanel;
 
     public FunctionCard(FunctionEvaluator functionEvaluator, MathEventStreamer eventStreamer,
-                        PlottingPanel plottingPanel, FunctionPanel parent, int index) {
+                        PlottingPanel plottingPanel, FunctionsPanel parent, int index) {
         setLayout(new MigLayout());
         this.functionEvaluator = functionEvaluator;
         this.plottingPanel = plottingPanel;

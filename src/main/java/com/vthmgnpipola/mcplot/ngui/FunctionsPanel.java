@@ -31,13 +31,13 @@ import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class FunctionPanel extends JPanel {
+public class FunctionsPanel extends JPanel {
     private final List<FunctionCard> functionCards;
 
     private AtomicInteger index;
 
-    public FunctionPanel(List<Function> functions, MathEventStreamer eventStreamer,
-                         PlottingPanel plottingPanel) {
+    public FunctionsPanel(List<Function> functions, MathEventStreamer eventStreamer,
+                          PlottingPanel plottingPanel) {
         setLayout(new MigLayout());
         this.functionCards = new ArrayList<>();
         index = new AtomicInteger(1);
