@@ -42,6 +42,7 @@ import javax.swing.JPanel;
 
 import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_BACKGROUND_COLOR;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_ENABLE_ANTIALIAS;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GLOBAL_AXIS_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAJOR_GRID_COLOR;
@@ -67,6 +68,7 @@ public class PlottingPanel extends JPanel {
     private int samplesPerCell = PREFERENCES.getInt(KEY_SAMPLES_PER_CELL, 25);
     private double maxStep = PREFERENCES.getDouble(KEY_MAX_STEP, 0.5);
     private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 3);
+    private boolean antialias = PREFERENCES.getBoolean(KEY_ENABLE_ANTIALIAS, false);
     private final AffineTransform zoomTx;
     private final Map<Function, FunctionPlot> functions;
 
@@ -286,6 +288,10 @@ public class PlottingPanel extends JPanel {
         g.drawLine(0, cameraY, 0, cameraY + getHeight());
 
         // Functions
+        if (antialias) {
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        }
+
         g.setStroke(traceStroke);
         for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
             Function function = functionEntry.getKey();
@@ -367,6 +373,16 @@ public class PlottingPanel extends JPanel {
         this.maxStep = maxStep;
         PREFERENCES.putDouble(KEY_MAX_STEP, maxStep);
         mathPanel.recalculateAllFunctions();
+    }
+
+    public boolean isAntialias() {
+        return antialias;
+    }
+
+    public void setAntialias(boolean antialias) {
+        this.antialias = antialias;
+        PREFERENCES.putBoolean(KEY_ENABLE_ANTIALIAS, antialias);
+        repaint();
     }
 
     @Override

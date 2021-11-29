@@ -19,6 +19,7 @@
 package com.vthmgnpipola.mcplot.ngui.components;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -30,6 +31,12 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 public class PlottingPanelSettingsPanel extends JPanel {
     public PlottingPanelSettingsPanel(PlottingPanel plottingPanel) {
         setLayout(new MigLayout("insets 15", "[]15", "[]10"));
+
+        JCheckBox enableAntialias = new JCheckBox(BUNDLE.getString("settings.plottingPanel.enableAntialias"),
+                plottingPanel.isAntialias());
+        add(enableAntialias, "span");
+        enableAntialias.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableAntialiasTooltip"));
+        enableAntialias.addActionListener(e -> plottingPanel.setAntialias(enableAntialias.isSelected()));
 
         JLabel samplesPerCellLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.samplesPerCell"));
         add(samplesPerCellLabel);

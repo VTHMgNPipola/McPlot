@@ -37,6 +37,7 @@ public class PreferencesHelper {
     public static final String KEY_SCALE_X = "scaleX";
     public static final String KEY_SCALE_Y = "scaleY";
     public static final String KEY_TRACE_WIDTH = "traceWidth";
+    public static final String KEY_ENABLE_ANTIALIAS = "antialias";
     public static final String KEY_FILL_TRANSPARENCY = "fillTransparency";
     public static final String KEY_BACKGROUND_COLOR = "backgroundColor";
     public static final String KEY_MINOR_GRID_COLOR = "minorGridColor";
