@@ -129,7 +129,7 @@ public class Function implements Serializable {
     }
 
     /**
-     * If not set this function won't be rendered on the graph (but will, currently, still be calculated).
+     * If not set this function won't be plotted on the graph.
      *
      * @return Returns if this function should be rendered.
      */

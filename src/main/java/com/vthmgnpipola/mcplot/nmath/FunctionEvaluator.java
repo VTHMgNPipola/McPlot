@@ -92,6 +92,10 @@ public class FunctionEvaluator {
     }
 
     public void evaluate() {
+        if (!function.isVisible()) {
+            return;
+        }
+
         double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
         double domainStart = function.getDomainStart().getActualValue() != null ?
                 function.getDomainStart().getActualValue() : plottingPanel.getCameraX() / zoomX;
