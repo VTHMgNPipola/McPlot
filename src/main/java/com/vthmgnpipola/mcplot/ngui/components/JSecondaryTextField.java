@@ -38,13 +38,15 @@ public class JSecondaryTextField extends JLabeledTextField {
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g.setColor(placeholderColor);
 
-            double secondaryY = (double) fontMetrics.getAscent() + getInsets().top;
-            double secondaryX = getInsets().left + fontMetrics.stringWidth(getText());
-            double secondaryWidth = fontMetrics.stringWidth(secondaryText);
-            if (secondaryX + secondaryWidth > getWidth() - getInsets().right) {
-                secondaryX = getWidth() - getInsets().left - secondaryWidth;
+            if (secondaryText != null) {
+                double secondaryY = (double) fontMetrics.getAscent() + getInsets().top;
+                double secondaryX = getInsets().left + fontMetrics.stringWidth(getText());
+                double secondaryWidth = fontMetrics.stringWidth(secondaryText);
+                if (secondaryX + secondaryWidth > getWidth() - getInsets().right) {
+                    secondaryX = getWidth() - getInsets().left - secondaryWidth;
+                }
+                g.drawString(secondaryText, (int) secondaryX, (int) secondaryY);
             }
-            g.drawString(secondaryText, (int) secondaryX, (int) secondaryY);
         }
     }
 
