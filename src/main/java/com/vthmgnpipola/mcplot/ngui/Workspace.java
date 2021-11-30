@@ -85,8 +85,8 @@ public class Workspace extends JFrame {
         JMenuItem exportText = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.text"));
         export.add(exportText);
         exportText.addActionListener(e -> {
-            ExportTextFileFrame exportTextFileFrame = new ExportTextFileFrame(plottingPanel.getFunctions(),
-                    mathPanel.getEventStreamer().getConstants());
+            ExportTextFileFrame exportTextFileFrame = new ExportTextFileFrame(plottingPanel.getFunctions().keySet(),
+                    mathPanel.getEventStreamer().getConstants(), mathPanel.getEventStreamer().getConstantValues());
             exportTextFileFrame.init();
             exportTextFileFrame.setVisible(true);
         });

@@ -21,9 +21,8 @@ package com.vthmgnpipola.mcplot.ngui;
 import com.vthmgnpipola.mcplot.PreferencesHelper;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
-import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
 import java.io.File;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -32,15 +31,18 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public abstract class ExportFunctionsFrame extends JFrame {
     protected static final JFileChooser FILE_CHOOSER = new JFileChooser();
 
-    protected final Map<Function, FunctionPlot> functions;
-    protected final List<Constant> constants;
+    protected final Collection<Function> functions;
+    protected final Collection<Constant> constants;
+    protected final Map<String, Double> constantValues;
 
-    public ExportFunctionsFrame(String title, Map<Function, FunctionPlot> functions, List<Constant> constants) {
+    public ExportFunctionsFrame(String title, Collection<Function> functions, Collection<Constant> constants,
+                                Map<String, Double> constantValues) {
         super(title);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         this.functions = functions;
         this.constants = constants;
+        this.constantValues = constantValues;
     }
 
     public abstract void init();

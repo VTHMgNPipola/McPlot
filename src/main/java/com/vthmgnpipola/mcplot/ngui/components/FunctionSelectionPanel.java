@@ -21,6 +21,10 @@ package com.vthmgnpipola.mcplot.ngui.components;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -30,8 +34,18 @@ import net.miginfocom.swing.MigLayout;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionSelectionPanel extends JPanel {
-    public FunctionSelectionPanel(Set<Function> functions) {
+    private final Collection<Function> functions;
+    private final Set<Function> selectedFunctions;
+
+    private final List<JCheckBox> selectionBoxes;
+
+    public FunctionSelectionPanel(Collection<Function> functions) {
         super(new MigLayout());
+
+        this.functions = functions;
+        selectedFunctions = new HashSet<>(functions.size() + 10);
+
+        selectionBoxes = new ArrayList<>();
 
         for (Function function : functions) {
             if (function.getDefinition() == null || function.getDefinition().isBlank()) {
@@ -40,6 +54,14 @@ public class FunctionSelectionPanel extends JPanel {
 
             JCheckBox selectFunction = new JCheckBox();
             add(selectFunction);
+            selectionBoxes.add(selectFunction);
+            selectFunction.addChangeListener(e -> {
+                if (selectFunction.isSelected()) {
+                    selectedFunctions.add(function);
+                } else {
+                    selectedFunctions.remove(function);
+                }
+            });
 
             ColorPanel colorPanel = new ColorPanel();
             add(colorPanel);
@@ -52,6 +74,21 @@ public class FunctionSelectionPanel extends JPanel {
         if (getComponentCount() == 0) {
             add(new JLabel(BUNDLE.getString("export.text.functions.noValidFunction")));
         }
+    }
+
+    public Set<Function> getSelectedFunctions() {
+        return selectedFunctions;
+    }
+
+    public void selectAll() {
+        selectionBoxes.forEach(checkbox -> checkbox.setSelected(true));
+        selectedFunctions.clear();
+        selectedFunctions.addAll(functions);
+    }
+
+    public void selectNone() {
+        selectionBoxes.forEach(checkbox -> checkbox.setSelected(false));
+        selectedFunctions.clear();
     }
 
     private static class ColorPanel extends JPanel {

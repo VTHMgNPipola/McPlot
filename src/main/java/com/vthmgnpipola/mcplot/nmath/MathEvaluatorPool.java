@@ -61,17 +61,17 @@ public class MathEvaluatorPool {
         });
     }
 
-    public Future<FunctionPlot> evaluateFunction(Function function, Expression expression, FunctionPlot plot,
-                                                 double domainStart, double domainEnd, double step,
-                                                 Map<String, Double> constants, Consumer<FunctionPlot> callback) {
+    public void evaluateFunction(Function function, Expression expression, FunctionPlot plot,
+                                 double domainStart, double domainEnd, double step,
+                                 Map<String, Double> constants, Consumer<FunctionPlot> callback) {
         runningFunctions++;
-        return executor.submit(() -> {
+        executor.submit(() -> {
             try {
                 if (function == null || expression == null || domainEnd < domainStart) {
                     plot.setPath(null);
 
                     runningFunctions--;
-                    return null;
+                    return;
                 }
 
                 String variableName = function.getVariableName();
@@ -79,7 +79,7 @@ public class MathEvaluatorPool {
                 expression.setVariable(variableName, domainStart);
                 if (!expression.validate(true).isValid()) {
                     runningFunctions--;
-                    return null;
+                    return;
                 }
 
                 plot.setStartX(domainStart);
@@ -100,13 +100,41 @@ public class MathEvaluatorPool {
                 if (runningFunctions == 0) {
                     functionsDoneTasks.forEach(Runnable::run);
                 }
-
-                return plot;
-            } catch (Throwable e) {
+            } catch (Throwable t) {
                 runningFunctions--;
                 plot.setPath(null);
                 callback.accept(null);
-                return null;
+            }
+        });
+    }
+
+    public void evaluateFunctionRaw(Function function, Expression expression, double domainStart, double domainEnd,
+                                    double step, Map<String, Double> constants, Consumer<double[]> callback) {
+        executor.submit(() -> {
+            try {
+                if (function == null || expression == null || domainEnd < domainStart) {
+                    return;
+                }
+
+                double[] values = new double[(int) Math.ceil((domainEnd - domainStart) / step) * 2];
+
+                String variableName = function.getVariableName();
+                expression.setVariables(constants);
+                expression.setVariable(variableName, domainStart);
+                if (!expression.validate(true).isValid()) {
+                    return;
+                }
+
+                int valueIndex = 0;
+                for (double i = domainStart; i < domainEnd; i += step) {
+                    expression.setVariable(variableName, i);
+                    values[valueIndex++] = i;
+                    values[valueIndex++] = expression.evaluate();
+                }
+
+                callback.accept(values);
+            } catch (Throwable t) {
+                callback.accept(null);
             }
         });
     }
