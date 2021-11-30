@@ -84,4 +84,8 @@ public class MathPanel extends JPanel {
             eventStreamer.constantUpdate();
         });
     }
+
+    public MathEventStreamer getEventStreamer() {
+        return eventStreamer;
+    }
 }
