@@ -18,26 +18,43 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.vthmgnpipola.mcplot.ngui.components.FunctionSelectionPanel;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
+import java.awt.Dimension;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class ExportTextFileFrame extends ExportFunctionsFrame {
+    private static final String EXTENSION = "txt";
+    private static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER =
+            new FileNameExtensionFilter(BUNDLE.getString("export.text.extensionFilter"), EXTENSION);
+
+    private JTextField filename;
+    private JCheckBox exportConstants;
+    private JRadioButton tabSeparator;
+    private JRadioButton spaceSeparator;
+    private JRadioButton unixSeparator;
+    private JRadioButton windowsSeparator;
+    private JRadioButton macosSeparator;
+    private JRadioButton defaultSeparator;
+    private FunctionSelectionPanel exportedFunctions;
+
     public ExportTextFileFrame(Map<Function, FunctionPlot> functions, List<Constant> constants) {
         super(BUNDLE.getString("export.text.title"), functions, constants);
     }
@@ -57,10 +74,21 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
         contentPane.add(filenameLabel);
         JButton selectFile = new JButton(BUNDLE.getString("export.text.selectFile"));
         contentPane.add(selectFile, "split 2");
-        JTextField filename = new JTextField();
+        selectFile.addActionListener(e -> {
+            int result = openSaveDialog(FILE_NAME_EXTENSION_FILTER);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String selectedFile = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
+                if (!selectedFile.endsWith("." + EXTENSION)) {
+                    selectedFile += "." + EXTENSION;
+                }
+
+                filename.setText(selectedFile);
+            }
+        });
+        filename = new JTextField();
         contentPane.add(filename, "growx, wrap");
 
-        JCheckBox exportConstants = new JCheckBox(BUNDLE.getString("export.text.exportConstants"));
+        exportConstants = new JCheckBox(BUNDLE.getString("export.text.exportConstants"));
         contentPane.add(exportConstants, "span");
         exportConstants.setSelected(true);
 
@@ -71,12 +99,12 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
 
         ButtonGroup valueSeparatorGroup = new ButtonGroup();
 
-        JRadioButton tabSeparator = new JRadioButton(BUNDLE.getString("export.text.valueSeparator.tab"));
+        tabSeparator = new JRadioButton(BUNDLE.getString("export.text.valueSeparator.tab"));
         valueSeparatorPanel.add(tabSeparator, "span");
         valueSeparatorGroup.add(tabSeparator);
         tabSeparator.setSelected(true);
 
-        JRadioButton spaceSeparator = new JRadioButton(BUNDLE.getString("export.text.valueSeparator.space"));
+        spaceSeparator = new JRadioButton(BUNDLE.getString("export.text.valueSeparator.space"));
         valueSeparatorPanel.add(spaceSeparator, "span");
         valueSeparatorGroup.add(spaceSeparator);
 
@@ -87,19 +115,19 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
 
         ButtonGroup lineSeparatorGroup = new ButtonGroup();
 
-        JRadioButton unixSeparator = new JRadioButton(BUNDLE.getString("export.text.lineSeparator.unix"));
+        unixSeparator = new JRadioButton(BUNDLE.getString("export.text.lineSeparator.unix"));
         lineSeparatorPanel.add(unixSeparator, "span");
         lineSeparatorGroup.add(unixSeparator);
 
-        JRadioButton windowsSeparator = new JRadioButton(BUNDLE.getString("export.text.lineSeparator.windows"));
+        windowsSeparator = new JRadioButton(BUNDLE.getString("export.text.lineSeparator.windows"));
         lineSeparatorPanel.add(windowsSeparator, "span");
         lineSeparatorGroup.add(windowsSeparator);
 
-        JRadioButton macosSeparator = new JRadioButton(BUNDLE.getString("export.text.lineSeparator.macos"));
+        macosSeparator = new JRadioButton(BUNDLE.getString("export.text.lineSeparator.macos"));
         lineSeparatorPanel.add(macosSeparator, "span");
         lineSeparatorGroup.add(macosSeparator);
 
-        JRadioButton defaultSeparator = new JRadioButton(BUNDLE.getString("export.text.lineSeparator.default"));
+        defaultSeparator = new JRadioButton(BUNDLE.getString("export.text.lineSeparator.default"));
         lineSeparatorPanel.add(defaultSeparator, "span");
         lineSeparatorGroup.add(defaultSeparator);
         defaultSeparator.setSelected(true);
@@ -109,8 +137,11 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
         exportedFunctionsPanel.setBorder(BorderFactory.createTitledBorder(
                 BUNDLE.getString("export.text.functions.title")));
 
-        JList<Function> exportedFunctions = new JList<>();
-        exportedFunctionsPanel.add(new JScrollPane(exportedFunctions), "span, grow");
+        exportedFunctions = new FunctionSelectionPanel(functions.keySet());
+        JScrollPane exportedFunctionsScrollPane = new JScrollPane(exportedFunctions);
+        exportedFunctionsScrollPane.setMinimumSize(new Dimension(0, 75));
+        exportedFunctionsScrollPane.setMaximumSize(new Dimension(5120, 150));
+        exportedFunctionsPanel.add(exportedFunctionsScrollPane, "span, grow");
 
         JButton selectAllFunctions = new JButton(BUNDLE.getString("export.text.functions.selectAll"));
         exportedFunctionsPanel.add(selectAllFunctions, "growx");

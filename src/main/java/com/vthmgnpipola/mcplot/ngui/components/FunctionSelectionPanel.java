@@ -1,0 +1,67 @@
+/*
+ * McPlot - a reliable, powerful, lightweight and free graphing calculator
+ * Copyright (C) 2021  VTHMgNPipola
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package com.vthmgnpipola.mcplot.ngui.components;
+
+import com.vthmgnpipola.mcplot.nmath.Function;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Set;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import net.miginfocom.swing.MigLayout;
+
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
+
+public class FunctionSelectionPanel extends JPanel {
+    public FunctionSelectionPanel(Set<Function> functions) {
+        super(new MigLayout());
+
+        for (Function function : functions) {
+            if (function.getDefinition() == null || function.getDefinition().isBlank()) {
+                continue;
+            }
+
+            JCheckBox selectFunction = new JCheckBox();
+            add(selectFunction);
+
+            ColorPanel colorPanel = new ColorPanel();
+            add(colorPanel);
+            colorPanel.setBackground(function.getTraceColor());
+
+            JLabel definition = new JLabel(function.getDefinition());
+            add(definition, "grow, wrap");
+        }
+
+        if (getComponentCount() == 0) {
+            add(new JLabel(BUNDLE.getString("export.text.functions.noValidFunction")));
+        }
+    }
+
+    private static class ColorPanel extends JPanel {
+        @Override
+        protected void paintComponent(Graphics g) {
+            g.setColor(getBackground());
+            g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+
+            g.setColor(Color.black);
+            g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        }
+    }
+}
