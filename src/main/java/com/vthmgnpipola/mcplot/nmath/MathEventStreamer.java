@@ -91,8 +91,10 @@ public class MathEventStreamer {
                     .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
 
             functionEvaluators.forEach(fe -> {
-                fe.processExpression();
-                fe.evaluate();
+                if (fe.getFunction().isVisible()) {
+                    fe.processExpression();
+                    fe.evaluate();
+                }
             });
             plottingPanel.repaint();
         });
@@ -101,11 +103,13 @@ public class MathEventStreamer {
     public void functionUpdate(boolean processExpressions) {
         Main.EXECUTOR_THREAD.submit(() -> {
             functionEvaluators.forEach(fe -> {
-                if (processExpressions) {
-                    fe.processExpression();
-                }
+                if (fe.getFunction().isVisible()) {
+                    if (processExpressions) {
+                        fe.processExpression();
+                    }
 
-                fe.evaluate();
+                    fe.evaluate();
+                }
             });
             plottingPanel.repaint();
         });
