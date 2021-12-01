@@ -42,7 +42,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         add(samplesPerCellLabel);
         JSpinner samplesPerCell = new JSpinner(new SpinnerNumberModel(plottingPanel.getSamplesPerCell(), 1,
                 999, 1));
-        add(samplesPerCell, "growx, wrap");
+        add(samplesPerCell, "growx, span 2, wrap");
         samplesPerCell.setToolTipText(BUNDLE.getString("settings.plottingPanel.samplesPerCellTooltip"));
         samplesPerCell.addChangeListener(e -> plottingPanel.setSamplesPerCell((int) samplesPerCell.getValue()));
 
@@ -50,7 +50,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         add(maxStepLabel);
         JSpinner maxStep = new JSpinner(new SpinnerNumberModel(plottingPanel.getMaxStep(), 0.00001,
                 999, 0.01));
-        add(maxStep, "growx, wrap");
+        add(maxStep, "growx, span 2, wrap");
         maxStep.setToolTipText(BUNDLE.getString("settings.plottingPanel.maxStepTooltip"));
         maxStep.addChangeListener(e -> plottingPanel.setMaxStep((double) maxStep.getValue()));
 
@@ -58,29 +58,37 @@ public class PlottingPanelSettingsPanel extends JPanel {
         add(scaleXLabel);
         JSpinner scaleX = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleX(), 0.0001, 999,
                 0.5));
-        add(scaleX, "growx, wrap");
+        add(scaleX, "growx");
         scaleX.addChangeListener(e -> plottingPanel.setScaleX((double) scaleX.getValue()));
+        JLabel scaleXUnit = new JLabel("x");
+        add(scaleXUnit, "alignx left, wrap");
 
         JLabel scaleYLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleY"));
         add(scaleYLabel);
         JSpinner scaleY = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleY(), 0.0001, 999,
                 0.5));
-        add(scaleY, "growx, wrap");
+        add(scaleY, "growx");
         scaleY.addChangeListener(e -> plottingPanel.setScaleY((double) scaleY.getValue()));
+        JLabel scaleYUnit = new JLabel("x");
+        add(scaleYUnit, "alignx left, wrap");
 
         JLabel traceWidthLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.traceWidth"));
         add(traceWidthLabel);
         JSpinner traceWidth = new JSpinner(new SpinnerNumberModel(plottingPanel.getTraceWidth(), 1, 10, 1));
-        add(traceWidth, "growx, wrap");
+        add(traceWidth, "growx");
         traceWidth.addChangeListener(e -> plottingPanel.setTraceWidth((int) traceWidth.getValue()));
+        JLabel traceWidthUnit = new JLabel("px");
+        add(traceWidthUnit, "alignx left, wrap");
 
         JLabel fillTransparencyLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.fillTransparency"));
         add(fillTransparencyLabel);
         JSpinner fillTransparency = new JSpinner(new SpinnerNumberModel(plottingPanel.getFillTransparency(), 0,
                 100, 0.5));
-        add(fillTransparency, "growx, wrap");
+        add(fillTransparency, "growx");
         fillTransparency.setToolTipText(BUNDLE.getString("settings.plottingPanel.fillTransparencyTooltip"));
         fillTransparency.addChangeListener(e -> plottingPanel.setFillTransparency((double) fillTransparency.getValue()));
+        JLabel fillTransparencyUnit = new JLabel("%");
+        add(fillTransparencyUnit, "alignx left, wrap");
 
         JLabel backgroundColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.backgroundColor"));
         add(backgroundColorLabel);
