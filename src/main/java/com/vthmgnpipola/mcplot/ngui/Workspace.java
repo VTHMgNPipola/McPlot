@@ -79,8 +79,8 @@ public class Workspace extends JFrame {
         JMenu export = new JMenu(BUNDLE.getString("workspace.menu.file.export"));
         file.add(export);
 
-        JMenuItem exportSpreadsheet = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.spreadsheet"));
-        export.add(exportSpreadsheet);
+//        JMenuItem exportSpreadsheet = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.spreadsheet"));
+//        export.add(exportSpreadsheet);
 
         JMenuItem exportText = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.text"));
         export.add(exportText);
@@ -92,11 +92,11 @@ public class Workspace extends JFrame {
             exportTextFileFrame.setVisible(true);
         });
 
-        JMenuItem exportPgfplots = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.pgfplots"));
-        export.add(exportPgfplots);
+//        JMenuItem exportPgfplots = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.pgfplots"));
+//        export.add(exportPgfplots);
 
-        JMenuItem exportPicture = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.picture"));
-        export.add(exportPicture);
+//        JMenuItem exportPicture = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.picture"));
+//        export.add(exportPicture);
 
         file.addSeparator();
 
