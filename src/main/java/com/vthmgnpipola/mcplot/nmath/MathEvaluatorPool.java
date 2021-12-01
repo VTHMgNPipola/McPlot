@@ -108,21 +108,22 @@ public class MathEvaluatorPool {
         });
     }
 
-    public void evaluateFunctionRaw(Function function, Expression expression, double domainStart, double domainEnd,
-                                    double step, Map<String, Double> constants, Consumer<double[]> callback) {
-        executor.submit(() -> {
+    public Future<double[]> evaluateFunctionRaw(Function function, Expression expression, double domainStart,
+                                                double domainEnd,
+                                                double step, Map<String, Double> constants) {
+        return executor.submit(() -> {
             try {
                 if (function == null || expression == null || domainEnd < domainStart) {
-                    return;
+                    return null;
                 }
 
-                double[] values = new double[(int) Math.ceil((domainEnd - domainStart) / step) * 2];
+                double[] values = new double[(int) Math.ceil((domainEnd - domainStart) / step) * 2 + 2];
 
                 String variableName = function.getVariableName();
                 expression.setVariables(constants);
                 expression.setVariable(variableName, domainStart);
                 if (!expression.validate(true).isValid()) {
-                    return;
+                    return null;
                 }
 
                 int valueIndex = 0;
@@ -132,9 +133,11 @@ public class MathEvaluatorPool {
                     values[valueIndex++] = expression.evaluate();
                 }
 
-                callback.accept(values);
+                System.out.println(valueIndex);
+
+                return values;
             } catch (Throwable t) {
-                callback.accept(null);
+                return null;
             }
         });
     }

@@ -20,6 +20,7 @@ package com.vthmgnpipola.mcplot.nmath;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import java.awt.Color;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -168,35 +169,27 @@ public class FunctionEvaluator {
                 });
     }
 
-    /**
-     * Processes a formation law into an exp4j's {@link Expression} object, using the constants defined on parent
-     * event streamer.
-     * <p>
-     * The formation law is determined using a private method, {@link #processFormationLaw()}, which will basically
-     * remove any calls to other functions defined on the parent event streamer and replace them with their formation
-     * laws, and do this until there are no more calls to a function defined on the event streamer.
-     */
-    public void processExpression() {
+    public static Expression processExpression(Function function, Collection<Function> functions,
+                                               Map<String, Double> constants) {
         if (function == null || function.getDefinition() == null ||
                 !FUNCTION_PATTERN.matcher(function.getDefinition()).matches()) {
-            expression = null;
-            return;
+            return null;
         }
 
         try {
-            String formationLaw = processFormationLaw();
+            String formationLaw = processFormationLaw(function, functions);
 
-            expression = new ExpressionBuilder(formationLaw).variable(function.getVariableName())
-                    .variables(parent.getConstantValues().keySet()).build();
+            return new ExpressionBuilder(formationLaw).variable(function.getVariableName())
+                    .variables(constants.keySet()).build();
         } catch (Exception e) {
-            expression = null;
+            return null;
         }
     }
 
-    private String processFormationLaw() {
+    public static String processFormationLaw(Function function, Collection<Function> functions) {
         boolean processed;
         StringBuilder formationLaw = new StringBuilder(function.getFormationLaw());
-        Map<String, Function> functionMap = parent.getFunctions().stream()
+        Map<String, Function> functionMap = functions.stream()
                 .filter(f -> !Objects.equals(f.getName(), function.getName()))
                 .collect(Collectors.toMap(Function::getName, f -> f));
         do {
@@ -218,5 +211,17 @@ public class FunctionEvaluator {
         } while (processed);
 
         return formationLaw.toString();
+    }
+
+    /**
+     * Processes a formation law into an exp4j's {@link Expression} object, using the constants defined on parent
+     * event streamer.
+     * <p>
+     * The formation law is determined using the method {@link #processFormationLaw(Function, Collection)}, which will
+     * basically remove any calls to other functions defined on the list of functions passed as an argument and replace
+     * them with their formation laws, and do this until there are no more calls to a function defined on the list
+     */
+    public void processExpression() {
+        expression = processExpression(function, parent.getFunctions(), parent.getConstantValues());
     }
 }

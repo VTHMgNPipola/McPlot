@@ -21,11 +21,15 @@ package com.vthmgnpipola.mcplot.ngui;
 import com.vthmgnpipola.mcplot.ngui.components.FunctionSelectionPanel;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
+import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
 import java.awt.Dimension;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.BorderFactory;
@@ -41,6 +45,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.miginfocom.swing.MigLayout;
+import net.objecthunter.exp4j.Expression;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -51,6 +56,7 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
 
     private JTextField filename;
     private JCheckBox exportConstants;
+    private JCheckBox exportFunctionDefinition;
     private JRadioButton tabSeparator;
     private JRadioButton unixSeparator;
     private JRadioButton windowsSeparator;
@@ -94,6 +100,10 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
         exportConstants = new JCheckBox(BUNDLE.getString("export.text.exportConstants"));
         contentPane.add(exportConstants, "span");
         exportConstants.setSelected(true);
+
+        exportFunctionDefinition = new JCheckBox(BUNDLE.getString("export.text.exportFunctionDefinition"));
+        contentPane.add(exportFunctionDefinition, "span");
+        exportFunctionDefinition.setSelected(true);
 
         JPanel valueSeparatorPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
         contentPane.add(valueSeparatorPanel, "span, grow");
@@ -197,40 +207,30 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
                 exportText.append(lineSeparator);
             }
 
-            // TODO: Calculate functions
-//            for (Function function : functions) {
-//                functionEvaluator.evaluate(values -> {
-//                    runningFunctions.decrementAndGet();
-//                    if (values == null) {
-//                        return;
-//                    }
-//
-//                    while (exportTextLocked.get()) {
-//                    }
-//
-//                    exportTextLocked.set(true);
-//
-//                    Function function = functionEvaluator.getFunction();
-//                    exportText.append(function.getDefinition()).append(lineSeparator);
-//                    for (int i = 0; i < values.length; i++) {
-//                        exportText.append(values[i++]).append(valueSeparator).append(values[i])
-//                                .append(lineSeparator);
-//                    }
-//                    exportText.append(lineSeparator);
-//
-//                    exportTextLocked.set(false);
-//
-//                    if (runningFunctions.get() == 0) {
-//                        try {
-//                            Files.writeString(Path.of(filename.getText()), exportText.toString());
-//                        } catch (IOException e) {
-//                            JOptionPane.showMessageDialog(this, BUNDLE.getString("export.error"),
-//                                    BUNDLE.getString("generics.errorDialog"), JOptionPane.ERROR_MESSAGE);
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//            }
+            Map<Function, Future<double[]>> results = new HashMap<>();
+            for (Function function : functions) {
+                Expression expression = FunctionEvaluator.processExpression(function, functions, constantValues);
+                results.put(function, MathEvaluatorPool.getInstance().evaluateFunctionRaw(function, expression, -100,
+                        100, 0.05, constantValues));
+            }
+
+            for (Map.Entry<Function, Future<double[]>> resultEntry : results.entrySet()) {
+                double[] result = resultEntry.getValue().get();
+
+                if (result != null) {
+                    if (exportFunctionDefinition.isSelected()) {
+                        exportText.append(resultEntry.getKey().getDefinition()).append(lineSeparator);
+                    }
+
+                    for (int i = 0; i < result.length; i++) {
+                        exportText.append(result[i++]).append(valueSeparator).append(result[i]).append(lineSeparator);
+                    }
+
+                    exportText.append(lineSeparator);
+                } else {
+                    throw new IllegalArgumentException("One (or more) of the functions couldn't be calculated!");
+                }
+            }
 
             Files.writeString(Path.of(filename.getText()), exportText.toString());
 
