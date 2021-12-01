@@ -30,8 +30,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -64,8 +62,8 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
     private FunctionSelectionPanel exportedFunctions;
 
     public ExportTextFileFrame(Collection<Function> functions, Collection<Constant> constants,
-                               Map<String, Double> constantValues) {
-        super(BUNDLE.getString("export.text.title"), functions, constants, constantValues);
+                               Map<String, Double> constantValues, PlottingPanel plottingPanel) {
+        super(BUNDLE.getString("export.text.title"), functions, constants, constantValues, plottingPanel);
     }
 
     @Override
@@ -192,26 +190,43 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
                 lineSeparator = System.lineSeparator();
             }
 
-            AtomicInteger runningFunctions = new AtomicInteger();
-            AtomicBoolean exportTextLocked = new AtomicBoolean(false);
             StringBuilder exportText = new StringBuilder();
 
             if (exportConstants.isSelected()) {
+                boolean exportedAnyConstants = false;
                 for (Constant constant : constants) {
-                    if (constant.getName() != null) {
+                    if (constant.getName() != null && constant.getDefinition() != null &&
+                            constant.getActualValue() != null) {
+                        exportedAnyConstants = true;
                         exportText.append(constant.getName()).append(valueSeparator).append(constant.getDefinition())
                                 .append(valueSeparator).append(constant.getActualValue()).append(lineSeparator);
                     }
                 }
 
-                exportText.append(lineSeparator);
+                if (exportedAnyConstants) {
+                    exportText.append(lineSeparator);
+                }
             }
 
             Map<Function, Future<double[]>> results = new HashMap<>();
             for (Function function : functions) {
+                if (function.getDomainStart().getActualValue() == null ||
+                        function.getDomainEnd().getActualValue() == null) {
+                    JOptionPane.showMessageDialog(this, BUNDLE.getString("export.error.invalidDomain"),
+                            BUNDLE.getString("generics.errorDialog"), JOptionPane.ERROR_MESSAGE);
+                    System.err.println("A domain start and end must be defined when exporting a function!");
+                    return;
+                }
+
+                double domainStart = function.getDomainStart().getActualValue();
+                double domainEnd = function.getDomainEnd().getActualValue();
+                double step = Math.min(plottingPanel.getMaxStep(), (domainEnd - domainStart) /
+                        ((double) (plottingPanel.getWidth() / plottingPanel.getPixelsPerStep()) *
+                                plottingPanel.getSamplesPerCell()));
                 Expression expression = FunctionEvaluator.processExpression(function, functions, constantValues);
-                results.put(function, MathEvaluatorPool.getInstance().evaluateFunctionRaw(function, expression, -100,
-                        100, 0.05, constantValues));
+
+                results.put(function, MathEvaluatorPool.getInstance().evaluateFunctionRaw(function, expression,
+                        domainStart, domainEnd, step, constantValues));
             }
 
             for (Map.Entry<Function, Future<double[]>> resultEntry : results.entrySet()) {
@@ -228,7 +243,10 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
 
                     exportText.append(lineSeparator);
                 } else {
-                    throw new IllegalArgumentException("One (or more) of the functions couldn't be calculated!");
+                    JOptionPane.showMessageDialog(this, BUNDLE.getString("export.error.calculationError"),
+                            BUNDLE.getString("generics.errorDialog"), JOptionPane.ERROR_MESSAGE);
+                    System.err.println("One or more of the functions couldn't be calculated!");
+                    return;
                 }
             }
 

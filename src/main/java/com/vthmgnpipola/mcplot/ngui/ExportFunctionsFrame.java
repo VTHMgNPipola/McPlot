@@ -31,18 +31,22 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public abstract class ExportFunctionsFrame extends JFrame {
     protected static final JFileChooser FILE_CHOOSER = new JFileChooser();
 
+    protected final PlottingPanel plottingPanel;
+
     protected final Collection<Function> functions;
     protected final Collection<Constant> constants;
     protected final Map<String, Double> constantValues;
 
     public ExportFunctionsFrame(String title, Collection<Function> functions, Collection<Constant> constants,
-                                Map<String, Double> constantValues) {
+                                Map<String, Double> constantValues, PlottingPanel plottingPanel) {
         super(title);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         this.functions = functions;
         this.constants = constants;
         this.constantValues = constantValues;
+
+        this.plottingPanel = plottingPanel;
     }
 
     public abstract void init();

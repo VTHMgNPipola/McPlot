@@ -86,7 +86,8 @@ public class Workspace extends JFrame {
         export.add(exportText);
         exportText.addActionListener(e -> {
             ExportTextFileFrame exportTextFileFrame = new ExportTextFileFrame(plottingPanel.getFunctions().keySet(),
-                    mathPanel.getEventStreamer().getConstants(), mathPanel.getEventStreamer().getConstantValues());
+                    mathPanel.getEventStreamer().getConstants(), mathPanel.getEventStreamer().getConstantValues(),
+                    plottingPanel);
             exportTextFileFrame.init();
             exportTextFileFrame.setVisible(true);
         });

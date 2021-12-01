@@ -133,8 +133,6 @@ public class MathEvaluatorPool {
                     values[valueIndex++] = expression.evaluate();
                 }
 
-                System.out.println(valueIndex);
-
                 return values;
             } catch (Throwable t) {
                 return null;
