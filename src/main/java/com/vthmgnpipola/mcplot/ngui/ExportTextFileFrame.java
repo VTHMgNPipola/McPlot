@@ -209,7 +209,7 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
             }
 
             Map<Function, Future<double[]>> results = new HashMap<>();
-            for (Function function : functions) {
+            for (Function function : exportedFunctions.getSelectedFunctions()) {
                 if (function.getDomainStart().getActualValue() == null ||
                         function.getDomainEnd().getActualValue() == null) {
                     JOptionPane.showMessageDialog(this, BUNDLE.getString("export.error.invalidDomain"),
