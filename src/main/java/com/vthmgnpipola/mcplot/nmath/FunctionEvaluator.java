@@ -20,12 +20,10 @@ package com.vthmgnpipola.mcplot.nmath;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import java.awt.Color;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -169,7 +167,7 @@ public class FunctionEvaluator {
                 });
     }
 
-    public static Expression processExpression(Function function, Collection<Function> functions,
+    public static Expression processExpression(Function function, Map<String, Function> functionMap,
                                                Map<String, Double> constants) {
         if (function == null || function.getDefinition() == null ||
                 !FUNCTION_PATTERN.matcher(function.getDefinition()).matches()) {
@@ -177,7 +175,7 @@ public class FunctionEvaluator {
         }
 
         try {
-            String formationLaw = processFormationLaw(function, functions);
+            String formationLaw = processFormationLaw(function, functionMap);
 
             return new ExpressionBuilder(formationLaw).variable(function.getVariableName())
                     .variables(constants.keySet()).build();
@@ -186,12 +184,9 @@ public class FunctionEvaluator {
         }
     }
 
-    public static String processFormationLaw(Function function, Collection<Function> functions) {
+    public static String processFormationLaw(Function function, Map<String, Function> functionMap) {
         boolean processed;
         StringBuilder formationLaw = new StringBuilder(function.getFormationLaw());
-        Map<String, Function> functionMap = functions.stream()
-                .filter(f -> !Objects.equals(f.getName(), function.getName()))
-                .collect(Collectors.toMap(Function::getName, f -> f));
         do {
             processed = false;
 
@@ -199,7 +194,7 @@ public class FunctionEvaluator {
             while (matcher.find()) {
                 String match = matcher.group();
                 Function subFunction = functionMap.get(match.substring(0, match.indexOf('(')).trim());
-                if (subFunction != null) {
+                if (subFunction != null && !Objects.equals(subFunction.getName(), function.getName())) {
                     String subFunctionFormationLaw = subFunction.getFormationLaw();
                     subFunctionFormationLaw = "(" + subFunctionFormationLaw.replaceAll(subFunction.getVariableName(),
                             match.substring(match.indexOf('(') + 1, match.indexOf(')')).trim()) + ")";
@@ -217,11 +212,11 @@ public class FunctionEvaluator {
      * Processes a formation law into an exp4j's {@link Expression} object, using the constants defined on parent
      * event streamer.
      * <p>
-     * The formation law is determined using the method {@link #processFormationLaw(Function, Collection)}, which will
+     * The formation law is determined using the method {@link #processFormationLaw(Function, Map)}, which will
      * basically remove any calls to other functions defined on the list of functions passed as an argument and replace
      * them with their formation laws, and do this until there are no more calls to a function defined on the list
      */
     public void processExpression() {
-        expression = processExpression(function, parent.getFunctions(), parent.getConstantValues());
+        expression = processExpression(function, parent.getFunctionMap(), parent.getConstantValues());
     }
 }

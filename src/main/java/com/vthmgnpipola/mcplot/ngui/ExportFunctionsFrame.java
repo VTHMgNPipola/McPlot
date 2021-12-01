@@ -33,16 +33,16 @@ public abstract class ExportFunctionsFrame extends JFrame {
 
     protected final PlottingPanel plottingPanel;
 
-    protected final Collection<Function> functions;
+    protected final Map<String, Function> functionMap;
     protected final Collection<Constant> constants;
     protected final Map<String, Double> constantValues;
 
-    public ExportFunctionsFrame(String title, Collection<Function> functions, Collection<Constant> constants,
+    public ExportFunctionsFrame(String title, Map<String, Function> functionMap, Collection<Constant> constants,
                                 Map<String, Double> constantValues, PlottingPanel plottingPanel) {
         super(title);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        this.functions = functions;
+        this.functionMap = functionMap;
         this.constants = constants;
         this.constantValues = constantValues;
 

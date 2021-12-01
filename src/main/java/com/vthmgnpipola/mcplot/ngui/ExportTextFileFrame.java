@@ -61,9 +61,9 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
     private JRadioButton macosSeparator;
     private FunctionSelectionPanel exportedFunctions;
 
-    public ExportTextFileFrame(Collection<Function> functions, Collection<Constant> constants,
+    public ExportTextFileFrame(Map<String, Function> functionMap, Collection<Constant> constants,
                                Map<String, Double> constantValues, PlottingPanel plottingPanel) {
-        super(BUNDLE.getString("export.text.title"), functions, constants, constantValues, plottingPanel);
+        super(BUNDLE.getString("export.text.title"), functionMap, constants, constantValues, plottingPanel);
     }
 
     @Override
@@ -148,7 +148,7 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
         exportedFunctionsPanel.setBorder(BorderFactory.createTitledBorder(
                 BUNDLE.getString("export.text.functions.title")));
 
-        exportedFunctions = new FunctionSelectionPanel(functions);
+        exportedFunctions = new FunctionSelectionPanel(functionMap);
         JScrollPane exportedFunctionsScrollPane = new JScrollPane(exportedFunctions);
         exportedFunctionsScrollPane.setMinimumSize(new Dimension(0, 75));
         exportedFunctionsScrollPane.setMaximumSize(new Dimension(5120, 150));
@@ -223,7 +223,7 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
                 double step = Math.min(plottingPanel.getMaxStep(), (domainEnd - domainStart) /
                         ((double) (plottingPanel.getWidth() / plottingPanel.getPixelsPerStep()) *
                                 plottingPanel.getSamplesPerCell()));
-                Expression expression = FunctionEvaluator.processExpression(function, functions, constantValues);
+                Expression expression = FunctionEvaluator.processExpression(function, functionMap, constantValues);
 
                 results.put(function, MathEvaluatorPool.getInstance().evaluateFunctionRaw(function, expression,
                         domainStart, domainEnd, step, constantValues));

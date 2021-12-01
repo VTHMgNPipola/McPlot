@@ -22,9 +22,9 @@ import com.vthmgnpipola.mcplot.nmath.Function;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -34,20 +34,20 @@ import net.miginfocom.swing.MigLayout;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionSelectionPanel extends JPanel {
-    private final Collection<Function> functions;
+    private final Map<String, Function> functionMap;
     private final Set<Function> selectedFunctions;
 
     private final List<JCheckBox> selectionBoxes;
 
-    public FunctionSelectionPanel(Collection<Function> functions) {
+    public FunctionSelectionPanel(Map<String, Function> functionMap) {
         super(new MigLayout());
 
-        this.functions = functions;
-        selectedFunctions = new HashSet<>(functions.size() + 10);
+        this.functionMap = functionMap;
+        selectedFunctions = new HashSet<>(this.functionMap.size() + 10);
 
         selectionBoxes = new ArrayList<>();
 
-        for (Function function : functions) {
+        for (Function function : functionMap.values()) {
             if (function.getDefinition() == null || function.getDefinition().isBlank()) {
                 continue;
             }
@@ -83,7 +83,7 @@ public class FunctionSelectionPanel extends JPanel {
     public void selectAll() {
         selectionBoxes.forEach(checkbox -> checkbox.setSelected(true));
         selectedFunctions.clear();
-        selectedFunctions.addAll(functions);
+        selectedFunctions.addAll(functionMap.values());
     }
 
     public void selectNone() {

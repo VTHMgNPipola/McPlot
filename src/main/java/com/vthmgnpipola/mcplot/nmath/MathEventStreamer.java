@@ -33,7 +33,9 @@ public class MathEventStreamer {
     private final List<Constant> constants;
     private final List<Function> functions;
     private final PlottingPanel plottingPanel;
+
     private Map<String, Double> constantValues;
+    private Map<String, Function> functionMap;
 
     public MathEventStreamer(PlottingPanel plottingPanel) {
         constantEvaluators = new ArrayList<>();
@@ -43,6 +45,7 @@ public class MathEventStreamer {
         functions = new ArrayList<>();
 
         constantValues = new HashMap<>();
+        functionMap = new HashMap<>();
 
         this.plottingPanel = plottingPanel;
     }
@@ -79,8 +82,8 @@ public class MathEventStreamer {
         return constantValues;
     }
 
-    public List<Function> getFunctions() {
-        return functions;
+    public Map<String, Function> getFunctionMap() {
+        return functionMap;
     }
 
     public void constantUpdate() {
@@ -90,6 +93,7 @@ public class MathEventStreamer {
                     .filter(c -> c.getActualValue() != null && c.getName() != null)
                     .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
 
+            functionMap = functions.stream().collect(Collectors.toMap(Function::getName, f -> f));
             functionEvaluators.forEach(fe -> {
                 if (fe.getFunction().isVisible()) {
                     fe.processExpression();
@@ -102,6 +106,7 @@ public class MathEventStreamer {
 
     public void functionUpdate(boolean processExpressions) {
         Main.EXECUTOR_THREAD.submit(() -> {
+            functionMap = functions.stream().collect(Collectors.toMap(Function::getName, f -> f));
             functionEvaluators.forEach(fe -> {
                 if (fe.getFunction().isVisible()) {
                     if (processExpressions) {
