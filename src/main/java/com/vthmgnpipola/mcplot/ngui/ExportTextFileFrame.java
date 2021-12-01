@@ -195,8 +195,8 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
             if (exportConstants.isSelected()) {
                 boolean exportedAnyConstants = false;
                 for (Constant constant : constants) {
-                    if (constant.getName() != null && constant.getDefinition() != null &&
-                            constant.getActualValue() != null) {
+                    if (constant.getName() != null && !constant.getName().isBlank() && constant.getDefinition() != null
+                            && constant.getActualValue() != null) {
                         exportedAnyConstants = true;
                         exportText.append(constant.getName()).append(valueSeparator).append(constant.getDefinition())
                                 .append(valueSeparator).append(constant.getActualValue()).append(lineSeparator);
