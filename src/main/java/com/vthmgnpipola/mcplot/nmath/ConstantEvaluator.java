@@ -81,7 +81,8 @@ public final class ConstantEvaluator {
             processed = false;
 
             for (Constant c : constants) {
-                if (c.getName() != null && !c.getName().equals(constant.getName()) && definition.contains(c.getName())) {
+                if (c.getName() != null && !c.getName().isBlank() && !c.getName().equals(constant.getName()) &&
+                        definition.contains(c.getName())) {
                     definition = definition.replace(c.getName(), "(" + c.getDefinition() + ")");
                     processed = true;
                 }
