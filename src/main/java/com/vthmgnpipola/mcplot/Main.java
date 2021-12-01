@@ -52,7 +52,7 @@ public class Main {
     /**
      * McPlot version, displayed in the Workspace window title and About window.
      */
-    public static final String VERSION = "0.1";
+    public static final String VERSION = "0.2";
 
     /**
      * Single threaded executor for general tasks done by the application. Normally used when a task might be too
