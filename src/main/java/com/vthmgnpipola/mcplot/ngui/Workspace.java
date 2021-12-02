@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.text.MessageFormat;
@@ -86,8 +87,8 @@ public class Workspace extends JFrame {
         export.add(exportText);
         exportText.addActionListener(e -> {
             ExportTextFileFrame exportTextFileFrame = new ExportTextFileFrame(
-                    mathPanel.getEventStreamer().getFunctionMap(), mathPanel.getEventStreamer().getConstants(),
-                    mathPanel.getEventStreamer().getConstantValues(),
+                    MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
+                    MathEventStreamer.getInstance().getConstantValues(),
                     plottingPanel);
             exportTextFileFrame.init();
             exportTextFileFrame.setVisible(true);

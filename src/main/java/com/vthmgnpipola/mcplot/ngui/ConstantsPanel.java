@@ -21,7 +21,6 @@ package com.vthmgnpipola.mcplot.ngui;
 import com.vthmgnpipola.mcplot.ngui.components.ConstantCard;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.ConstantEvaluator;
-import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -36,27 +35,25 @@ public class ConstantsPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public ConstantsPanel(List<Constant> constants, MathEventStreamer eventStreamer) {
+    public ConstantsPanel(List<Constant> constants) {
         super(new MigLayout());
         this.constantCards = new ArrayList<>();
         index = new AtomicInteger(1);
 
         if (constants.size() != 0) {
             constants.forEach(c -> {
-                ConstantEvaluator constantEvaluator = new ConstantEvaluator(c, eventStreamer);
-                eventStreamer.registerConstantEvaluator(constantEvaluator);
+                ConstantEvaluator constantEvaluator = new ConstantEvaluator(c);
 
-                ConstantCard constantCard = new ConstantCard(constantEvaluator, eventStreamer, this,
+                ConstantCard constantCard = new ConstantCard(constantEvaluator, this,
                         index.getAndIncrement());
                 add(constantCard, "pushx, span, growx");
                 constantCards.add(constantCard);
             });
         } else {
             Constant firstConstant = new Constant();
-            ConstantEvaluator firstConstantEvaluator = new ConstantEvaluator(firstConstant, eventStreamer);
-            eventStreamer.registerConstantEvaluator(firstConstantEvaluator);
+            ConstantEvaluator firstConstantEvaluator = new ConstantEvaluator(firstConstant);
 
-            ConstantCard firstConstantCard = new ConstantCard(firstConstantEvaluator, eventStreamer, this,
+            ConstantCard firstConstantCard = new ConstantCard(firstConstantEvaluator, this,
                     index.getAndIncrement());
             add(firstConstantCard, "pushx, span, growx");
             constants.add(firstConstant);
@@ -67,10 +64,9 @@ public class ConstantsPanel extends JPanel {
         add(addConstantCard, "pushx, span, growx");
         addConstantCard.addActionListener(e -> {
             Constant constant = new Constant();
-            ConstantEvaluator constantEvaluator = new ConstantEvaluator(constant, eventStreamer);
-            eventStreamer.registerConstantEvaluator(constantEvaluator);
+            ConstantEvaluator constantEvaluator = new ConstantEvaluator(constant);
 
-            ConstantCard constantCard = new ConstantCard(constantEvaluator, eventStreamer, this,
+            ConstantCard constantCard = new ConstantCard(constantEvaluator, this,
                     index.getAndIncrement());
             add(constantCard, "pushx, span, growx", getComponentCount() - 1);
             constants.add(constant);

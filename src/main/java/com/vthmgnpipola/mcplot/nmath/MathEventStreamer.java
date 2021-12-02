@@ -27,17 +27,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MathEventStreamer {
+    private static final MathEventStreamer INSTANCE = new MathEventStreamer();
+
     private final List<ConstantEvaluator> constantEvaluators;
     private final List<FunctionEvaluator> functionEvaluators;
 
     private final List<Constant> constants;
     private final List<Function> functions;
-    private final PlottingPanel plottingPanel;
+    private PlottingPanel plottingPanel;
 
     private Map<String, Double> constantValues;
     private Map<String, Function> functionMap;
 
-    public MathEventStreamer(PlottingPanel plottingPanel) {
+    private MathEventStreamer() {
         constantEvaluators = new ArrayList<>();
         functionEvaluators = new ArrayList<>();
 
@@ -46,7 +48,13 @@ public class MathEventStreamer {
 
         constantValues = new HashMap<>();
         functionMap = new HashMap<>();
+    }
 
+    public static MathEventStreamer getInstance() {
+        return INSTANCE;
+    }
+
+    public void setPlottingPanel(PlottingPanel plottingPanel) {
         this.plottingPanel = plottingPanel;
     }
 
@@ -93,14 +101,18 @@ public class MathEventStreamer {
                     .filter(c -> c.getActualValue() != null && c.getName() != null)
                     .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
 
-            functionMap = functions.stream().collect(Collectors.toMap(Function::getName, f -> f));
+            functionMap = functions.stream().filter(f -> f.getDefinition() != null)
+                    .collect(Collectors.toMap(Function::getName, f -> f));
             functionEvaluators.forEach(fe -> {
                 if (fe.getFunction().isVisible()) {
                     fe.processExpression();
                     fe.evaluate();
                 }
             });
-            plottingPanel.repaint();
+
+            if (plottingPanel != null) {
+                plottingPanel.repaint();
+            }
         });
     }
 
@@ -116,7 +128,10 @@ public class MathEventStreamer {
                     fe.evaluate();
                 }
             });
-            plottingPanel.repaint();
+
+            if (plottingPanel != null) {
+                plottingPanel.repaint();
+            }
         });
     }
 }

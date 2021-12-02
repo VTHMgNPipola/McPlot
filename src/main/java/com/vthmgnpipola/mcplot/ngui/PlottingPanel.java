@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.vthmgnpipola.mcplot.GraphUnit;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
 import java.awt.BasicStroke;
@@ -45,6 +46,8 @@ import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_BACKGROUND_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_ENABLE_ANTIALIAS;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GLOBAL_AXIS_COLOR;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_X;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_Y;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAJOR_GRID_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAX_STEP;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MINOR_GRID_COLOR;
@@ -74,6 +77,8 @@ public class PlottingPanel extends JPanel {
 
     private Font font;
     private double fillTransparency = PREFERENCES.getDouble(KEY_FILL_TRANSPARENCY, 25);
+    private GraphUnit unitX = GraphUnit.getUnit(PREFERENCES.get(KEY_GRAPH_UNIT_X, ""));
+    private GraphUnit unitY = GraphUnit.getUnit(PREFERENCES.get(KEY_GRAPH_UNIT_Y, ""));
     private Color backgroundColor = new Color(PREFERENCES.getInt(KEY_BACKGROUND_COLOR, Color.white.getRGB()));
     private Color minorGridColor = new Color(PREFERENCES.getInt(KEY_MINOR_GRID_COLOR, -1513240));
     private Color majorGridColor = new Color(PREFERENCES.getInt(KEY_MAJOR_GRID_COLOR, Color.lightGray.getRGB()));
@@ -262,7 +267,8 @@ public class PlottingPanel extends JPanel {
             if (i != 0) {
                 g.setColor(globalAxisColor);
                 g.drawLine(i, -5, i, 5);
-                String step = decimalFormat.format((((double) i / pixelsPerStep) / (scaleX * zoom)));
+                double stepValue = (((double) i / pixelsPerStep) / (scaleX * zoom));
+                String step = unitX.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
                 g.drawString(step, i - fontMetrics.stringWidth(step) / 2, 7 + fontMetrics.getAscent());
             }
         }
@@ -277,7 +283,8 @@ public class PlottingPanel extends JPanel {
             if (i != 0) {
                 g.setColor(globalAxisColor);
                 g.drawLine(-5, i, 5, i);
-                String step = decimalFormat.format(-(((double) i / pixelsPerStep) / (scaleY * zoom)));
+                double stepValue = -(((double) i / pixelsPerStep) / (scaleY * zoom));
+                String step = unitY.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
                 g.drawString(step, -7 - fontMetrics.stringWidth(step), i + fontMetrics.getAscent() / 2);
             }
         }
@@ -291,6 +298,9 @@ public class PlottingPanel extends JPanel {
         if (antialias) {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
+
+        zoomTx.setToScale(scaleX * pixelsPerStep * zoom * unitX.getScale(),
+                -scaleY * pixelsPerStep * zoom * unitY.getScale());
 
         g.setStroke(traceStroke);
         for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
@@ -332,7 +342,6 @@ public class PlottingPanel extends JPanel {
     public void setScaleX(double scaleX) {
         this.scaleX = scaleX;
         PREFERENCES.putDouble(KEY_SCALE_X, scaleX);
-        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
         mathPanel.recalculateAllFunctions();
     }
 
@@ -343,7 +352,6 @@ public class PlottingPanel extends JPanel {
     public void setScaleY(double scaleY) {
         this.scaleY = scaleY;
         PREFERENCES.putDouble(KEY_SCALE_Y, scaleY);
-        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
         mathPanel.recalculateAllFunctions();
     }
 
@@ -456,6 +464,22 @@ public class PlottingPanel extends JPanel {
         this.fillTransparency = fillTransparency;
         PREFERENCES.putDouble(KEY_FILL_TRANSPARENCY, fillTransparency);
         repaint();
+    }
+
+    public GraphUnit getUnitX() {
+        return unitX;
+    }
+
+    public void setUnitX(GraphUnit unitX) {
+        this.unitX = unitX;
+    }
+
+    public GraphUnit getUnitY() {
+        return unitY;
+    }
+
+    public void setUnitY(GraphUnit unitY) {
+        this.unitY = unitY;
     }
 
     public Map<Function, FunctionPlot> getFunctions() {

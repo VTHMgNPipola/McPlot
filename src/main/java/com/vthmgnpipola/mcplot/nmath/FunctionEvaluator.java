@@ -54,19 +54,18 @@ public class FunctionEvaluator {
      * two constant evaluators in the parent event streamer for the domain start and domain end values.
      *
      * @param function      Function this function evaluator "takes care" of.
-     * @param parent        Event streamer used when sending events.
      * @param plottingPanel Plotting panel where the function will be plotted.
      */
-    public FunctionEvaluator(Function function, MathEventStreamer parent, PlottingPanel plottingPanel) {
+    public FunctionEvaluator(Function function, PlottingPanel plottingPanel) {
         this.function = function;
-        this.parent = parent;
+        this.parent = MathEventStreamer.getInstance();
         this.plottingPanel = plottingPanel;
 
-        domainStartEvaluator = new ConstantEvaluator(function.getDomainStart(), parent);
-        parent.registerConstantEvaluator(domainStartEvaluator);
+        parent.registerFunctionEvaluator(this);
 
-        domainEndEvaluator = new ConstantEvaluator(function.getDomainEnd(), parent);
-        parent.registerConstantEvaluator(domainEndEvaluator);
+        domainStartEvaluator = new ConstantEvaluator(function.getDomainStart());
+
+        domainEndEvaluator = new ConstantEvaluator(function.getDomainEnd());
 
         plot = new FunctionPlot();
         plottingPanel.getFunctions().put(function, plot);
@@ -147,7 +146,8 @@ public class FunctionEvaluator {
      * graph width and zoom.
      */
     public void evaluate() {
-        double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom();
+        double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom() *
+                plottingPanel.getUnitX().getScale();
         double domainStart = function.getDomainStart().getActualValue() != null ?
                 function.getDomainStart().getActualValue() : plottingPanel.getCameraX() / zoomX;
         double domainEnd = function.getDomainEnd().getActualValue() != null ?

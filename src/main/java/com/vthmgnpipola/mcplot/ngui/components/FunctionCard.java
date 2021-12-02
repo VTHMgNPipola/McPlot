@@ -46,14 +46,9 @@ public class FunctionCard extends JPanel {
 
     private final JCheckBox visible;
 
-    private final FunctionEvaluator functionEvaluator;
-    private final PlottingPanel plottingPanel;
-
-    public FunctionCard(FunctionEvaluator functionEvaluator, MathEventStreamer eventStreamer,
-                        PlottingPanel plottingPanel, FunctionsPanel parent, int index) {
+    public FunctionCard(FunctionEvaluator functionEvaluator, PlottingPanel plottingPanel, FunctionsPanel parent,
+                        int index) {
         setLayout(new MigLayout());
-        this.functionEvaluator = functionEvaluator;
-        this.plottingPanel = plottingPanel;
 
         setIndex(index);
 
@@ -118,7 +113,7 @@ public class FunctionCard extends JPanel {
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
             plottingPanel.getFunctions().remove(function);
-            eventStreamer.removeFunctionEvaluator(functionEvaluator);
+            MathEventStreamer.getInstance().removeFunctionEvaluator(functionEvaluator);
 
             parent.removeFunctionCard(this);
         });

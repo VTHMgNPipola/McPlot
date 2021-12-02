@@ -36,8 +36,6 @@ public class MathPanel extends JPanel {
     private List<Function> functions;
     private List<Constant> constants;
 
-    private MathEventStreamer eventStreamer;
-
     public MathPanel() {
         setLayout(new BorderLayout());
     }
@@ -49,7 +47,7 @@ public class MathPanel extends JPanel {
     public void init(PlottingPanel plottingPanel, List<Function> functions, List<Constant> constants) {
         removeAll();
 
-        eventStreamer = new MathEventStreamer(plottingPanel);
+        MathEventStreamer.getInstance().setPlottingPanel(plottingPanel);
         plottingPanel.setMathPanel(this);
         MathEvaluatorPool.getInstance().addFunctionsDoneTask(plottingPanel::repaint);
 
@@ -58,10 +56,10 @@ public class MathPanel extends JPanel {
         this.functions = functions;
         this.constants = constants;
 
-        FunctionsPanel functionsPanel = new FunctionsPanel(functions, eventStreamer, plottingPanel);
+        FunctionsPanel functionsPanel = new FunctionsPanel(functions, plottingPanel);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.functions"), new JScrollPane(functionsPanel));
 
-        ConstantsPanel constantsPanel = new ConstantsPanel(constants, eventStreamer);
+        ConstantsPanel constantsPanel = new ConstantsPanel(constants);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.constants"), new JScrollPane(constantsPanel));
 
         add(tabbedPane, BorderLayout.CENTER);
@@ -69,7 +67,7 @@ public class MathPanel extends JPanel {
 
     public void recalculateAllFunctions() {
         // TODO: Discover why the math gets entirely wrong when this is false
-        eventStreamer.functionUpdate(true);
+        MathEventStreamer.getInstance().functionUpdate(true);
     }
 
     public void save() {
@@ -81,11 +79,7 @@ public class MathPanel extends JPanel {
             plottingPanel.getFunctions().clear();
             init(plottingPanel, f, c);
             updateUI();
-            eventStreamer.constantUpdate();
+            MathEventStreamer.getInstance().constantUpdate();
         });
-    }
-
-    public MathEventStreamer getEventStreamer() {
-        return eventStreamer;
     }
 }

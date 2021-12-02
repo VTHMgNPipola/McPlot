@@ -28,10 +28,11 @@ public final class ConstantEvaluator {
 
     private Runnable updateAction;
 
-    public ConstantEvaluator(Constant constant,
-                             MathEventStreamer parent) {
+    public ConstantEvaluator(Constant constant) {
         this.constant = constant;
-        this.parent = parent;
+        this.parent = MathEventStreamer.getInstance();
+
+        parent.registerConstantEvaluator(this);
     }
 
     public Constant getConstant() {

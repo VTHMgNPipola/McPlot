@@ -42,8 +42,7 @@ public class ConstantCard extends JPanel {
 
     private final JSecondaryTextField value;
 
-    public ConstantCard(ConstantEvaluator constantEvaluator, MathEventStreamer eventStreamer, ConstantsPanel parent,
-                        int index) {
+    public ConstantCard(ConstantEvaluator constantEvaluator, ConstantsPanel parent, int index) {
         super(new MigLayout());
         this.constantEvaluator = constantEvaluator;
         constantEvaluator.setUpdateAction(this::updateValueTooltip);
@@ -74,7 +73,7 @@ public class ConstantCard extends JPanel {
         add(remove, "wrap");
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
-            eventStreamer.removeConstantEvaluator(constantEvaluator);
+            MathEventStreamer.getInstance().removeConstantEvaluator(constantEvaluator);
 
             parent.removeConstantCard(this);
         });

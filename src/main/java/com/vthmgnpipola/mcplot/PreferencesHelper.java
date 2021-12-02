@@ -38,6 +38,8 @@ public class PreferencesHelper {
 
     public static final String KEY_SAMPLES_PER_CELL = "samplesPerCell";
     public static final String KEY_MAX_STEP = "maxStep";
+    public static final String KEY_GRAPH_UNIT_X = "unitX";
+    public static final String KEY_GRAPH_UNIT_Y = "unitY";
     public static final String KEY_SCALE_X = "scaleX";
     public static final String KEY_SCALE_Y = "scaleY";
     public static final String KEY_TRACE_WIDTH = "traceWidth";
@@ -47,6 +49,11 @@ public class PreferencesHelper {
     public static final String KEY_MINOR_GRID_COLOR = "minorGridColor";
     public static final String KEY_MAJOR_GRID_COLOR = "majorGridColor";
     public static final String KEY_GLOBAL_AXIS_COLOR = "globalAxisColor";
+
+    public static final String KEY_CUSTOM_X_UNIT_NAME = "unitXName";
+    public static final String KEY_CUSTOM_X_UNIT_DEFINITION = "unitXDefinition";
+    public static final String KEY_CUSTOM_Y_UNIT_NAME = "unitYName";
+    public static final String KEY_CUSTOM_Y_UNIT_DEFINITION = "unitYDefinition";
 
     static {
         // This makes sure that when the application shuts down all the preferences are saved
