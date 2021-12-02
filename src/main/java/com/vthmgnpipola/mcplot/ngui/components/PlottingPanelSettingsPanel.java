@@ -52,6 +52,9 @@ public class PlottingPanelSettingsPanel extends JPanel {
         enableAntialias.addActionListener(e -> plottingPanel.setAntialias(enableAntialias.isSelected()));
 
         // X Axis Unit
+        JLabeledTextField axisXUnitName = new JLabeledTextField();
+        JLabeledTextField axisXUnitDefinition = new JLabeledTextField();
+
         JLabel axisXUnitLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.axisXUnit"));
         add(axisXUnitLabel);
         JComboBox<GraphUnit> axisXUnit = new JComboBox<>(new GraphUnit[]{GraphUnit.DEFAULT, GraphUnit.PI,
@@ -62,14 +65,22 @@ public class PlottingPanelSettingsPanel extends JPanel {
             plottingPanel.setUnitX((GraphUnit) axisXUnit.getSelectedItem());
             PREFERENCES.put(KEY_GRAPH_UNIT_X, GraphUnit.getString((GraphUnit) axisXUnit.getSelectedItem()));
             MathEventStreamer.getInstance().functionUpdate(false);
+
+            if (axisXUnit.getSelectedItem() != GraphUnit.CUSTOM_X_UNIT) {
+                axisXUnitName.setEnabled(false);
+                axisXUnitDefinition.setEnabled(false);
+            } else {
+                axisXUnitName.setEnabled(true);
+                axisXUnitDefinition.setEnabled(true);
+            }
         });
 
         add(new JPanel());
 
-        JLabeledTextField axisXUnitName = new JLabeledTextField();
         add(axisXUnitName, "span 2, split 2");
         axisXUnitName.setPlaceholderText(BUNDLE.getString("settings.plottingPanel.axisUnitName"));
         axisXUnitName.setText(GraphUnit.CUSTOM_X_UNIT.getSymbol());
+        axisXUnitName.setEnabled(axisXUnit.getSelectedItem() == GraphUnit.CUSTOM_X_UNIT);
         axisXUnitName.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -79,10 +90,10 @@ public class PlottingPanelSettingsPanel extends JPanel {
             }
         });
 
-        JLabeledTextField axisXUnitDefinition = new JLabeledTextField();
         add(axisXUnitDefinition, "growx, wrap");
         axisXUnitDefinition.setPlaceholderText(BUNDLE.getString("settings.plottingPanel.axisUnitDefinition"));
         axisXUnitDefinition.setText(GraphUnit.CUSTOM_X_UNIT.getUnitValueEvaluator().getConstant().getDefinition());
+        axisXUnitDefinition.setEnabled(axisXUnit.getSelectedItem() == GraphUnit.CUSTOM_X_UNIT);
         axisXUnitDefinition.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -93,6 +104,9 @@ public class PlottingPanelSettingsPanel extends JPanel {
         });
 
         // Y Axis Unit
+        JLabeledTextField axisYUnitName = new JLabeledTextField();
+        JLabeledTextField axisYUnitDefinition = new JLabeledTextField();
+
         JLabel axisYUnitLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.axisYUnit"));
         add(axisYUnitLabel);
         JComboBox<GraphUnit> axisYUnit = new JComboBox<>(new GraphUnit[]{GraphUnit.DEFAULT, GraphUnit.PI,
@@ -103,14 +117,22 @@ public class PlottingPanelSettingsPanel extends JPanel {
             plottingPanel.setUnitY((GraphUnit) axisYUnit.getSelectedItem());
             PREFERENCES.put(KEY_GRAPH_UNIT_Y, GraphUnit.getString((GraphUnit) axisYUnit.getSelectedItem()));
             MathEventStreamer.getInstance().functionUpdate(false);
+
+            if (axisYUnit.getSelectedItem() != GraphUnit.CUSTOM_Y_UNIT) {
+                axisYUnitName.setEnabled(false);
+                axisYUnitDefinition.setEnabled(false);
+            } else {
+                axisYUnitName.setEnabled(true);
+                axisYUnitDefinition.setEnabled(true);
+            }
         });
 
         add(new JPanel());
 
-        JLabeledTextField axisYUnitName = new JLabeledTextField();
         add(axisYUnitName, "span 2, split 2");
         axisYUnitName.setPlaceholderText(BUNDLE.getString("settings.plottingPanel.axisUnitName"));
         axisYUnitName.setText(GraphUnit.CUSTOM_Y_UNIT.getSymbol());
+        axisYUnitName.setEnabled(axisYUnit.getSelectedItem() == GraphUnit.CUSTOM_Y_UNIT);
         axisYUnitName.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -120,15 +142,15 @@ public class PlottingPanelSettingsPanel extends JPanel {
             }
         });
 
-        JLabeledTextField axisYUnitDefinition = new JLabeledTextField();
         add(axisYUnitDefinition, "growx, wrap");
         axisYUnitDefinition.setPlaceholderText(BUNDLE.getString("settings.plottingPanel.axisUnitDefinition"));
         axisYUnitDefinition.setText(GraphUnit.CUSTOM_Y_UNIT.getUnitValueEvaluator().getConstant().getDefinition());
+        axisYUnitDefinition.setEnabled(axisYUnit.getSelectedItem() == GraphUnit.CUSTOM_Y_UNIT);
         axisYUnitDefinition.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_Y_UNIT.getUnitValueEvaluator().setDefinition(axisYUnitDefinition.getText());
-                PREFERENCES.put(KEY_CUSTOM_Y_UNIT_DEFINITION, axisXUnitDefinition.getText());
+                PREFERENCES.put(KEY_CUSTOM_Y_UNIT_DEFINITION, axisYUnitDefinition.getText());
                 MathEventStreamer.getInstance().functionUpdate(false);
             }
         });
