@@ -24,6 +24,7 @@ java -jar <generated-jar-file>
 
 * Definition of constants
 * Usage of your functions in other functions
+* Custom independent units for each axis
 * Show function area
 * Quickly zoom in and out and pan through the graph with minimal lag
 * Almost fully customize how to graph is displayed
