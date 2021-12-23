@@ -19,6 +19,7 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import java.awt.Font;
+import java.awt.Window;
 import java.text.MessageFormat;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,16 +30,20 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 import static com.vthmgnpipola.mcplot.Main.VERSION;
 
 public class AboutFrame extends JFrame {
-    public AboutFrame() {
+    private final Window parent;
+
+    public AboutFrame(Window parent) {
         super(BUNDLE.getString("about.title"));
         setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        this.parent = parent;
     }
 
     public void init() {
         initContentPane();
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(parent);
     }
 
     private void initContentPane() {

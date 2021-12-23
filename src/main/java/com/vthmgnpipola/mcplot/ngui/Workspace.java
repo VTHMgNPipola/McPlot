@@ -123,7 +123,7 @@ public class Workspace extends JFrame {
         JMenuItem about = new JMenuItem(BUNDLE.getString("workspace.menu.file.about"));
         file.add(about);
         about.addActionListener(e -> {
-            AboutFrame aboutFrame = new AboutFrame();
+            AboutFrame aboutFrame = new AboutFrame(this);
             aboutFrame.init();
             aboutFrame.setVisible(true);
         });

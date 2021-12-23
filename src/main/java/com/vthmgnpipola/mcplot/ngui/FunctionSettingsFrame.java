@@ -18,7 +18,6 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
-import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import java.awt.event.KeyAdapter;
@@ -29,27 +28,26 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionSettingsFrame extends JFrame {
     private final FunctionEvaluator functionEvaluator;
-    private final FunctionCard functionCard;
 
-    public FunctionSettingsFrame(FunctionEvaluator functionEvaluator, FunctionCard functionCard, int index) {
+    public FunctionSettingsFrame(FunctionEvaluator functionEvaluator, int index) {
         super(MessageFormat.format(BUNDLE.getString("functionSettings.title"), index));
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         this.functionEvaluator = functionEvaluator;
-        this.functionCard = functionCard;
     }
 
     public void init(PlottingPanel plottingPanel) {
         initContentPane(plottingPanel);
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(SwingUtilities.getWindowAncestor(plottingPanel));
     }
 
     private void initContentPane(PlottingPanel plottingPanel) {

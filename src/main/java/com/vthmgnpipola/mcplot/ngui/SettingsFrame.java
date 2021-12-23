@@ -23,6 +23,7 @@ import com.vthmgnpipola.mcplot.ngui.components.PlottingPanelSettingsPanel;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -40,7 +41,7 @@ public class SettingsFrame extends JFrame {
     public void init() {
         initContentPane();
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(SwingUtilities.getWindowAncestor(plottingPanel));
     }
 
     private void initContentPane() {

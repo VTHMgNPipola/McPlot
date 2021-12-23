@@ -72,8 +72,7 @@ public class FunctionCard extends JPanel {
         add(otherSettings, "growy");
         otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettingsTooltip"));
         otherSettings.addActionListener(e -> {
-            FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(functionEvaluator,
-                    this, index);
+            FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(functionEvaluator, index);
             functionSettingsFrame.init(plottingPanel);
             functionSettingsFrame.setVisible(true);
         });

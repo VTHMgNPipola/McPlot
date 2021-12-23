@@ -41,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.miginfocom.swing.MigLayout;
 import net.objecthunter.exp4j.Expression;
@@ -70,7 +71,7 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
     public void init() {
         initContentPane();
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(SwingUtilities.getWindowAncestor(plottingPanel));
     }
 
     private void initContentPane() {

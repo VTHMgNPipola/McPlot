@@ -38,6 +38,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import net.miginfocom.swing.MigLayout;
 
@@ -59,7 +60,7 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
     public void init() {
         initContentPane();
         pack();
-        setLocationRelativeTo(null);
+        setLocationRelativeTo(SwingUtilities.getWindowAncestor(plottingPanel));
     }
 
     @Override
