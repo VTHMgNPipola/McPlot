@@ -159,7 +159,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JLabel samplesPerCellLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.samplesPerCell"));
         add(samplesPerCellLabel);
         JSpinner samplesPerCell = new JSpinner(new SpinnerNumberModel(plottingPanel.getSamplesPerCell(), 1,
-                999, 1));
+                1000000000, 1));
         add(samplesPerCell, "growx, span 2, wrap");
         samplesPerCell.setToolTipText(BUNDLE.getString("settings.plottingPanel.samplesPerCellTooltip"));
         samplesPerCell.addChangeListener(e -> plottingPanel.setSamplesPerCell((int) samplesPerCell.getValue()));
@@ -167,8 +167,8 @@ public class PlottingPanelSettingsPanel extends JPanel {
         // Maximum step
         JLabel maxStepLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.maxStep"));
         add(maxStepLabel);
-        JSpinner maxStep = new JSpinner(new SpinnerNumberModel(plottingPanel.getMaxStep(), 0.00001,
-                999, 0.01));
+        JSpinner maxStep = new JSpinner(new SpinnerNumberModel(plottingPanel.getMaxStep(), 0.000000001,
+                1000000000d, 0.01));
         add(maxStep, "growx, span 2, wrap");
         maxStep.setToolTipText(BUNDLE.getString("settings.plottingPanel.maxStepTooltip"));
         maxStep.addChangeListener(e -> plottingPanel.setMaxStep((double) maxStep.getValue()));
@@ -176,8 +176,8 @@ public class PlottingPanelSettingsPanel extends JPanel {
         // X Scale
         JLabel scaleXLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleX"));
         add(scaleXLabel);
-        JSpinner scaleX = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleX(), Double.MIN_VALUE,
-                Double.MAX_VALUE, 0.5));
+        JSpinner scaleX = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleX(), 0.000000001,
+                1000000000d, 0.5));
         add(scaleX, "growx");
         scaleX.addChangeListener(e -> plottingPanel.setScaleX((double) scaleX.getValue()));
         JLabel scaleXUnit = new JLabel("x");
@@ -186,8 +186,8 @@ public class PlottingPanelSettingsPanel extends JPanel {
         // Y Scale
         JLabel scaleYLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleY"));
         add(scaleYLabel);
-        JSpinner scaleY = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleY(), Double.MIN_VALUE,
-                Double.MAX_VALUE, 0.5));
+        JSpinner scaleY = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleY(), 0.000000001,
+                1000000000d, 0.5));
         add(scaleY, "growx");
         scaleY.addChangeListener(e -> plottingPanel.setScaleY((double) scaleY.getValue()));
         JLabel scaleYUnit = new JLabel("x");
