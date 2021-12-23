@@ -472,6 +472,7 @@ public class PlottingPanel extends JPanel {
 
     public void setUnitX(GraphUnit unitX) {
         this.unitX = unitX;
+        repaint();
     }
 
     public GraphUnit getUnitY() {
@@ -480,6 +481,7 @@ public class PlottingPanel extends JPanel {
 
     public void setUnitY(GraphUnit unitY) {
         this.unitY = unitY;
+        repaint();
     }
 
     public Map<Function, FunctionPlot> getFunctions() {
