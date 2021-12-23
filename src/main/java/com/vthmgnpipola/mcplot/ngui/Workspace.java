@@ -97,8 +97,16 @@ public class Workspace extends JFrame {
 //        JMenuItem exportPgfplots = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.pgfplots"));
 //        export.add(exportPgfplots);
 
-//        JMenuItem exportPicture = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.picture"));
-//        export.add(exportPicture);
+        JMenuItem exportPicture = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.picture"));
+        export.add(exportPicture);
+        exportPicture.addActionListener(e -> {
+            ExportImageFileFrame exportImageFileFrame = new ExportImageFileFrame(
+                    MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
+                    MathEventStreamer.getInstance().getConstantValues(),
+                    plottingPanel);
+            exportImageFileFrame.init();
+            exportImageFileFrame.setVisible(true);
+        });
 
         file.addSeparator();
 
