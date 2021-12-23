@@ -18,6 +18,10 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.formdev.flatlaf.icons.FlatFileViewFileIcon;
+import com.formdev.flatlaf.icons.FlatFileViewFloppyDriveIcon;
+import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
+import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -66,11 +70,13 @@ public class Workspace extends JFrame {
         JMenu file = new JMenu(BUNDLE.getString("workspace.menu.file"));
         menuBar.add(file);
 
-        JMenuItem save = new JMenuItem(BUNDLE.getString("workspace.menu.file.save"));
+        JMenuItem save = new JMenuItem(BUNDLE.getString("workspace.menu.file.save"),
+                new FlatFileViewFloppyDriveIcon());
         file.add(save);
         save.addActionListener(e -> mathPanel.save());
 
-        JMenuItem open = new JMenuItem(BUNDLE.getString("workspace.menu.file.open"));
+        JMenuItem open = new JMenuItem(BUNDLE.getString("workspace.menu.file.open"),
+                new FlatTreeOpenIcon());
         file.add(open);
         open.addActionListener(e -> mathPanel.open(plottingPanel));
 
@@ -83,7 +89,8 @@ public class Workspace extends JFrame {
 //        JMenuItem exportSpreadsheet = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.spreadsheet"));
 //        export.add(exportSpreadsheet);
 
-        JMenuItem exportText = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.text"));
+        JMenuItem exportText = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.text"),
+                new FlatFileViewFileIcon());
         export.add(exportText);
         exportText.addActionListener(e -> {
             ExportTextFileFrame exportTextFileFrame = new ExportTextFileFrame(
@@ -130,7 +137,8 @@ public class Workspace extends JFrame {
 
         file.addSeparator();
 
-        JMenuItem exit = new JMenuItem(BUNDLE.getString("workspace.menu.file.exit"));
+        JMenuItem exit = new JMenuItem(BUNDLE.getString("workspace.menu.file.exit"),
+                new FlatTabbedPaneCloseIcon());
         file.add(exit);
         exit.addActionListener(e -> System.exit(0));
     }

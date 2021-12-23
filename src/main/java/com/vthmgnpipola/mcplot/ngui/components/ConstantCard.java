@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui.components;
 
+import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.vthmgnpipola.mcplot.ngui.ConstantsPanel;
 import com.vthmgnpipola.mcplot.nmath.ConstantEvaluator;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
@@ -69,7 +70,7 @@ public class ConstantCard extends JPanel {
             }
         });
 
-        JButton remove = new JButton("X");
+        JButton remove = new JButton(new FlatTabbedPaneCloseIcon());
         add(remove, "wrap");
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {

@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui.components;
 
+import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.vthmgnpipola.mcplot.ngui.FunctionSettingsFrame;
 import com.vthmgnpipola.mcplot.ngui.FunctionsPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
@@ -107,7 +108,7 @@ public class FunctionCard extends JPanel {
             }
         });
 
-        JButton remove = new JButton("X");
+        JButton remove = new JButton(new FlatTabbedPaneCloseIcon());
         add(remove);
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
