@@ -135,13 +135,8 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
         export.addActionListener(e -> export());
     }
 
-    private static class TransferableImage implements Transferable {
+    private record TransferableImage(BufferedImage image) implements Transferable {
         private static final DataFlavor[] DATA_FLAVORS = new DataFlavor[]{DataFlavor.imageFlavor};
-        private final BufferedImage image;
-
-        public TransferableImage(BufferedImage image) {
-            this.image = image;
-        }
 
         @Override
         public DataFlavor[] getTransferDataFlavors() {
