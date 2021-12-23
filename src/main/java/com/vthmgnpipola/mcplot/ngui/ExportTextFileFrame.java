@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.formdev.flatlaf.icons.FlatFileViewDirectoryIcon;
 import com.vthmgnpipola.mcplot.ngui.components.FunctionSelectionPanel;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
@@ -80,8 +81,9 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
 
         JLabel filenameLabel = new JLabel(BUNDLE.getString("export.text.filename"));
         contentPane.add(filenameLabel);
-        JButton selectFile = new JButton(BUNDLE.getString("export.text.selectFile"));
+        JButton selectFile = new JButton(new FlatFileViewDirectoryIcon());
         contentPane.add(selectFile, "split 2");
+        selectFile.setToolTipText(BUNDLE.getString("export.text.selectFile.tooltip"));
         selectFile.addActionListener(e -> {
             int result = openSaveDialog(FILE_NAME_EXTENSION_FILTER);
             if (result == JFileChooser.APPROVE_OPTION) {
