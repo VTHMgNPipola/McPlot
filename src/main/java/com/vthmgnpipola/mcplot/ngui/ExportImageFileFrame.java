@@ -24,6 +24,7 @@ import com.vthmgnpipola.mcplot.ngui.icons.FlatCopyIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -36,6 +37,7 @@ import java.util.Collection;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -48,11 +50,12 @@ import net.miginfocom.swing.MigLayout;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class ExportImageFileFrame extends ExportFunctionsFrame {
-    private static final String EXTENSION = "jpg";
+    private static final String EXTENSION = "png";
     private static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER =
             new FileNameExtensionFilter(BUNDLE.getString("export.image.extensionFilter"), EXTENSION);
 
     private JTextField filename;
+    private JCheckBox enableAntialias;
 
     public ExportImageFileFrame(Map<String, Function> functionMap, Collection<Constant> constants,
                                 Map<String, Double> constantValues, PlottingPanel plottingPanel) {
@@ -72,7 +75,7 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
 
         try {
             OutputStream outputStream = Files.newOutputStream(Path.of(filename.getText()));
-            ImageIO.write(getExportedImage(), "jpeg", outputStream);
+            ImageIO.write(getExportedImage(), "png", outputStream);
 
             JOptionPane.showMessageDialog(this, BUNDLE.getString("export.success"),
                     BUNDLE.getString("generics.successDialog"), JOptionPane.INFORMATION_MESSAGE);
@@ -103,6 +106,9 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
         BufferedImage image = new BufferedImage(plottingPanel.getWidth(), plottingPanel.getHeight(),
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
+        if (enableAntialias.isSelected()) {
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        }
         plottingPanel.paintComponent(g);
         return image;
     }
@@ -129,6 +135,11 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
         });
         filename = new JTextField();
         contentPane.add(filename, "growx, wrap");
+
+        enableAntialias = new JCheckBox(BUNDLE.getString("export.image.enableAntialias"));
+        contentPane.add(enableAntialias, "span");
+        enableAntialias.setToolTipText(BUNDLE.getString("export.image.enableAntialias.tooltip"));
+        enableAntialias.setSelected(true);
 
         JButton copyToClipboard = new JButton(BUNDLE.getString("export.image.copy"), new FlatCopyIcon());
         contentPane.add(copyToClipboard, "span, split 2, alignx right");
