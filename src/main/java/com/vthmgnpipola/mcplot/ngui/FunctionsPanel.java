@@ -19,6 +19,7 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatAddIcon;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import java.util.ArrayList;
@@ -60,7 +61,8 @@ public class FunctionsPanel extends JPanel {
             functionCards.add(firstFunctionCard);
         }
 
-        JButton addFunctionCard = new JButton(BUNDLE.getString("workspace.actions.createFunction"));
+        JButton addFunctionCard = new JButton(BUNDLE.getString("workspace.actions.createFunction"),
+                new FlatAddIcon());
         add(addFunctionCard, "pushx, span, growx");
         addFunctionCard.addActionListener(e -> {
             Function function = new Function();

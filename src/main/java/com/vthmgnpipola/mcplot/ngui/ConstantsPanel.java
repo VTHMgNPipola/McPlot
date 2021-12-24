@@ -19,6 +19,7 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.ConstantCard;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatAddIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.ConstantEvaluator;
 import java.util.ArrayList;
@@ -60,7 +61,8 @@ public class ConstantsPanel extends JPanel {
             constantCards.add(firstConstantCard);
         }
 
-        JButton addConstantCard = new JButton(BUNDLE.getString("workspace.actions.createConstant"));
+        JButton addConstantCard = new JButton(BUNDLE.getString("workspace.actions.createConstant"),
+                new FlatAddIcon());
         add(addConstantCard, "pushx, span, growx");
         addConstantCard.addActionListener(e -> {
             Constant constant = new Constant();
