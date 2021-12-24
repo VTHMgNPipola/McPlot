@@ -18,10 +18,13 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
-import com.formdev.flatlaf.icons.FlatFileViewFileIcon;
 import com.formdev.flatlaf.icons.FlatFileViewFloppyDriveIcon;
 import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatHelpIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatPictureIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatSettingsIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatTextFileIcon;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -90,7 +93,7 @@ public class Workspace extends JFrame {
 //        export.add(exportSpreadsheet);
 
         JMenuItem exportText = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.text"),
-                new FlatFileViewFileIcon());
+                new FlatTextFileIcon());
         export.add(exportText);
         exportText.addActionListener(e -> {
             ExportTextFileFrame exportTextFileFrame = new ExportTextFileFrame(
@@ -104,7 +107,8 @@ public class Workspace extends JFrame {
 //        JMenuItem exportPgfplots = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.pgfplots"));
 //        export.add(exportPgfplots);
 
-        JMenuItem exportPicture = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.picture"));
+        JMenuItem exportPicture = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.picture"),
+                new FlatPictureIcon());
         export.add(exportPicture);
         exportPicture.addActionListener(e -> {
             ExportImageFileFrame exportImageFileFrame = new ExportImageFileFrame(
@@ -117,7 +121,7 @@ public class Workspace extends JFrame {
 
         file.addSeparator();
 
-        JMenuItem settings = new JMenuItem(BUNDLE.getString("generics.settings"));
+        JMenuItem settings = new JMenuItem(BUNDLE.getString("generics.settings"), new FlatSettingsIcon());
         file.add(settings);
         settings.addActionListener(e -> {
             SettingsFrame settingsFrame = new SettingsFrame(plottingPanel);
@@ -127,7 +131,7 @@ public class Workspace extends JFrame {
 
         file.addSeparator();
 
-        JMenuItem about = new JMenuItem(BUNDLE.getString("workspace.menu.file.about"));
+        JMenuItem about = new JMenuItem(BUNDLE.getString("workspace.menu.file.about"), new FlatHelpIcon());
         file.add(about);
         about.addActionListener(e -> {
             AboutFrame aboutFrame = new AboutFrame(this);

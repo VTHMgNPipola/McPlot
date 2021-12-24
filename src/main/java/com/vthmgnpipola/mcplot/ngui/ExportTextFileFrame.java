@@ -20,6 +20,9 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.formdev.flatlaf.icons.FlatFileViewDirectoryIcon;
 import com.vthmgnpipola.mcplot.ngui.components.FunctionSelectionPanel;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatApplyIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatSelectAllIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatUnselectAllIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
@@ -157,15 +160,17 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
         exportedFunctionsScrollPane.setMaximumSize(new Dimension(5120, 150));
         exportedFunctionsPanel.add(exportedFunctionsScrollPane, "span, grow");
 
-        JButton selectAllFunctions = new JButton(BUNDLE.getString("export.text.functions.selectAll"));
+        JButton selectAllFunctions = new JButton(BUNDLE.getString("export.text.functions.selectAll"),
+                new FlatSelectAllIcon());
         exportedFunctionsPanel.add(selectAllFunctions, "growx");
         selectAllFunctions.addActionListener(e -> exportedFunctions.selectAll());
 
-        JButton selectNoneFunctions = new JButton(BUNDLE.getString("export.text.functions.selectNone"));
+        JButton selectNoneFunctions = new JButton(BUNDLE.getString("export.text.functions.selectNone"),
+                new FlatUnselectAllIcon());
         exportedFunctionsPanel.add(selectNoneFunctions, "growx");
         selectNoneFunctions.addActionListener(e -> exportedFunctions.selectNone());
 
-        JButton export = new JButton(BUNDLE.getString("export.text.apply"));
+        JButton export = new JButton(BUNDLE.getString("export.text.apply"), new FlatApplyIcon());
         contentPane.add(export, "span, alignx right");
         export.addActionListener(e -> export());
     }

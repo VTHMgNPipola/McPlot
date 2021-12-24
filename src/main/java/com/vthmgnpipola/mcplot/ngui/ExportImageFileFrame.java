@@ -19,6 +19,8 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.formdev.flatlaf.icons.FlatFileViewDirectoryIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatApplyIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatCopyIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import java.awt.Graphics2D;
@@ -128,12 +130,12 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
         filename = new JTextField();
         contentPane.add(filename, "growx, wrap");
 
-        JButton copyToClipboard = new JButton(BUNDLE.getString("export.image.copy"));
+        JButton copyToClipboard = new JButton(BUNDLE.getString("export.image.copy"), new FlatCopyIcon());
         contentPane.add(copyToClipboard, "span, split 2, alignx right");
         copyToClipboard.setToolTipText(BUNDLE.getString("export.image.copy.tooltip"));
         copyToClipboard.addActionListener(e -> copyToClipboard());
 
-        JButton export = new JButton(BUNDLE.getString("export.image.apply"));
+        JButton export = new JButton(BUNDLE.getString("export.image.apply"), new FlatApplyIcon());
         contentPane.add(export, "alignx right");
         export.addActionListener(e -> export());
     }

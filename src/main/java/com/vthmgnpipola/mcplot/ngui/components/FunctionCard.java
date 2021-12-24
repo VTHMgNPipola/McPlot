@@ -22,6 +22,7 @@ import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.vthmgnpipola.mcplot.ngui.FunctionSettingsFrame;
 import com.vthmgnpipola.mcplot.ngui.FunctionsPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatMoreSettingsIcon;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
@@ -69,7 +70,7 @@ public class FunctionCard extends JPanel {
         colorChooserButton.setMaximumSize(new Dimension(40, 40));
         colorChooserButton.setColorChooserListener(functionEvaluator::setTraceColor);
 
-        JButton otherSettings = new JButton("...");
+        JButton otherSettings = new JButton(new FlatMoreSettingsIcon());
         add(otherSettings, "growy");
         otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettingsTooltip"));
         otherSettings.addActionListener(e -> {
