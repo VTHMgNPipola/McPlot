@@ -73,8 +73,10 @@ public class PlottingPanel extends JPanel {
     private double maxStep = PREFERENCES.getDouble(KEY_MAX_STEP, 0.5);
     private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 3);
     private boolean antialias = PREFERENCES.getBoolean(KEY_ENABLE_ANTIALIAS, false);
-    private final int flPositionX = 20;
-    private final int flPositionY = 20;
+    private int flPositionX = 20;
+    private int flPositionY = 20;
+    private int flWidth = 0;
+    private int flHeight = 0;
     private boolean functionLegends = PREFERENCES.getBoolean(KEY_ENABLE_FUNCTION_LEGENDS, false);
     private final AffineTransform zoomTx;
     private final Map<Function, FunctionPlot> functions;
@@ -101,23 +103,29 @@ public class PlottingPanel extends JPanel {
         zoomTx = new AffineTransform();
         zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
 
-        final boolean[] dragging = new boolean[1];
-        final int[] startPos = new int[2];
+        final int[] dragging = new int[1]; // 1: dragging plotting panel; 2: dragging function legend panel
+        final int[] startPos = new int[2]; // 0: X position; 1: Y position
         // TODO: Start dragging when shift is pressed
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
-                    dragging[0] = true;
                     startPos[0] = e.getXOnScreen();
                     startPos[1] = e.getYOnScreen();
+
+                    if ((e.getX() >= flPositionX && e.getX() <= flPositionX + flWidth) &&
+                            (e.getY() >= flPositionY && e.getY() <= flPositionY + flHeight)) {
+                        dragging[0] = 2;
+                    } else {
+                        dragging[0] = 1;
+                    }
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
-                    dragging[0] = false;
+                    dragging[0] = 0;
                 }
             }
         });
@@ -134,7 +142,7 @@ public class PlottingPanel extends JPanel {
             }
 
             private void moveCamera(MouseEvent e) {
-                if (dragging[0]) {
+                if (dragging[0] == 1) {
                     int currentMouseX = e.getXOnScreen();
                     int currentMouseY = e.getYOnScreen();
 
@@ -145,6 +153,17 @@ public class PlottingPanel extends JPanel {
                     startPos[1] = currentMouseY;
 
                     mathPanel.recalculateAllFunctions();
+                    repaint();
+                } else if (dragging[0] == 2) {
+                    int currentMouseX = e.getXOnScreen();
+                    int currentMouseY = e.getYOnScreen();
+
+                    flPositionX += currentMouseX - startPos[0];
+                    flPositionY += currentMouseY - startPos[1];
+
+                    startPos[0] = currentMouseX;
+                    startPos[1] = currentMouseY;
+
                     repaint();
                 }
             }
@@ -342,8 +361,8 @@ public class PlottingPanel extends JPanel {
             g.translate(cameraX, cameraY);
             g.setStroke(baseStroke);
 
-            int panelHeight = 20 + fontMetrics.getHeight() * visibleFunctions;
-            int panelWidth = 70 + longestFunction;
+            int panelHeight = flHeight = 20 + fontMetrics.getHeight() * visibleFunctions;
+            int panelWidth = flWidth = 70 + longestFunction;
             g.setColor(backgroundColor);
             g.fillRect(flPositionX, flPositionY, panelWidth, panelHeight);
             g.setColor(globalAxisColor);
@@ -370,6 +389,9 @@ public class PlottingPanel extends JPanel {
                         fontMetrics.getHeight() * i + fontMetrics.getAscent() + 10);
                 i++;
             }
+        } else {
+            flWidth = 0;
+            flHeight = 0;
         }
     }
 
