@@ -96,41 +96,45 @@ public class MathEventStreamer {
 
     public void constantUpdate() {
         Main.EXECUTOR_THREAD.execute(() -> {
-            constantEvaluators.forEach(ConstantEvaluator::evaluate);
-            constantValues = constants.stream()
-                    .filter(c -> c.getActualValue() != null && c.getName() != null)
-                    .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
+            try {
+                constantEvaluators.forEach(ConstantEvaluator::evaluate);
+                constantValues = constants.stream()
+                        .filter(c -> c.getActualValue() != null && c.getName() != null)
+                        .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
 
-            functionMap = functions.stream().filter(f -> f.getDefinition() != null)
-                    .collect(Collectors.toMap(Function::getName, f -> f));
-            functionEvaluators.forEach(fe -> {
-                if (fe.getFunction().isVisible()) {
-                    fe.processExpression();
-                    fe.evaluate();
+                functionMap = functions.stream().filter(f -> f.getDefinition() != null)
+                        .collect(Collectors.toMap(Function::getName, f -> f));
+                functionEvaluators.forEach(fe -> {
+                    if (fe.getFunction().isVisible()) {
+                        fe.processExpression();
+                        fe.evaluate();
+                    }
+                });
+            } finally {
+                if (plottingPanel != null) {
+                    plottingPanel.repaint();
                 }
-            });
-
-            if (plottingPanel != null) {
-                plottingPanel.repaint();
             }
         });
     }
 
     public void functionUpdate(boolean processExpressions) {
         Main.EXECUTOR_THREAD.submit(() -> {
-            functionMap = functions.stream().collect(Collectors.toMap(Function::getName, f -> f));
-            functionEvaluators.forEach(fe -> {
-                if (fe.getFunction().isVisible()) {
-                    if (processExpressions) {
-                        fe.processExpression();
+            try {
+                functionMap = functions.stream().collect(Collectors.toMap(Function::getName, f -> f));
+                functionEvaluators.forEach(fe -> {
+                    if (fe.getFunction().isVisible()) {
+                        if (processExpressions) {
+                            fe.processExpression();
+                        }
+
+                        fe.evaluate();
                     }
-
-                    fe.evaluate();
+                });
+            } finally {
+                if (plottingPanel != null) {
+                    plottingPanel.repaint();
                 }
-            });
-
-            if (plottingPanel != null) {
-                plottingPanel.repaint();
             }
         });
     }

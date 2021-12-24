@@ -25,10 +25,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.text.DefaultFormatter;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
@@ -162,6 +164,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
                 1000000000, 1));
         add(samplesPerCell, "growx, span 2, wrap");
         samplesPerCell.setToolTipText(BUNDLE.getString("settings.plottingPanel.samplesPerCellTooltip"));
+        enableCommitsOnValidEdit(samplesPerCell);
         samplesPerCell.addChangeListener(e -> plottingPanel.setSamplesPerCell((int) samplesPerCell.getValue()));
 
         // Maximum step
@@ -171,6 +174,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
                 1000000000d, 0.01));
         add(maxStep, "growx, span 2, wrap");
         maxStep.setToolTipText(BUNDLE.getString("settings.plottingPanel.maxStepTooltip"));
+        enableCommitsOnValidEdit(maxStep);
         maxStep.addChangeListener(e -> plottingPanel.setMaxStep((double) maxStep.getValue()));
 
         // X Scale
@@ -179,6 +183,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JSpinner scaleX = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleX(), 0.000000001,
                 1000000000d, 0.5));
         add(scaleX, "growx");
+        enableCommitsOnValidEdit(scaleX);
         scaleX.addChangeListener(e -> plottingPanel.setScaleX((double) scaleX.getValue()));
         JLabel scaleXUnit = new JLabel("x");
         add(scaleXUnit, "alignx left, wrap");
@@ -189,6 +194,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JSpinner scaleY = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleY(), 0.000000001,
                 1000000000d, 0.5));
         add(scaleY, "growx");
+        enableCommitsOnValidEdit(scaleY);
         scaleY.addChangeListener(e -> plottingPanel.setScaleY((double) scaleY.getValue()));
         JLabel scaleYUnit = new JLabel("x");
         add(scaleYUnit, "alignx left, wrap");
@@ -198,6 +204,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         add(traceWidthLabel);
         JSpinner traceWidth = new JSpinner(new SpinnerNumberModel(plottingPanel.getTraceWidth(), 1, 10, 1));
         add(traceWidth, "growx");
+        enableCommitsOnValidEdit(traceWidth);
         traceWidth.addChangeListener(e -> plottingPanel.setTraceWidth((int) traceWidth.getValue()));
         JLabel traceWidthUnit = new JLabel("px");
         add(traceWidthUnit, "alignx left, wrap");
@@ -209,6 +216,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
                 100, 0.5));
         add(fillTransparency, "growx");
         fillTransparency.setToolTipText(BUNDLE.getString("settings.plottingPanel.fillTransparencyTooltip"));
+        enableCommitsOnValidEdit(fillTransparency);
         fillTransparency.addChangeListener(e -> plottingPanel.setFillTransparency((double) fillTransparency.getValue()));
         JLabel fillTransparencyUnit = new JLabel("%");
         add(fillTransparencyUnit, "alignx left, wrap");
@@ -244,5 +252,11 @@ public class PlottingPanelSettingsPanel extends JPanel {
         add(globalAxisColor, "pushx, growy");
         globalAxisColor.setSelectedColor(plottingPanel.getGlobalAxisColor());
         globalAxisColor.setColorChooserListener(plottingPanel::setGlobalAxisColor);
+    }
+
+    private void enableCommitsOnValidEdit(JSpinner spinner) {
+        JFormattedTextField field = (JFormattedTextField) spinner.getEditor().getComponent(0);
+        DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
+        formatter.setCommitsOnValidEdit(true);
     }
 }
