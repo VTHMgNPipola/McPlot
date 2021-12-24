@@ -109,22 +109,21 @@ public class PlottingPanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
-                    startPos[0] = e.getXOnScreen();
-                    startPos[1] = e.getYOnScreen();
+                startPos[0] = e.getXOnScreen();
+                startPos[1] = e.getYOnScreen();
 
-                    if ((e.getX() >= flPositionX && e.getX() <= flPositionX + flWidth) &&
-                            (e.getY() >= flPositionY && e.getY() <= flPositionY + flHeight)) {
-                        dragging[0] = 2;
-                    } else {
-                        dragging[0] = 1;
-                    }
+                if ((e.getX() >= flPositionX && e.getX() <= flPositionX + flWidth) &&
+                        (e.getY() >= flPositionY && e.getY() <= flPositionY + flHeight)) {
+                    dragging[0] = 2;
+                } else if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
+                    dragging[0] = 1;
                 }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
+                if ((e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3 && dragging[0] == 1) ||
+                        dragging[0] == 2) {
                     dragging[0] = 0;
                 }
             }
