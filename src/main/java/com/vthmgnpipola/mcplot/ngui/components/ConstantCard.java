@@ -54,7 +54,7 @@ public class ConstantCard extends JPanel {
         add(name, "pushx, growx");
         name.setText(constantEvaluator.getConstant().getName());
         name.setPlaceholderText(BUNDLE.getString("constantCard.name"));
-        name.setToolTipText(BUNDLE.getString("constantCard.nameTooltip"));
+        name.setToolTipText(BUNDLE.getString("constantCard.name.tooltip"));
         name.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -83,7 +83,7 @@ public class ConstantCard extends JPanel {
         add(value, "pushx, span, growx");
         value.setText(constantEvaluator.getConstant().getDefinition());
         value.setPlaceholderText(BUNDLE.getString("constantCard.value"));
-        value.setToolTipText(BUNDLE.getString("constantCard.valueTooltip"));
+        value.setToolTipText(BUNDLE.getString("constantCard.value.tooltip"));
         updateValueTooltip();
         value.addFocusListener(new FocusAdapter() {
             @Override

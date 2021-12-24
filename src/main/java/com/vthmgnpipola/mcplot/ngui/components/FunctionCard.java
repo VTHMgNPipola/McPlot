@@ -72,7 +72,7 @@ public class FunctionCard extends JPanel {
 
         JButton otherSettings = new JButton(new FlatMoreSettingsIcon());
         add(otherSettings, "growy");
-        otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettingsTooltip"));
+        otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettings.tooltip"));
         otherSettings.addActionListener(e -> {
             FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(functionEvaluator, index);
             functionSettingsFrame.init(plottingPanel);
@@ -82,7 +82,7 @@ public class FunctionCard extends JPanel {
         visible = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"),
                 function.isVisible());
         add(visible, "pushx, growx, wrap");
-        visible.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisibleTooltip"));
+        visible.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisible.tooltip"));
         visible.addActionListener(e -> functionEvaluator.setVisible(visible.isSelected()));
 
         JLabeledTextField functionField = new JLabeledTextField();

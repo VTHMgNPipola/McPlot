@@ -44,6 +44,7 @@ import javax.swing.JPanel;
 import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_BACKGROUND_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_ENABLE_ANTIALIAS;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_ENABLE_FUNCTION_LEGENDS;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GLOBAL_AXIS_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_X;
@@ -72,6 +73,9 @@ public class PlottingPanel extends JPanel {
     private double maxStep = PREFERENCES.getDouble(KEY_MAX_STEP, 0.5);
     private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 3);
     private boolean antialias = PREFERENCES.getBoolean(KEY_ENABLE_ANTIALIAS, false);
+    private final int flPositionX = 20;
+    private final int flPositionY = 20;
+    private boolean functionLegends = PREFERENCES.getBoolean(KEY_ENABLE_FUNCTION_LEGENDS, false);
     private final AffineTransform zoomTx;
     private final Map<Function, FunctionPlot> functions;
 
@@ -232,6 +236,7 @@ public class PlottingPanel extends JPanel {
         Graphics2D g = (Graphics2D) graphics;
         g.setFont(font);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+        Stroke baseStroke = g.getStroke();
 
         if (fontMetrics == null) {
             fontMetrics = g.getFontMetrics();
@@ -303,6 +308,8 @@ public class PlottingPanel extends JPanel {
                 -scaleY * pixelsPerStep * zoom * unitY.getScale());
 
         g.setStroke(traceStroke);
+        int visibleFunctions = 0;
+        int longestFunction = 0;
         for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
             Function function = functionEntry.getKey();
             FunctionPlot plot = functionEntry.getValue();
@@ -324,6 +331,45 @@ public class PlottingPanel extends JPanel {
             }
             g.setColor(traceColor);
             g.draw(zoomTx.createTransformedShape(plot.getPath()));
+
+            longestFunction = Math.max(longestFunction, fontMetrics.stringWidth(function.getDefinition()));
+
+            visibleFunctions++;
+        }
+
+        // Function legends
+        if (functionLegends && visibleFunctions != 0) {
+            g.translate(cameraX, cameraY);
+            g.setStroke(baseStroke);
+
+            int panelHeight = 20 + fontMetrics.getHeight() * visibleFunctions;
+            int panelWidth = 70 + longestFunction;
+            g.setColor(backgroundColor);
+            g.fillRect(flPositionX, flPositionY, panelWidth, panelHeight);
+            g.setColor(globalAxisColor);
+            g.drawRect(flPositionX, flPositionY, panelWidth, panelHeight);
+
+            g.translate(flPositionX, flPositionY);
+            int i = 0;
+            for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
+                Function function = functionEntry.getKey();
+                FunctionPlot plot = functionEntry.getValue();
+                Color traceColor = function.getTraceColor();
+                if (!function.isVisible() || plot == null || plot.getPath() == null) {
+                    continue;
+                }
+
+                g.setStroke(traceStroke);
+                g.setColor(traceColor);
+                int y = fontMetrics.getHeight() * i + fontMetrics.getHeight() / 2 + 10;
+                g.drawLine(10, y, 50, y);
+
+                g.setStroke(baseStroke);
+                g.setColor(globalAxisColor);
+                g.drawString(function.getDefinition(), 60,
+                        fontMetrics.getHeight() * i + fontMetrics.getAscent() + 10);
+                i++;
+            }
         }
     }
 
@@ -481,6 +527,16 @@ public class PlottingPanel extends JPanel {
 
     public void setUnitY(GraphUnit unitY) {
         this.unitY = unitY;
+        repaint();
+    }
+
+    public boolean isFunctionLegends() {
+        return functionLegends;
+    }
+
+    public void setFunctionLegends(boolean functionLegends) {
+        this.functionLegends = functionLegends;
+        PREFERENCES.putBoolean(KEY_ENABLE_FUNCTION_LEGENDS, functionLegends);
         repaint();
     }
 

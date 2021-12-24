@@ -50,8 +50,15 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JCheckBox enableAntialias = new JCheckBox(BUNDLE.getString("settings.plottingPanel.enableAntialias"),
                 plottingPanel.isAntialias());
         add(enableAntialias, "span");
-        enableAntialias.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableAntialiasTooltip"));
+        enableAntialias.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableAntialias.tooltip"));
         enableAntialias.addActionListener(e -> plottingPanel.setAntialias(enableAntialias.isSelected()));
+
+        // Enable function legends
+        JCheckBox enableFuncLegends = new JCheckBox(BUNDLE.getString("settings.plottingPanel.enableFuncLegends"),
+                plottingPanel.isFunctionLegends());
+        add(enableFuncLegends, "span");
+        enableFuncLegends.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableFuncLegends.tooltip"));
+        enableFuncLegends.addActionListener(e -> plottingPanel.setFunctionLegends(enableFuncLegends.isSelected()));
 
         // X Axis Unit
         JLabeledTextField axisXUnitName = new JLabeledTextField();
@@ -163,7 +170,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JSpinner samplesPerCell = new JSpinner(new SpinnerNumberModel(plottingPanel.getSamplesPerCell(), 1,
                 1000000000, 1));
         add(samplesPerCell, "growx, span 2, wrap");
-        samplesPerCell.setToolTipText(BUNDLE.getString("settings.plottingPanel.samplesPerCellTooltip"));
+        samplesPerCell.setToolTipText(BUNDLE.getString("settings.plottingPanel.samplesPerCell.tooltip"));
         enableCommitsOnValidEdit(samplesPerCell);
         samplesPerCell.addChangeListener(e -> plottingPanel.setSamplesPerCell((int) samplesPerCell.getValue()));
 
@@ -173,7 +180,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JSpinner maxStep = new JSpinner(new SpinnerNumberModel(plottingPanel.getMaxStep(), 0.000000001,
                 1000000000d, 0.01));
         add(maxStep, "growx, span 2, wrap");
-        maxStep.setToolTipText(BUNDLE.getString("settings.plottingPanel.maxStepTooltip"));
+        maxStep.setToolTipText(BUNDLE.getString("settings.plottingPanel.maxStep.tooltip"));
         enableCommitsOnValidEdit(maxStep);
         maxStep.addChangeListener(e -> plottingPanel.setMaxStep((double) maxStep.getValue()));
 
@@ -215,7 +222,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JSpinner fillTransparency = new JSpinner(new SpinnerNumberModel(plottingPanel.getFillTransparency(), 0,
                 100, 0.5));
         add(fillTransparency, "growx");
-        fillTransparency.setToolTipText(BUNDLE.getString("settings.plottingPanel.fillTransparencyTooltip"));
+        fillTransparency.setToolTipText(BUNDLE.getString("settings.plottingPanel.fillTransparency.tooltip"));
         enableCommitsOnValidEdit(fillTransparency);
         fillTransparency.addChangeListener(e -> plottingPanel.setFillTransparency((double) fillTransparency.getValue()));
         JLabel fillTransparencyUnit = new JLabel("%");

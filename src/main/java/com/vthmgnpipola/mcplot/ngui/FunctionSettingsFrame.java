@@ -62,7 +62,7 @@ public class FunctionSettingsFrame extends JFrame {
         JTextField domainStart = new JTextField(function.getDomainStart().getActualValue() != null ?
                 function.getDomainStart().getDefinition() : "*");
         contentPane.add(domainStart, "growx, wrap");
-        domainStart.setToolTipText(BUNDLE.getString("functionSettings.domainStartTooltip"));
+        domainStart.setToolTipText(BUNDLE.getString("functionSettings.domainStart.tooltip"));
         domainStart.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -76,7 +76,7 @@ public class FunctionSettingsFrame extends JFrame {
         JTextField domainEnd = new JTextField(function.getDomainEnd().getActualValue() != null ?
                 function.getDomainEnd().getDefinition() : "*");
         contentPane.add(domainEnd, "growx, wrap");
-        domainEnd.setToolTipText(BUNDLE.getString("functionSettings.domainEndTooltip"));
+        domainEnd.setToolTipText(BUNDLE.getString("functionSettings.domainEnd.tooltip"));
         domainEnd.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
@@ -87,7 +87,7 @@ public class FunctionSettingsFrame extends JFrame {
 
         JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"), function.isFilled());
         contentPane.add(fillArea, "span");
-        fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillAreaTooltip"));
+        fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillArea.tooltip"));
         fillArea.addActionListener(e -> functionEvaluator.setFilled(fillArea.isSelected()));
     }
 }
