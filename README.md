@@ -30,14 +30,14 @@ java -jar <generated-jar-file>
 * Almost fully customize how to graph is displayed
 * Relatively small memory footprint
 * Save and load your functions and constants to a file
-* Export data to text files
+* Export data to text files and images
 
 ## Planned Features
 
 * Reduce the memory footprint even more
-* Export graph and function data to spreadsheets, PGFPlots graphs and pictures
+* Export graph and function data to spreadsheets, PGFPlots graphs
 * Improve overall customization and flexibility
-* Gather and present data from the functions
+* Gather and present data from functions
 * Show functions as splines instead of straight lines from each sample point
 * Option to use a "speed" standard expression evaluator and a "precision" slower evaluator
 
