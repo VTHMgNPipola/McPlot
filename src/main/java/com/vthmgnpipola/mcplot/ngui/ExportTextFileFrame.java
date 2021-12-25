@@ -46,16 +46,14 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import net.miginfocom.swing.MigLayout;
 import net.objecthunter.exp4j.Expression;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class ExportTextFileFrame extends ExportFunctionsFrame {
-    private static final String EXTENSION = "txt";
-    private static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER =
-            new FileNameExtensionFilter(BUNDLE.getString("export.text.extensionFilter"), EXTENSION);
+    private static final FileChooserExtension EXTENSION = new FileChooserExtension(
+            BUNDLE.getString("export.text.extensionFilter"), "txt", "txt");
 
     private JTextField filename;
     private JCheckBox exportConstants;
@@ -88,12 +86,9 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
         contentPane.add(selectFile, "split 2");
         selectFile.setToolTipText(BUNDLE.getString("export.text.selectFile.tooltip"));
         selectFile.addActionListener(e -> {
-            int result = openSaveDialog(FILE_NAME_EXTENSION_FILTER);
+            int result = openSaveDialog(EXTENSION.getFilter());
             if (result == JFileChooser.APPROVE_OPTION) {
-                String selectedFile = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
-                if (!selectedFile.endsWith("." + EXTENSION)) {
-                    selectedFile += "." + EXTENSION;
-                }
+                String selectedFile = EXTENSION.getPathWithExtension(FILE_CHOOSER.getSelectedFile().getAbsolutePath());
 
                 filename.setText(selectedFile);
             }
