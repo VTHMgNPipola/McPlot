@@ -44,15 +44,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class ExportImageFileFrame extends ExportFunctionsFrame {
-    private static final String EXTENSION = "png";
-    private static final FileNameExtensionFilter FILE_NAME_EXTENSION_FILTER =
-            new FileNameExtensionFilter(BUNDLE.getString("export.image.extensionFilter"), EXTENSION);
+    private static final FileChooserExtension EXTENSION = new FileChooserExtension(
+            BUNDLE.getString("export.image.extensionFilter"), "png",
+            "png", "jpg", "tiff", "bmp");
 
     private JTextField filename;
     private JCheckBox enableAntialias;
@@ -73,9 +72,9 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
     public void export() {
         dispose();
 
-        try {
-            OutputStream outputStream = Files.newOutputStream(Path.of(filename.getText()));
-            ImageIO.write(getExportedImage(), "png", outputStream);
+        Path path = Path.of(filename.getText());
+        try (OutputStream outputStream = Files.newOutputStream(path)) {
+            ImageIO.write(getExportedImage(), EXTENSION.getFileType(path.getFileName().toString()), outputStream);
 
             JOptionPane.showMessageDialog(this, BUNDLE.getString("export.success"),
                     BUNDLE.getString("generics.successDialog"), JOptionPane.INFORMATION_MESSAGE);
@@ -123,12 +122,9 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
         contentPane.add(selectFile, "split 2");
         selectFile.setToolTipText(BUNDLE.getString("export.image.selectFile.tooltip"));
         selectFile.addActionListener(e -> {
-            int result = openSaveDialog(FILE_NAME_EXTENSION_FILTER);
+            int result = openSaveDialog(EXTENSION.getFilter());
             if (result == JFileChooser.APPROVE_OPTION) {
-                String selectedFile = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
-                if (!selectedFile.endsWith("." + EXTENSION)) {
-                    selectedFile += "." + EXTENSION;
-                }
+                String selectedFile = EXTENSION.getPathWithExtension(FILE_CHOOSER.getSelectedFile().getAbsolutePath());
 
                 filename.setText(selectedFile);
             }
