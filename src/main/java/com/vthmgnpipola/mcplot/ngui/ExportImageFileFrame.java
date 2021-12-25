@@ -53,6 +53,8 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
             BUNDLE.getString("export.image.extensionFilter"), "png",
             "png", "jpg", "tiff", "bmp");
 
+    private static String lastFilename;
+
     private JTextField filename;
     private JCheckBox enableAntialias;
 
@@ -71,6 +73,7 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
     @Override
     public void export() {
         dispose();
+        lastFilename = filename.getText();
 
         Path path = Path.of(filename.getText());
         try (OutputStream outputStream = Files.newOutputStream(path)) {
@@ -129,7 +132,7 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
                 filename.setText(selectedFile);
             }
         });
-        filename = new JTextField();
+        filename = new JTextField(lastFilename);
         contentPane.add(filename, "growx, wrap");
 
         enableAntialias = new JCheckBox(BUNDLE.getString("export.image.enableAntialias"));

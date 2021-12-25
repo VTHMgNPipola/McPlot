@@ -55,6 +55,8 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
     private static final FileChooserExtension EXTENSION = new FileChooserExtension(
             BUNDLE.getString("export.text.extensionFilter"), "txt", "txt");
 
+    private static String lastFilename;
+
     private JTextField filename;
     private JCheckBox exportConstants;
     private JCheckBox exportFunctionDefinition;
@@ -93,7 +95,7 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
                 filename.setText(selectedFile);
             }
         });
-        filename = new JTextField();
+        filename = new JTextField(lastFilename);
         contentPane.add(filename, "growx, wrap");
 
         exportConstants = new JCheckBox(BUNDLE.getString("export.text.exportConstants"));
@@ -173,6 +175,7 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
     @Override
     public void export() {
         dispose();
+        lastFilename = filename.getText();
 
         try {
             String valueSeparator;
