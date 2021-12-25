@@ -55,6 +55,7 @@ public class FunctionSelectionPanel extends JPanel {
             JCheckBox selectFunction = new JCheckBox();
             add(selectFunction);
             selectionBoxes.add(selectFunction);
+            selectFunction.setSelected(function.isVisible());
             selectFunction.addChangeListener(e -> {
                 if (selectFunction.isSelected()) {
                     selectedFunctions.add(function);
