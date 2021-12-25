@@ -35,7 +35,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
  */
 public class FunctionEvaluator {
     private static final Pattern FUNCTION_PATTERN = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\(\s*[a-zA-Z]+\s*\\)" +
-            "\s*=[^=]*");
+            "\s*=[^=]+");
     private static final Pattern FUNCTION_CALL_PATTERN = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\" +
             "(\s*[a-zA-Z]+\s*\\)");
 
@@ -148,20 +148,24 @@ public class FunctionEvaluator {
     public void evaluate() {
         double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom() *
                 plottingPanel.getUnitX().getScale();
-        double domainStart = function.getDomainStart().getActualValue() != null ?
-                function.getDomainStart().getActualValue() : plottingPanel.getCameraX() / zoomX;
-        double domainEnd = function.getDomainEnd().getActualValue() != null ?
-                function.getDomainEnd().getActualValue() :
-                (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
+        double domainStart = plottingPanel.getCameraX() / zoomX;
+        double domainEnd = (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
         double step = Math.min(plottingPanel.getMaxStep(), (domainEnd - domainStart) /
                 ((double) (plottingPanel.getWidth() / plottingPanel.getPixelsPerStep()) *
                         plottingPanel.getSamplesPerCell()));
-        if (function.getDomainStart() == null) {
+
+        if (function.getDomainStart().getActualValue() == null) {
             domainStart -= step;
+        } else {
+            domainStart = Math.max(domainStart, function.getDomainStart().getActualValue());
         }
-        if (function.getDomainEnd() == null) {
+
+        if (function.getDomainEnd().getActualValue() == null) {
             domainEnd += step;
+        } else {
+            domainEnd = Math.min(domainEnd, function.getDomainEnd().getActualValue());
         }
+
         MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
                 parent.getConstantValues(), plot -> {
                 });
