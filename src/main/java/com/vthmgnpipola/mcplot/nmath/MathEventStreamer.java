@@ -29,17 +29,25 @@ import java.util.stream.Collectors;
 public class MathEventStreamer {
     private static final MathEventStreamer INSTANCE = new MathEventStreamer();
 
-    private final List<ConstantEvaluator> constantEvaluators;
-    private final List<FunctionEvaluator> functionEvaluators;
+    private List<ConstantEvaluator> constantEvaluators;
+    private List<FunctionEvaluator> functionEvaluators;
 
-    private final List<Constant> constants;
-    private final List<Function> functions;
+    private List<Constant> constants;
+    private List<Function> functions;
     private PlottingPanel plottingPanel;
 
     private Map<String, Double> constantValues;
     private Map<String, Function> functionMap;
 
     private MathEventStreamer() {
+        reset();
+    }
+
+    public static MathEventStreamer getInstance() {
+        return INSTANCE;
+    }
+
+    public void reset() {
         constantEvaluators = new ArrayList<>();
         functionEvaluators = new ArrayList<>();
 
@@ -48,10 +56,6 @@ public class MathEventStreamer {
 
         constantValues = new HashMap<>();
         functionMap = new HashMap<>();
-    }
-
-    public static MathEventStreamer getInstance() {
-        return INSTANCE;
     }
 
     public void setPlottingPanel(PlottingPanel plottingPanel) {

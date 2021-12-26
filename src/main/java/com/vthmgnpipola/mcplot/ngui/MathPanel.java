@@ -53,21 +53,27 @@ public class MathPanel extends JPanel {
 
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 
-        this.functions = functions;
-        this.constants = constants;
+        this.functions = new ArrayList<>();
+        if (functions != null) {
+            this.functions.addAll(functions);
+        }
 
-        FunctionsPanel functionsPanel = new FunctionsPanel(functions, plottingPanel);
+        this.constants = new ArrayList<>();
+        if (constants != null) {
+            this.constants.addAll(constants);
+        }
+
+        FunctionsPanel functionsPanel = new FunctionsPanel(this.functions, plottingPanel);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.functions"), new JScrollPane(functionsPanel));
 
-        ConstantsPanel constantsPanel = new ConstantsPanel(constants);
+        ConstantsPanel constantsPanel = new ConstantsPanel(this.constants);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.constants"), new JScrollPane(constantsPanel));
 
         add(tabbedPane, BorderLayout.CENTER);
     }
 
     public void recalculateAllFunctions() {
-        // TODO: Discover why the math gets entirely wrong when this is false
-        MathEventStreamer.getInstance().functionUpdate(true);
+        MathEventStreamer.getInstance().functionUpdate(false);
     }
 
     public void save() {
@@ -81,6 +87,7 @@ public class MathPanel extends JPanel {
     public void open(PlottingPanel plottingPanel) {
         MathSessionHelper.openSession((f, c) -> {
             plottingPanel.getFunctions().clear();
+            MathEventStreamer.getInstance().reset();
             init(plottingPanel, f, c);
             updateUI();
             MathEventStreamer.getInstance().constantUpdate();
