@@ -56,6 +56,9 @@ public class FunctionSelectionPanel extends JPanel {
             add(selectFunction);
             selectionBoxes.add(selectFunction);
             selectFunction.setSelected(function.isVisible());
+            if (function.isVisible()) {
+                selectedFunctions.add(function);
+            }
             selectFunction.addChangeListener(e -> {
                 if (selectFunction.isSelected()) {
                     selectedFunctions.add(function);

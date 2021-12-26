@@ -18,7 +18,6 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
-import com.formdev.flatlaf.icons.FlatFileViewDirectoryIcon;
 import com.vthmgnpipola.mcplot.ngui.components.FunctionSelectionPanel;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatApplyIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatSelectAllIcon;
@@ -38,8 +37,6 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -82,21 +79,8 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
         JPanel contentPane = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
         setContentPane(new JScrollPane(contentPane));
 
-        JLabel filenameLabel = new JLabel(BUNDLE.getString("export.text.filename"));
-        contentPane.add(filenameLabel);
-        JButton selectFile = new JButton(new FlatFileViewDirectoryIcon());
-        contentPane.add(selectFile, "split 2");
-        selectFile.setToolTipText(BUNDLE.getString("export.text.selectFile.tooltip"));
-        selectFile.addActionListener(e -> {
-            int result = openSaveDialog(EXTENSION.getFilter());
-            if (result == JFileChooser.APPROVE_OPTION) {
-                String selectedFile = EXTENSION.getPathWithExtension(FILE_CHOOSER.getSelectedFile().getAbsolutePath());
-
-                filename.setText(selectedFile);
-            }
-        });
         filename = new JTextField(lastFilename);
-        contentPane.add(filename, "growx, wrap");
+        addFilenameField(contentPane, filename, EXTENSION);
 
         exportConstants = new JCheckBox(BUNDLE.getString("export.text.exportConstants"));
         contentPane.add(exportConstants, "span");

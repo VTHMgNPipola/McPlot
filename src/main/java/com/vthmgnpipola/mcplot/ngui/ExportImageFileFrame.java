@@ -18,7 +18,6 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
-import com.formdev.flatlaf.icons.FlatFileViewDirectoryIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatApplyIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatCopyIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
@@ -38,8 +37,6 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -119,21 +116,8 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
         JPanel contentPane = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
         setContentPane(contentPane);
 
-        JLabel filenameLabel = new JLabel(BUNDLE.getString("export.image.filename"));
-        contentPane.add(filenameLabel);
-        JButton selectFile = new JButton(new FlatFileViewDirectoryIcon());
-        contentPane.add(selectFile, "split 2");
-        selectFile.setToolTipText(BUNDLE.getString("export.image.selectFile.tooltip"));
-        selectFile.addActionListener(e -> {
-            int result = openSaveDialog(EXTENSION.getFilter());
-            if (result == JFileChooser.APPROVE_OPTION) {
-                String selectedFile = EXTENSION.getPathWithExtension(FILE_CHOOSER.getSelectedFile().getAbsolutePath());
-
-                filename.setText(selectedFile);
-            }
-        });
         filename = new JTextField(lastFilename);
-        contentPane.add(filename, "growx, wrap");
+        addFilenameField(contentPane, filename, EXTENSION);
 
         enableAntialias = new JCheckBox(BUNDLE.getString("export.image.enableAntialias"));
         contentPane.add(enableAntialias, "span");

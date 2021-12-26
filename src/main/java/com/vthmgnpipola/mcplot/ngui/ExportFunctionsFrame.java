@@ -18,15 +18,22 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.formdev.flatlaf.icons.FlatFileViewDirectoryIcon;
 import com.vthmgnpipola.mcplot.PreferencesHelper;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public abstract class ExportFunctionsFrame extends JFrame {
     protected static final JFileChooser FILE_CHOOSER = new JFileChooser();
@@ -67,5 +74,23 @@ public abstract class ExportFunctionsFrame extends JFrame {
                     FILE_CHOOSER.getCurrentDirectory().getAbsolutePath());
         }
         return option;
+    }
+
+    protected void addFilenameField(JPanel panel, final JTextField filename,
+                                    FileChooserExtension extension) {
+        JLabel filenameLabel = new JLabel(BUNDLE.getString("export.filename"));
+        panel.add(filenameLabel);
+        JButton selectFile = new JButton(new FlatFileViewDirectoryIcon());
+        panel.add(selectFile, "split 2");
+        selectFile.setToolTipText(BUNDLE.getString("export.selectFile.tooltip"));
+        selectFile.addActionListener(e -> {
+            int result = openSaveDialog(extension.getFilter());
+            if (result == JFileChooser.APPROVE_OPTION) {
+                String selectedFile = extension.getPathWithExtension(FILE_CHOOSER.getSelectedFile().getAbsolutePath());
+
+                filename.setText(selectedFile);
+            }
+        });
+        panel.add(filename, "growx, wrap");
     }
 }
