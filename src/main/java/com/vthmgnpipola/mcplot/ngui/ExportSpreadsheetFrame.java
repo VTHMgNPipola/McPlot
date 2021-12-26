@@ -24,6 +24,7 @@ import com.vthmgnpipola.mcplot.ngui.icons.FlatSelectAllIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatUnselectAllIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.util.Collection;
 import java.util.Map;
@@ -31,11 +32,14 @@ import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
@@ -46,21 +50,19 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
     private static final String EXTENSION_XLSX = "xlsx";
 
     private static final FileChooserExtension EXTENSION = new FileChooserExtension(
-            BUNDLE.getString("export.spreadsheet.extensionFilter"), "xlsx",
+            BUNDLE.getString("export.spreadsheet.extensionFilter"), EXTENSION_ODS,
             EXTENSION_CSV, EXTENSION_ODS, EXTENSION_XLSX);
+
+    private static final String TYPE_CSV = "csv";
+    private static final String TYPE_COMPLEX = "complex";
+    private static final String TYPE_INVALID = "invalid";
 
     private static String lastFilename;
 
     private JTextField filename;
     private JCheckBox exportConstants;
     private JCheckBox exportFunctionDefinition;
-    private JRadioButton commaSeparator;
-    private JRadioButton semicolonSeparator;
-    private JRadioButton tabSeparator;
-    private JRadioButton spaceSeparator;
-    private JRadioButton unixSeparator;
-    private JRadioButton windowsSeparator;
-    private JRadioButton macosSeparator;
+    private String selectedType;
     private FunctionSelectionPanel exportedFunctions;
 
     public ExportSpreadsheetFrame(Map<String, Function> functionMap, Collection<Constant> constants,
@@ -88,64 +90,55 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         filename = new JTextField(lastFilename);
         addFilenameField(contentPane, filename, EXTENSION);
 
-        JPanel csvPanel = new JPanel(new MigLayout("insets 0"));
-        contentPane.add(csvPanel, "span");
-
         exportConstants = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportConstants"));
-        csvPanel.add(exportConstants, "span");
+        add(exportConstants, "span");
         exportConstants.setSelected(true);
 
         exportFunctionDefinition = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportFunctionDefinition"));
-        csvPanel.add(exportFunctionDefinition, "span");
+        add(exportFunctionDefinition, "span");
         exportFunctionDefinition.setSelected(true);
 
-        JPanel cellSeparatorPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
-        csvPanel.add(cellSeparatorPanel, "grow");
-        cellSeparatorPanel.setBorder(BorderFactory.createTitledBorder(
-                BUNDLE.getString("export.spreadsheet.cellSeparator.title")));
+        CardLayout cardLayout = new CardLayout();
+        JPanel propertiesPanel = new JPanel(cardLayout);
+        contentPane.add(propertiesPanel, "span");
 
-        ButtonGroup cellSeparatorGroup = new ButtonGroup();
+        JPanel invalidTypePanel = new JPanel();
+        propertiesPanel.add(invalidTypePanel, TYPE_INVALID);
+        invalidTypePanel.add(new JLabel(BUNDLE.getString("export.spreadsheet.invalidType")));
 
-        commaSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.comma"));
-        cellSeparatorPanel.add(commaSeparator, "span");
-        cellSeparatorGroup.add(commaSeparator);
-        commaSeparator.setSelected(true);
+        CSVPropertiesPanel csvPanel = new CSVPropertiesPanel();
+        propertiesPanel.add(csvPanel, TYPE_CSV);
+        csvPanel.init();
 
-        semicolonSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.semicolon"));
-        cellSeparatorPanel.add(semicolonSeparator, "span");
-        cellSeparatorGroup.add(semicolonSeparator);
+        ComplexPropertiesPanel complexPanel = new ComplexPropertiesPanel();
+        propertiesPanel.add(complexPanel, TYPE_COMPLEX);
+        complexPanel.init();
 
-        tabSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.tab"));
-        cellSeparatorPanel.add(tabSeparator, "span");
-        cellSeparatorGroup.add(tabSeparator);
+        filename.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updatePropertiesPanel();
+            }
 
-        spaceSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.space"));
-        cellSeparatorPanel.add(spaceSeparator, "span");
-        cellSeparatorGroup.add(spaceSeparator);
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updatePropertiesPanel();
+            }
 
-        JPanel lineSeparatorPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
-        csvPanel.add(lineSeparatorPanel, "span, grow");
-        lineSeparatorPanel.setBorder(BorderFactory.createTitledBorder(
-                BUNDLE.getString("export.spreadsheet.lineSeparator.title")));
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updatePropertiesPanel();
+            }
 
-        ButtonGroup lineSeparatorGroup = new ButtonGroup();
-
-        JRadioButton defaultSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.default"));
-        lineSeparatorPanel.add(defaultSeparator, "span");
-        lineSeparatorGroup.add(defaultSeparator);
-        defaultSeparator.setSelected(true);
-
-        unixSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.unix"));
-        lineSeparatorPanel.add(unixSeparator, "span");
-        lineSeparatorGroup.add(unixSeparator);
-
-        windowsSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.windows"));
-        lineSeparatorPanel.add(windowsSeparator, "span");
-        lineSeparatorGroup.add(windowsSeparator);
-
-        macosSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.macos"));
-        lineSeparatorPanel.add(macosSeparator, "span");
-        lineSeparatorGroup.add(macosSeparator);
+            private void updatePropertiesPanel() {
+                selectedType = switch (EXTENSION.getFileType(filename.getText()).toLowerCase()) {
+                    case EXTENSION_CSV -> TYPE_CSV;
+                    case EXTENSION_XLSX, EXTENSION_ODS -> TYPE_COMPLEX;
+                    default -> TYPE_INVALID;
+                };
+                cardLayout.show(propertiesPanel, selectedType);
+            }
+        });
 
         JPanel exportedFunctionsPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
         contentPane.add(exportedFunctionsPanel, "span, grow");
@@ -171,5 +164,96 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         JButton export = new JButton(BUNDLE.getString("export.spreadsheet.apply"), new FlatApplyIcon());
         contentPane.add(export, "span, alignx right");
         export.addActionListener(e -> export());
+    }
+
+    private static class CSVPropertiesPanel extends JPanel {
+        public JRadioButton commaSeparator;
+        public JRadioButton semicolonSeparator;
+        public JRadioButton tabSeparator;
+        public JRadioButton spaceSeparator;
+        public JRadioButton unixSeparator;
+        public JRadioButton windowsSeparator;
+        public JRadioButton macosSeparator;
+
+        public CSVPropertiesPanel() {
+            super(new MigLayout("insets 0", "[]15", "[]10"));
+        }
+
+        private void init() {
+            JPanel cellSeparatorPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
+            add(cellSeparatorPanel, "grow");
+            cellSeparatorPanel.setBorder(BorderFactory.createTitledBorder(
+                    BUNDLE.getString("export.spreadsheet.cellSeparator.title")));
+
+            ButtonGroup cellSeparatorGroup = new ButtonGroup();
+
+            commaSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.comma"));
+            cellSeparatorPanel.add(commaSeparator, "span");
+            cellSeparatorGroup.add(commaSeparator);
+            commaSeparator.setSelected(true);
+
+            semicolonSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.semicolon"));
+            cellSeparatorPanel.add(semicolonSeparator, "span");
+            cellSeparatorGroup.add(semicolonSeparator);
+
+            tabSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.tab"));
+            cellSeparatorPanel.add(tabSeparator, "span");
+            cellSeparatorGroup.add(tabSeparator);
+
+            spaceSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.space"));
+            cellSeparatorPanel.add(spaceSeparator, "span");
+            cellSeparatorGroup.add(spaceSeparator);
+
+            JPanel lineSeparatorPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
+            add(lineSeparatorPanel, "span, grow");
+            lineSeparatorPanel.setBorder(BorderFactory.createTitledBorder(
+                    BUNDLE.getString("export.spreadsheet.lineSeparator.title")));
+
+            ButtonGroup lineSeparatorGroup = new ButtonGroup();
+
+            JRadioButton defaultSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.default"));
+            lineSeparatorPanel.add(defaultSeparator, "span");
+            lineSeparatorGroup.add(defaultSeparator);
+            defaultSeparator.setSelected(true);
+
+            unixSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.unix"));
+            lineSeparatorPanel.add(unixSeparator, "span");
+            lineSeparatorGroup.add(unixSeparator);
+
+            windowsSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.windows"));
+            lineSeparatorPanel.add(windowsSeparator, "span");
+            lineSeparatorGroup.add(windowsSeparator);
+
+            macosSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.macos"));
+            lineSeparatorPanel.add(macosSeparator, "span");
+            lineSeparatorGroup.add(macosSeparator);
+        }
+    }
+
+    private static class ComplexPropertiesPanel extends JPanel {
+        public JCheckBox separateAll;
+        public JCheckBox exportConstantTable;
+        public JCheckBox exportFunctionTable;
+
+        public ComplexPropertiesPanel() {
+            super(new MigLayout("insets 0", "[]15", "[]10"));
+        }
+
+        public void init() {
+            separateAll = new JCheckBox(BUNDLE.getString("export.spreadsheet.separateAll"));
+            add(separateAll, "span");
+            separateAll.setToolTipText(BUNDLE.getString("export.spreadsheet.separateAll.tooltip"));
+            separateAll.setSelected(true);
+
+            exportConstantTable = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportConstantTable"));
+            add(exportConstantTable, "span");
+            exportConstantTable.setToolTipText(BUNDLE.getString("export.spreadsheet.exportConstantTable.tooltip"));
+            exportConstantTable.setSelected(true);
+
+            exportFunctionTable = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportFunctionTable"));
+            add(exportFunctionTable, "span");
+            exportFunctionTable.setToolTipText(BUNDLE.getString("export.spreadsheet.exportFunctionTable.tooltip"));
+            exportFunctionTable.setSelected(true);
+        }
     }
 }
