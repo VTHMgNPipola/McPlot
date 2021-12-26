@@ -98,11 +98,12 @@ public class MathEventStreamer {
         Main.EXECUTOR_THREAD.execute(() -> {
             try {
                 constantEvaluators.forEach(ConstantEvaluator::evaluate);
-                constantValues = constants.stream()
+                constantValues = constants.stream().sequential()
                         .filter(c -> c.getActualValue() != null && c.getName() != null)
                         .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
 
-                functionMap = functions.stream().filter(f -> f.getDefinition() != null)
+                functionMap = functions.stream().sequential()
+                        .filter(f -> f.getDefinition() != null)
                         .collect(Collectors.toMap(Function::getName, f -> f));
                 functionEvaluators.forEach(fe -> {
                     if (fe.getFunction().isVisible()) {
@@ -121,7 +122,8 @@ public class MathEventStreamer {
     public void functionUpdate(boolean processExpressions) {
         Main.EXECUTOR_THREAD.submit(() -> {
             try {
-                functionMap = functions.stream().collect(Collectors.toMap(Function::getName, f -> f));
+                functionMap = functions.stream().sequential()
+                        .collect(Collectors.toMap(Function::getName, f -> f));
                 functionEvaluators.forEach(fe -> {
                     if (fe.getFunction().isVisible()) {
                         if (processExpressions) {
