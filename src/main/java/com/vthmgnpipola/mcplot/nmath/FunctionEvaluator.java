@@ -167,8 +167,7 @@ public class FunctionEvaluator {
         }
 
         MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
-                parent.getConstantValues(), plot -> {
-                });
+                parent.getConstantValues());
     }
 
     public static Expression processExpression(Function function, Map<String, Function> functionMap,

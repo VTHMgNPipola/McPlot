@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -63,7 +62,7 @@ public class MathEvaluatorPool {
 
     public void evaluateFunction(Function function, Expression expression, FunctionPlot plot,
                                  double domainStart, double domainEnd, double step,
-                                 Map<String, Double> constants, Consumer<FunctionPlot> callback) {
+                                 Map<String, Double> constants) {
         runningFunctions++;
         executor.submit(() -> {
             try {
@@ -96,14 +95,12 @@ public class MathEvaluatorPool {
                 plot.setPath(path);
 
                 runningFunctions--;
-                callback.accept(plot);
                 if (runningFunctions == 0) {
                     functionsDoneTasks.forEach(Runnable::run);
                 }
             } catch (Throwable t) {
                 runningFunctions--;
                 plot.setPath(null);
-                callback.accept(null);
             }
         });
     }
