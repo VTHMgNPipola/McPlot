@@ -64,7 +64,7 @@ public class PlottingPanel extends JPanel {
     private int cameraX, cameraY;
     private double scaleX = PREFERENCES.getDouble(KEY_SCALE_X, 1);
     private double scaleY = PREFERENCES.getDouble(KEY_SCALE_Y, 1);
-    private final int[] zoomArray = new int[]{1, 2, 5, 10};
+    private final int[] zoomArray = new int[]{1, 2, 5};
     private int pixelsPerStep = INITIAL_PIXELS_PER_STEP;
     private double zoom = 1;
     private int zoomPos = 0;
@@ -176,12 +176,12 @@ public class PlottingPanel extends JPanel {
          * the zoom "position" (how many times the wheel rotated), respectively.
          * It then checks if the zoom position is a valid address in an array of zoom values I considered good, and
          * if so chooses one of those.
+         * If it is a valid address it simply uses the zoom value that corresponds to that address.
          * If it is over the maximum address, it calculates how many times the value "circled" around the list of zoom
-         * values and subtracts one from this value. It then calculates what would be the effective index if the
-         * array of zoom values was circular, and skips the first item since it is 1. It then calculates the zoom by
-         * grabbing the zoom value from the array using the effective index it calculated and multiplying the value
+         * values and calculates what would be the index if the array of zoom values was circular. It then calculates
+         * the zoom by grabbing the zoom value from the array using the index it calculated and multiplying the value
          * by 10 to the power of the times the zoom position circled the array.
-         * If it is below the minimum address, it does the same thing but considering the zoom position as a positive
+         * If it is below the minimum address, it does the same thing but considering the zoom index as a positive
          * value and inverting the final zoom result (by doing 1 over whatever zoom value it got).
          */
         addMouseWheelListener(e -> EXECUTOR_THREAD.submit(() -> {
@@ -206,16 +206,10 @@ public class PlottingPanel extends JPanel {
             } else if (zoomPos >= zoomArray.length) {
                 int timesCircled = zoomPos / zoomArray.length;
                 int arrayPos = zoomPos % zoomArray.length;
-                if (arrayPos == 0) {
-                    arrayPos++;
-                }
                 zoom = zoomArray[arrayPos] * Math.pow(10, timesCircled);
             } else {
                 int timesCircled = -zoomPos / zoomArray.length;
                 int arrayPos = (-zoomPos + zoomArray.length) % zoomArray.length;
-                if (arrayPos == 0) {
-                    arrayPos++;
-                }
                 zoom = (double) 1 / (zoomArray[arrayPos] * Math.pow(10, timesCircled));
             }
 
