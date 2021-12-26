@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.formdev.flatlaf.icons.FlatFileViewFileIcon;
 import com.formdev.flatlaf.icons.FlatFileViewFloppyDriveIcon;
 import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
@@ -97,7 +98,8 @@ public class Workspace extends JFrame {
         JMenu export = new JMenu(BUNDLE.getString("workspace.menu.file.export"));
         file.add(export);
 
-        JMenuItem exportSpreadsheet = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.spreadsheet"));
+        JMenuItem exportSpreadsheet = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.spreadsheet"),
+                new FlatFileViewFileIcon());
         export.add(exportSpreadsheet);
         exportSpreadsheet.addActionListener(e -> {
             ExportSpreadsheetFrame exportSpreadsheetFrame = new ExportSpreadsheetFrame(
