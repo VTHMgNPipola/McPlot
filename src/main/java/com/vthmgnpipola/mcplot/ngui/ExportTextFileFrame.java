@@ -138,17 +138,17 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
         exportedFunctions = new FunctionSelectionPanel(functionMap);
         JScrollPane exportedFunctionsScrollPane = new JScrollPane(exportedFunctions);
         exportedFunctionsScrollPane.setMinimumSize(new Dimension(0, 75));
-        exportedFunctionsScrollPane.setMaximumSize(new Dimension(5120, 150));
-        exportedFunctionsPanel.add(exportedFunctionsScrollPane, "span, grow");
+        exportedFunctionsScrollPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+        exportedFunctionsPanel.add(exportedFunctionsScrollPane, "span, push, grow");
 
         JButton selectAllFunctions = new JButton(BUNDLE.getString("export.text.functions.selectAll"),
                 new FlatSelectAllIcon());
-        exportedFunctionsPanel.add(selectAllFunctions, "growx");
+        exportedFunctionsPanel.add(selectAllFunctions);
         selectAllFunctions.addActionListener(e -> exportedFunctions.selectAll());
 
         JButton selectNoneFunctions = new JButton(BUNDLE.getString("export.text.functions.selectNone"),
                 new FlatUnselectAllIcon());
-        exportedFunctionsPanel.add(selectNoneFunctions, "growx");
+        exportedFunctionsPanel.add(selectNoneFunctions);
         selectNoneFunctions.addActionListener(e -> exportedFunctions.selectNone());
 
         JButton export = new JButton(BUNDLE.getString("export.text.apply"), new FlatApplyIcon());

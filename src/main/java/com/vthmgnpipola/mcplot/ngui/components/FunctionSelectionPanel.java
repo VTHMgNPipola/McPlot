@@ -76,7 +76,7 @@ public class FunctionSelectionPanel extends JPanel {
         }
 
         if (getComponentCount() == 0) {
-            add(new JLabel(BUNDLE.getString("export.text.functions.noValidFunction")));
+            add(new JLabel(BUNDLE.getString("export.functions.noValidFunction")));
         }
     }
 

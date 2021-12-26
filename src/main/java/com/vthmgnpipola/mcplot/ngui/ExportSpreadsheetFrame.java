@@ -18,13 +18,22 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.vthmgnpipola.mcplot.ngui.components.FunctionSelectionPanel;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatApplyIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatSelectAllIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatUnselectAllIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
+import java.awt.Dimension;
 import java.util.Collection;
 import java.util.Map;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
@@ -43,6 +52,16 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
     private static String lastFilename;
 
     private JTextField filename;
+    private JCheckBox exportConstants;
+    private JCheckBox exportFunctionDefinition;
+    private JRadioButton commaSeparator;
+    private JRadioButton semicolonSeparator;
+    private JRadioButton tabSeparator;
+    private JRadioButton spaceSeparator;
+    private JRadioButton unixSeparator;
+    private JRadioButton windowsSeparator;
+    private JRadioButton macosSeparator;
+    private FunctionSelectionPanel exportedFunctions;
 
     public ExportSpreadsheetFrame(Map<String, Function> functionMap, Collection<Constant> constants,
                                   Map<String, Double> constantValues, PlottingPanel plottingPanel) {
@@ -68,6 +87,86 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
 
         filename = new JTextField(lastFilename);
         addFilenameField(contentPane, filename, EXTENSION);
+
+        JPanel csvPanel = new JPanel(new MigLayout("insets 0"));
+        contentPane.add(csvPanel, "span");
+
+        exportConstants = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportConstants"));
+        csvPanel.add(exportConstants, "span");
+        exportConstants.setSelected(true);
+
+        exportFunctionDefinition = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportFunctionDefinition"));
+        csvPanel.add(exportFunctionDefinition, "span");
+        exportFunctionDefinition.setSelected(true);
+
+        JPanel cellSeparatorPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
+        csvPanel.add(cellSeparatorPanel, "grow");
+        cellSeparatorPanel.setBorder(BorderFactory.createTitledBorder(
+                BUNDLE.getString("export.spreadsheet.cellSeparator.title")));
+
+        ButtonGroup cellSeparatorGroup = new ButtonGroup();
+
+        commaSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.comma"));
+        cellSeparatorPanel.add(commaSeparator, "span");
+        cellSeparatorGroup.add(commaSeparator);
+        commaSeparator.setSelected(true);
+
+        semicolonSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.semicolon"));
+        cellSeparatorPanel.add(semicolonSeparator, "span");
+        cellSeparatorGroup.add(semicolonSeparator);
+
+        tabSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.tab"));
+        cellSeparatorPanel.add(tabSeparator, "span");
+        cellSeparatorGroup.add(tabSeparator);
+
+        spaceSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.cellSeparator.space"));
+        cellSeparatorPanel.add(spaceSeparator, "span");
+        cellSeparatorGroup.add(spaceSeparator);
+
+        JPanel lineSeparatorPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
+        csvPanel.add(lineSeparatorPanel, "span, grow");
+        lineSeparatorPanel.setBorder(BorderFactory.createTitledBorder(
+                BUNDLE.getString("export.spreadsheet.lineSeparator.title")));
+
+        ButtonGroup lineSeparatorGroup = new ButtonGroup();
+
+        JRadioButton defaultSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.default"));
+        lineSeparatorPanel.add(defaultSeparator, "span");
+        lineSeparatorGroup.add(defaultSeparator);
+        defaultSeparator.setSelected(true);
+
+        unixSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.unix"));
+        lineSeparatorPanel.add(unixSeparator, "span");
+        lineSeparatorGroup.add(unixSeparator);
+
+        windowsSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.windows"));
+        lineSeparatorPanel.add(windowsSeparator, "span");
+        lineSeparatorGroup.add(windowsSeparator);
+
+        macosSeparator = new JRadioButton(BUNDLE.getString("export.spreadsheet.lineSeparator.macos"));
+        lineSeparatorPanel.add(macosSeparator, "span");
+        lineSeparatorGroup.add(macosSeparator);
+
+        JPanel exportedFunctionsPanel = new JPanel(new MigLayout("insets 15", "[]15", "[]10"));
+        contentPane.add(exportedFunctionsPanel, "span, grow");
+        exportedFunctionsPanel.setBorder(BorderFactory.createTitledBorder(
+                BUNDLE.getString("export.spreadsheet.functions.title")));
+
+        exportedFunctions = new FunctionSelectionPanel(functionMap);
+        JScrollPane exportedFunctionsScrollPane = new JScrollPane(exportedFunctions);
+        exportedFunctionsScrollPane.setMinimumSize(new Dimension(0, 75));
+        exportedFunctionsScrollPane.setMaximumSize(new Dimension(5120, 150));
+        exportedFunctionsPanel.add(exportedFunctionsScrollPane, "span, push, grow");
+
+        JButton selectAllFunctions = new JButton(BUNDLE.getString("export.spreadsheet.functions.selectAll"),
+                new FlatSelectAllIcon());
+        exportedFunctionsPanel.add(selectAllFunctions);
+        selectAllFunctions.addActionListener(e -> exportedFunctions.selectAll());
+
+        JButton selectNoneFunctions = new JButton(BUNDLE.getString("export.spreadsheet.functions.selectNone"),
+                new FlatUnselectAllIcon());
+        exportedFunctionsPanel.add(selectNoneFunctions);
+        selectNoneFunctions.addActionListener(e -> exportedFunctions.selectNone());
 
         JButton export = new JButton(BUNDLE.getString("export.spreadsheet.apply"), new FlatApplyIcon());
         contentPane.add(export, "span, alignx right");
