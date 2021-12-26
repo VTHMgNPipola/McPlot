@@ -22,16 +22,22 @@ import com.formdev.flatlaf.icons.FlatFileViewDirectoryIcon;
 import com.vthmgnpipola.mcplot.PreferencesHelper;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
+import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
 import java.io.File;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import net.objecthunter.exp4j.Expression;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -92,5 +98,30 @@ public abstract class ExportFunctionsFrame extends JFrame {
             }
         });
         panel.add(filename, "growx, wrap");
+    }
+
+    protected Map<Function, Future<double[]>> evaluateFunctions(Collection<Function> selectedFunctions) {
+        Map<Function, Future<double[]>> results = new HashMap<>();
+        for (Function function : selectedFunctions) {
+            if (function.getDomainStart().getActualValue() == null ||
+                    function.getDomainEnd().getActualValue() == null) {
+                JOptionPane.showMessageDialog(this, BUNDLE.getString("export.error.invalidDomain"),
+                        BUNDLE.getString("generics.errorDialog"), JOptionPane.ERROR_MESSAGE);
+                System.err.println("A domain start and end must be defined when exporting a function!");
+                return null;
+            }
+
+            double domainStart = function.getDomainStart().getActualValue();
+            double domainEnd = function.getDomainEnd().getActualValue();
+            double step = Math.min(plottingPanel.getMaxStep(), (domainEnd - domainStart) /
+                    ((double) (plottingPanel.getWidth() / plottingPanel.getPixelsPerStep()) *
+                            plottingPanel.getSamplesPerCell()));
+            Expression expression = FunctionEvaluator.processExpression(function, functionMap, constantValues);
+
+            results.put(function, MathEvaluatorPool.getInstance().evaluateFunctionRaw(function, expression,
+                    domainStart, domainEnd, step, constantValues));
+        }
+
+        return results;
     }
 }

@@ -45,6 +45,14 @@
             <artifactId>flatlaf</artifactId>
             <version>1.6.5</version>
         </dependency>
+
+        <!-- If unstable, due to not being production ready as I'm adding the dependency, use another
+        OpenDocument producer -->
+        <dependency>
+            <groupId>com.github.jferard</groupId>
+            <artifactId>fastods</artifactId>
+            <version>0.8.1</version>
+        </dependency>
     </dependencies>
 
     <build>

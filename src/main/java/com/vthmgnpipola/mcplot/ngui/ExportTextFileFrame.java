@@ -24,13 +24,10 @@ import com.vthmgnpipola.mcplot.ngui.icons.FlatSelectAllIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatUnselectAllIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
-import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
-import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
 import java.awt.Dimension;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 import javax.swing.BorderFactory;
@@ -44,7 +41,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
-import net.objecthunter.exp4j.Expression;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -198,25 +194,9 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
                 }
             }
 
-            Map<Function, Future<double[]>> results = new HashMap<>();
-            for (Function function : exportedFunctions.getSelectedFunctions()) {
-                if (function.getDomainStart().getActualValue() == null ||
-                        function.getDomainEnd().getActualValue() == null) {
-                    JOptionPane.showMessageDialog(this, BUNDLE.getString("export.error.invalidDomain"),
-                            BUNDLE.getString("generics.errorDialog"), JOptionPane.ERROR_MESSAGE);
-                    System.err.println("A domain start and end must be defined when exporting a function!");
-                    return;
-                }
-
-                double domainStart = function.getDomainStart().getActualValue();
-                double domainEnd = function.getDomainEnd().getActualValue();
-                double step = Math.min(plottingPanel.getMaxStep(), (domainEnd - domainStart) /
-                        ((double) (plottingPanel.getWidth() / plottingPanel.getPixelsPerStep()) *
-                                plottingPanel.getSamplesPerCell()));
-                Expression expression = FunctionEvaluator.processExpression(function, functionMap, constantValues);
-
-                results.put(function, MathEvaluatorPool.getInstance().evaluateFunctionRaw(function, expression,
-                        domainStart, domainEnd, step, constantValues));
+            Map<Function, Future<double[]>> results = evaluateFunctions(exportedFunctions.getSelectedFunctions());
+            if (results == null) {
+                return;
             }
 
             for (Map.Entry<Function, Future<double[]>> resultEntry : results.entrySet()) {

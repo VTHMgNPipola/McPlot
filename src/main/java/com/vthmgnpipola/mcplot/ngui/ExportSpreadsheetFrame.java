@@ -18,6 +18,11 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.github.jferard.fastods.AnonymousOdsFileWriter;
+import com.github.jferard.fastods.OdsDocument;
+import com.github.jferard.fastods.OdsFactory;
+import com.github.jferard.fastods.Table;
+import com.github.jferard.fastods.TableCellWalker;
 import com.vthmgnpipola.mcplot.ngui.components.FunctionSelectionPanel;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatApplyIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatSelectAllIcon;
@@ -26,13 +31,21 @@ import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -62,6 +75,8 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
     private JTextField filename;
     private JCheckBox exportConstants;
     private JCheckBox exportFunctionDefinition;
+    private CSVPropertiesPanel csvPropertiesPanel;
+    private ComplexPropertiesPanel complexPropertiesPanel;
     private String selectedType;
     private FunctionSelectionPanel exportedFunctions;
 
@@ -79,8 +94,132 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
 
     @Override
     public void export() {
+        if (selectedType.equals(TYPE_INVALID)) {
+            JOptionPane.showMessageDialog(this, BUNDLE.getString("export.spreadsheet.invalidType"),
+                    BUNDLE.getString("generics.errorDialog"), JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         dispose();
         lastFilename = filename.getText();
+
+        try {
+            Map<Function, Future<double[]>> results = evaluateFunctions(exportedFunctions.getSelectedFunctions());
+            if (results == null) {
+                return;
+            }
+
+            switch (EXTENSION.getFileType(filename.getText().toLowerCase())) {
+                case EXTENSION_CSV -> exportCsv(results);
+                case EXTENSION_ODS -> exportOds(results);
+                case EXTENSION_XLSX -> exportXlsx(results);
+            }
+
+            JOptionPane.showMessageDialog(this, BUNDLE.getString("export.success"),
+                    BUNDLE.getString("generics.successDialog"), JOptionPane.INFORMATION_MESSAGE);
+        } catch (Throwable t) {
+            JOptionPane.showMessageDialog(this, BUNDLE.getString("export.error"),
+                    BUNDLE.getString("generics.errorDialog"), JOptionPane.ERROR_MESSAGE);
+            t.printStackTrace();
+        }
+    }
+
+    private void exportCsv(Map<Function, Future<double[]>> results) {
+
+    }
+
+    private void exportOds(Map<Function, Future<double[]>> results) throws IOException, ExecutionException,
+            InterruptedException {
+        OdsFactory odsFactory = OdsFactory.create();
+        AnonymousOdsFileWriter writer = odsFactory.createWriter();
+        OdsDocument document = writer.document();
+
+        String tableName;
+        AtomicInteger functionSheetIndex = new AtomicInteger(1);
+        if (exportConstants.isSelected() && complexPropertiesPanel.separateAll.isSelected()) {
+            tableName = BUNDLE.getString("export.spreadsheet.constantSheetName");
+        } else if (complexPropertiesPanel.separateAll.isSelected()) {
+            tableName = MessageFormat.format(BUNDLE.getString("export.spreadsheet.functionSheetName"),
+                    functionSheetIndex.getAndIncrement());
+        } else {
+            tableName = BUNDLE.getString("export.spreadsheet.generalSheetName");
+        }
+
+        Table currentTable = document.addTable(tableName);
+        TableCellWalker walker = currentTable.getWalker();
+
+        if (exportConstants.isSelected() && constants != null &&
+                constants.parallelStream().anyMatch(c -> c.getActualValue() != null && c.getName() != null &&
+                        !c.getName().isBlank())) {
+            walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantName"));
+            walker.next();
+            walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantDefinition"));
+            walker.next();
+            walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantValue"));
+            walker.nextRow();
+
+            for (Constant constant : constants) {
+                if (constant.getActualValue() != null && constant.getName() != null && !constant.getName().isBlank()) {
+                    walker.setStringValue(constant.getName());
+                    walker.next();
+                    walker.setStringValue(constant.getDefinition());
+                    walker.next();
+                    walker.setFloatValue(constant.getActualValue());
+                    walker.nextRow();
+                }
+            }
+
+            walker.nextRow();
+            walker.nextRow();
+        }
+
+        String functionDefinitionLabel = BUNDLE.getString("export.spreadsheet.functionDefinition");
+        String xLabel = BUNDLE.getString("export.spreadsheet.functionX");
+        String resultLabel = BUNDLE.getString("export.spreadsheet.functionResult");
+        boolean exportFunctionDefinitionValue = exportFunctionDefinition.isSelected();
+        for (Map.Entry<Function, Future<double[]>> functionEntry : results.entrySet()) {
+            if (complexPropertiesPanel.separateAll.isSelected()) {
+                tableName = MessageFormat.format(BUNDLE.getString("export.spreadsheet.functionSheetName"),
+                        functionSheetIndex.getAndIncrement());
+                currentTable = document.addTable(tableName);
+                walker = currentTable.getWalker();
+            }
+
+            double[] result = functionEntry.getValue().get();
+
+            if (exportFunctionDefinitionValue) {
+                walker.setStringValue(functionDefinitionLabel);
+                walker.nextRow();
+                walker.setStringValue(functionEntry.getKey().getDefinition().trim());
+                walker.setCellMerge(result.length / 2, 1);
+                walker.previousRow();
+                walker.next();
+            }
+            walker.setStringValue(xLabel);
+            walker.next();
+            walker.setStringValue(resultLabel);
+            walker.nextRow();
+
+            for (int i = 0; i < result.length; i++) {
+                if (exportFunctionDefinitionValue) {
+                    walker.next();
+                }
+
+                walker.setFloatValue(result[i++]);
+                walker.next();
+                walker.setFloatValue(result[i]);
+                walker.nextRow();
+            }
+
+            walker.nextRow();
+            walker.nextRow();
+        }
+
+        writer.save(Files.newOutputStream(Path.of(filename.getText())));
+    }
+
+    private void exportXlsx(Map<Function, Future<double[]>> results) {
+
     }
 
     private void initContentPane() {
@@ -106,13 +245,13 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         propertiesPanel.add(invalidTypePanel, TYPE_INVALID);
         invalidTypePanel.add(new JLabel(BUNDLE.getString("export.spreadsheet.invalidType")));
 
-        CSVPropertiesPanel csvPanel = new CSVPropertiesPanel();
-        propertiesPanel.add(csvPanel, TYPE_CSV);
-        csvPanel.init();
+        csvPropertiesPanel = new CSVPropertiesPanel();
+        propertiesPanel.add(csvPropertiesPanel, TYPE_CSV);
+        csvPropertiesPanel.init();
 
-        ComplexPropertiesPanel complexPanel = new ComplexPropertiesPanel();
-        propertiesPanel.add(complexPanel, TYPE_COMPLEX);
-        complexPanel.init();
+        complexPropertiesPanel = new ComplexPropertiesPanel();
+        propertiesPanel.add(complexPropertiesPanel, TYPE_COMPLEX);
+        complexPropertiesPanel.init();
 
         filename.getDocument().addDocumentListener(new DocumentListener() {
             @Override
