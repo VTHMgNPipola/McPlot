@@ -18,14 +18,23 @@
 
 package com.vthmgnpipola.mcplot;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.vthmgnpipola.mcplot.ngui.Workspace;
+import java.awt.Frame;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.JFrame;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
+
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_DARK_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_LIGHT_LAF;
 
 /**
  * McPlot is a lightweight graphing calculator written in Java 17, free for anyone to use.
@@ -41,7 +50,7 @@ public class Main {
      * Resource bundle used to set the text values of GUI components depending on the select language
      */
     public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("mcplot",
-            Locale.forLanguageTag(PreferencesHelper.PREFERENCES.get(PreferencesHelper.KEY_LANGUAGE,
+            Locale.forLanguageTag(PREFERENCES.get(PreferencesHelper.KEY_LANGUAGE,
                     Language.LANGUAGES[0].getTag())));
 
     /**
@@ -68,7 +77,7 @@ public class Main {
      * @param args Command line arguments, which are ignored.
      */
     public static void main(String[] args) {
-        FlatLightLaf.setup();
+        updateLookAndFeel(PREFERENCES.get(KEY_LAF, VALUE_LIGHT_LAF));
         JFrame.setDefaultLookAndFeelDecorated(true);
 
         SwingUtilities.invokeLater(() -> {
@@ -76,5 +85,23 @@ public class Main {
             workspace.init();
             workspace.setVisible(true);
         });
+    }
+
+    /**
+     * Changes the Look and Feel of the application during runtime, and then updates all created {@link Frame}s.
+     *
+     * @param tag Tag of the Look and Feel. This is a value constant in {@link PreferencesHelper}.
+     */
+    public static void updateLookAndFeel(String tag) {
+        LookAndFeel newLaf = null;
+        switch (tag) {
+            case VALUE_LIGHT_LAF -> newLaf = new FlatLightLaf();
+            case VALUE_DARK_LAF -> newLaf = new FlatDarkLaf();
+        }
+        FlatLaf.setup(newLaf);
+
+        for (Frame frame : JFrame.getFrames()) {
+            SwingUtilities.updateComponentTreeUI(frame);
+        }
     }
 }

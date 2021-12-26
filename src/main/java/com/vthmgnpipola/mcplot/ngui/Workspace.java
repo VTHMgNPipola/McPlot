@@ -124,7 +124,7 @@ public class Workspace extends JFrame {
         JMenuItem settings = new JMenuItem(BUNDLE.getString("generics.settings"), new FlatSettingsIcon());
         file.add(settings);
         settings.addActionListener(e -> {
-            SettingsFrame settingsFrame = new SettingsFrame(plottingPanel);
+            SettingsFrame settingsFrame = new SettingsFrame(plottingPanel, this);
             settingsFrame.init();
             settingsFrame.setVisible(true);
         });

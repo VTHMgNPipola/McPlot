@@ -29,13 +29,15 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class SettingsFrame extends JFrame {
     private final PlottingPanel plottingPanel;
+    private final Workspace workspace;
 
-    public SettingsFrame(PlottingPanel plottingPanel) {
+    public SettingsFrame(PlottingPanel plottingPanel, Workspace workspace) {
         super(BUNDLE.getString("settings.title"));
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         this.plottingPanel = plottingPanel;
+        this.workspace = workspace;
     }
 
     public void init() {
@@ -52,7 +54,7 @@ public class SettingsFrame extends JFrame {
         tabbedPane.addTab(BUNDLE.getString("settings.plottingPanel.title"),
                 new JScrollPane(plottingPanelSettingsPanel));
 
-        GeneralSettingsPanel generalSettingsPanel = new GeneralSettingsPanel();
+        GeneralSettingsPanel generalSettingsPanel = new GeneralSettingsPanel(workspace);
         tabbedPane.add(BUNDLE.getString("settings.general.title"), new JScrollPane(generalSettingsPanel));
     }
 }

@@ -34,6 +34,7 @@ public class PreferencesHelper {
     public static final String KEY_CURRENT_DIRECTORY_OPEN = "currentDirOpen";
 
     public static final String KEY_LANGUAGE = "language";
+    public static final String KEY_LAF = "laf";
     public static final String KEY_OPEN_MAXIMIZED = "openMaximized";
 
     public static final String KEY_SAMPLES_PER_CELL = "samplesPerCell";
@@ -55,6 +56,9 @@ public class PreferencesHelper {
     public static final String KEY_CUSTOM_X_UNIT_DEFINITION = "unitXDefinition";
     public static final String KEY_CUSTOM_Y_UNIT_NAME = "unitYName";
     public static final String KEY_CUSTOM_Y_UNIT_DEFINITION = "unitYDefinition";
+
+    public static final String VALUE_LIGHT_LAF = "light";
+    public static final String VALUE_DARK_LAF = "dark";
 
     static {
         // This makes sure that when the application shuts down all the preferences are saved
