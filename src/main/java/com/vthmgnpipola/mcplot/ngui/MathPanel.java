@@ -71,7 +71,11 @@ public class MathPanel extends JPanel {
     }
 
     public void save() {
-        MathSessionHelper.saveSession(functions, constants);
+        MathSessionHelper.saveSession(functions, constants, false);
+    }
+
+    public void saveAs() {
+        MathSessionHelper.saveSession(functions, constants, true);
     }
 
     public void open(PlottingPanel plottingPanel) {

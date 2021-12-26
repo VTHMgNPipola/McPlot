@@ -35,6 +35,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.KeyStroke;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 import static com.vthmgnpipola.mcplot.Main.VERSION;
@@ -76,11 +77,19 @@ public class Workspace extends JFrame {
         JMenuItem save = new JMenuItem(BUNDLE.getString("workspace.menu.file.save"),
                 new FlatFileViewFloppyDriveIcon());
         file.add(save);
+        save.setAccelerator(KeyStroke.getKeyStroke("control S"));
         save.addActionListener(e -> mathPanel.save());
+
+        JMenuItem saveAs = new JMenuItem(BUNDLE.getString("workspace.menu.file.saveAs"),
+                new FlatFileViewFloppyDriveIcon());
+        file.add(saveAs);
+        saveAs.setAccelerator(KeyStroke.getKeyStroke("control shift S"));
+        saveAs.addActionListener(e -> mathPanel.saveAs());
 
         JMenuItem open = new JMenuItem(BUNDLE.getString("workspace.menu.file.open"),
                 new FlatTreeOpenIcon());
         file.add(open);
+        open.setAccelerator(KeyStroke.getKeyStroke("control O"));
         open.addActionListener(e -> mathPanel.open(plottingPanel));
 
         file.addSeparator();

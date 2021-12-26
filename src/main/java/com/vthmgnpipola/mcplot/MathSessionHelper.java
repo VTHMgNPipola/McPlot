@@ -40,32 +40,40 @@ public class MathSessionHelper {
     private static final JFileChooser FILE_CHOOSER = new JFileChooser();
     private static final String EXTENSION = "mcp";
 
+    private static String lastPath;
+
     static {
         FILE_CHOOSER.setFileFilter(new FileNameExtensionFilter(BUNDLE.getString("workspace.menu.file.fileFormat"),
                 EXTENSION));
     }
 
-    public static void saveSession(List<Function> functions, List<Constant> constants) {
-        String saveDirectory = PreferencesHelper.PREFERENCES.get(PreferencesHelper.KEY_CURRENT_DIRECTORY_SAVE, null);
-        if (saveDirectory != null) {
-            FILE_CHOOSER.setCurrentDirectory(new File(saveDirectory));
+    public static void saveSession(List<Function> functions, List<Constant> constants, boolean forceDialog) {
+        String chosenPath = lastPath;
+        if (chosenPath == null || forceDialog) {
+            String saveDirectory = PreferencesHelper.PREFERENCES.get(PreferencesHelper.KEY_CURRENT_DIRECTORY_SAVE, null);
+            if (saveDirectory != null) {
+                FILE_CHOOSER.setCurrentDirectory(new File(saveDirectory));
+            }
+
+            int state = FILE_CHOOSER.showSaveDialog(null);
+            if (state != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
+            chosenPath = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
         }
 
-        int state = FILE_CHOOSER.showSaveDialog(null);
-        if (state == JFileChooser.APPROVE_OPTION) {
-            String chosenPath = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
-            if (!chosenPath.endsWith(EXTENSION)) {
-                chosenPath += "." + EXTENSION;
-            }
+        if (!chosenPath.endsWith(EXTENSION)) {
+            chosenPath += "." + EXTENSION;
+        }
 
-            PreferencesHelper.PREFERENCES.put(PreferencesHelper.KEY_CURRENT_DIRECTORY_SAVE, chosenPath);
-            try (ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(Path.of(chosenPath)))) {
-                oos.writeObject(constants);
-                oos.writeObject(functions);
-            } catch (Throwable t) {
-                JOptionPane.showMessageDialog(null, BUNDLE.getString("errors.save"),
-                        BUNDLE.getString("generics.errorDialog"), JOptionPane.WARNING_MESSAGE);
-            }
+        PreferencesHelper.PREFERENCES.put(PreferencesHelper.KEY_CURRENT_DIRECTORY_SAVE, chosenPath);
+        try (ObjectOutputStream oos = new ObjectOutputStream(Files.newOutputStream(Path.of(chosenPath)))) {
+            oos.writeObject(constants);
+            oos.writeObject(functions);
+            lastPath = chosenPath;
+        } catch (Throwable t) {
+            JOptionPane.showMessageDialog(null, BUNDLE.getString("errors.save"),
+                    BUNDLE.getString("generics.errorDialog"), JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -83,6 +91,7 @@ public class MathSessionHelper {
             try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Path.of(chosenPath)))) {
                 List<Constant> constants = (List<Constant>) ois.readObject();
                 List<Function> functions = (List<Function>) ois.readObject();
+                lastPath = chosenPath;
 
                 consumer.accept(functions, constants);
             } catch (Throwable t) {
