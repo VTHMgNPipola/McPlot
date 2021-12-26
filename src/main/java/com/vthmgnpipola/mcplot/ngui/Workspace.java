@@ -97,8 +97,16 @@ public class Workspace extends JFrame {
         JMenu export = new JMenu(BUNDLE.getString("workspace.menu.file.export"));
         file.add(export);
 
-//        JMenuItem exportSpreadsheet = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.spreadsheet"));
-//        export.add(exportSpreadsheet);
+        JMenuItem exportSpreadsheet = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.spreadsheet"));
+        export.add(exportSpreadsheet);
+        exportSpreadsheet.addActionListener(e -> {
+            ExportSpreadsheetFrame exportSpreadsheetFrame = new ExportSpreadsheetFrame(
+                    MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
+                    MathEventStreamer.getInstance().getConstantValues(),
+                    plottingPanel);
+            exportSpreadsheetFrame.init();
+            exportSpreadsheetFrame.setVisible(true);
+        });
 
         JMenuItem exportText = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.text"),
                 new FlatTextFileIcon());
