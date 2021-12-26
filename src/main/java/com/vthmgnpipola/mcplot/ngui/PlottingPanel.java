@@ -344,7 +344,7 @@ public class PlottingPanel extends JPanel {
             g.setColor(traceColor);
             g.draw(zoomTx.createTransformedShape(plot.getPath()));
 
-            longestFunction = Math.max(longestFunction, fontMetrics.stringWidth(function.getDefinition()));
+            longestFunction = Math.max(longestFunction, fontMetrics.stringWidth(function.getDefinition().trim()));
 
             visibleFunctions++;
         }
@@ -378,7 +378,7 @@ public class PlottingPanel extends JPanel {
 
                 g.setStroke(baseStroke);
                 g.setColor(globalAxisColor);
-                g.drawString(function.getDefinition(), 60,
+                g.drawString(function.getDefinition().trim(), 60,
                         fontMetrics.getHeight() * i + fontMetrics.getAscent() + 10);
                 i++;
             }

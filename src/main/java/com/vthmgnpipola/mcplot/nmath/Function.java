@@ -182,15 +182,15 @@ public class Function implements Serializable {
      * Splits the definition string into the function name, variable name and formation law.
      */
     private void doDecomposition() {
-        String[] parts = definition.split("=");
+        String[] parts = definition.replace(" ", "").split("=");
         if (parts.length != 2) {
             return;
         }
 
-        formationLaw = parts[1].trim();
+        formationLaw = parts[1];
 
-        name = parts[0].substring(0, parts[0].indexOf('(')).trim();
-        variableName = parts[0].substring(parts[0].indexOf('(') + 1, parts[0].indexOf(')')).trim();
+        name = parts[0].substring(0, parts[0].indexOf('('));
+        variableName = parts[0].substring(parts[0].indexOf('(') + 1, parts[0].indexOf(')'));
     }
 
     /**
