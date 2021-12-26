@@ -80,8 +80,7 @@ public class Workspace extends JFrame {
         save.setAccelerator(KeyStroke.getKeyStroke("control S"));
         save.addActionListener(e -> mathPanel.save());
 
-        JMenuItem saveAs = new JMenuItem(BUNDLE.getString("workspace.menu.file.saveAs"),
-                new FlatFileViewFloppyDriveIcon());
+        JMenuItem saveAs = new JMenuItem(BUNDLE.getString("workspace.menu.file.saveAs"));
         file.add(saveAs);
         saveAs.setAccelerator(KeyStroke.getKeyStroke("control shift S"));
         saveAs.addActionListener(e -> mathPanel.saveAs());
