@@ -133,6 +133,9 @@ public class FunctionEvaluator {
      */
     public void setVisible(boolean visible) {
         function.setVisible(visible);
+        if (visible) {
+            evaluate();
+        }
         plottingPanel.repaint();
     }
 
