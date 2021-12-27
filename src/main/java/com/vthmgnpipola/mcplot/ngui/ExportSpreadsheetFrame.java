@@ -136,21 +136,25 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
 
         String tableName;
         AtomicInteger functionSheetIndex = new AtomicInteger(1);
-        if (exportConstants.isSelected() && complexPropertiesPanel.separateAll.isSelected()) {
+        boolean hasExportableConstants = constants != null &&
+                constants.parallelStream().anyMatch(c -> c.getActualValue() != null && c.getName() != null &&
+                        !c.getName().isBlank());
+        boolean firstFunctionSheet = false;
+        if (exportConstants.isSelected() && complexPropertiesPanel.separateAll.isSelected() && hasExportableConstants) {
             tableName = BUNDLE.getString("export.spreadsheet.constantSheetName");
         } else if (complexPropertiesPanel.separateAll.isSelected()) {
             tableName = MessageFormat.format(BUNDLE.getString("export.spreadsheet.functionSheetName"),
                     functionSheetIndex.getAndIncrement());
+            firstFunctionSheet = true;
         } else {
             tableName = BUNDLE.getString("export.spreadsheet.generalSheetName");
+            firstFunctionSheet = true;
         }
 
         Table currentTable = document.addTable(tableName);
         TableCellWalker walker = currentTable.getWalker();
 
-        if (exportConstants.isSelected() && constants != null &&
-                constants.parallelStream().anyMatch(c -> c.getActualValue() != null && c.getName() != null &&
-                        !c.getName().isBlank())) {
+        if (exportConstants.isSelected() && hasExportableConstants) {
             walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantName"));
             walker.next();
             walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantDefinition"));
@@ -170,35 +174,43 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
             }
 
             walker.nextRow();
-            walker.nextRow();
         }
 
         String functionDefinitionLabel = BUNDLE.getString("export.spreadsheet.functionDefinition");
         String xLabel = BUNDLE.getString("export.spreadsheet.functionX");
         String resultLabel = BUNDLE.getString("export.spreadsheet.functionResult");
+        String tableLabel = BUNDLE.getString("export.spreadsheet.functionSheetName");
         boolean exportFunctionDefinitionValue = exportFunctionDefinition.isSelected();
         for (Map.Entry<Function, Future<double[]>> functionEntry : results.entrySet()) {
-            if (complexPropertiesPanel.separateAll.isSelected()) {
-                tableName = MessageFormat.format(BUNDLE.getString("export.spreadsheet.functionSheetName"),
-                        functionSheetIndex.getAndIncrement());
+            double[] result = functionEntry.getValue().get();
+
+            if (complexPropertiesPanel.separateAll.isSelected() && ((hasExportableConstants || !firstFunctionSheet) ^
+                    (!exportConstants.isSelected() && firstFunctionSheet))) {
+                tableName = MessageFormat.format(tableLabel, functionSheetIndex.getAndIncrement());
                 currentTable = document.addTable(tableName);
                 walker = currentTable.getWalker();
             }
 
-            double[] result = functionEntry.getValue().get();
-
             if (exportFunctionDefinitionValue) {
-                walker.setStringValue(functionDefinitionLabel);
-                walker.nextRow();
-                walker.setStringValue(functionEntry.getKey().getDefinition().trim());
-                walker.setCellMerge(result.length / 2, 1);
-                walker.previousRow();
-                walker.next();
+                if (complexPropertiesPanel.separateAll.isSelected() || firstFunctionSheet) {
+                    walker.setStringValue(functionDefinitionLabel);
+                    walker.nextRow();
+                    walker.setStringValue(functionEntry.getKey().getDefinition().trim());
+                    walker.setCellMerge(result.length / 2, 1);
+                    walker.previousRow();
+                    walker.next();
+                } else {
+                    walker.setStringValue(functionEntry.getKey().getDefinition().trim());
+                    walker.setCellMerge(result.length / 2, 1);
+                }
             }
-            walker.setStringValue(xLabel);
-            walker.next();
-            walker.setStringValue(resultLabel);
-            walker.nextRow();
+            if (complexPropertiesPanel.separateAll.isSelected() || firstFunctionSheet) {
+                walker.setStringValue(xLabel);
+                walker.next();
+                walker.setStringValue(resultLabel);
+                walker.nextRow();
+            }
+            firstFunctionSheet = false;
 
             for (int i = 0; i < result.length; i++) {
                 if (exportFunctionDefinitionValue) {
@@ -210,9 +222,6 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
                 walker.setFloatValue(result[i]);
                 walker.nextRow();
             }
-
-            walker.nextRow();
-            walker.nextRow();
         }
 
         writer.save(Files.newOutputStream(Path.of(filename.getText())));
@@ -253,29 +262,22 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         propertiesPanel.add(complexPropertiesPanel, TYPE_COMPLEX);
         complexPropertiesPanel.init();
 
+        updatePropertiesPanel(cardLayout, propertiesPanel);
+
         filename.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                updatePropertiesPanel();
+                updatePropertiesPanel(cardLayout, propertiesPanel);
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                updatePropertiesPanel();
+                updatePropertiesPanel(cardLayout, propertiesPanel);
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                updatePropertiesPanel();
-            }
-
-            private void updatePropertiesPanel() {
-                selectedType = switch (EXTENSION.getFileType(filename.getText()).toLowerCase()) {
-                    case EXTENSION_CSV -> TYPE_CSV;
-                    case EXTENSION_XLSX, EXTENSION_ODS -> TYPE_COMPLEX;
-                    default -> TYPE_INVALID;
-                };
-                cardLayout.show(propertiesPanel, selectedType);
+                updatePropertiesPanel(cardLayout, propertiesPanel);
             }
         });
 
@@ -303,6 +305,15 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         JButton export = new JButton(BUNDLE.getString("export.spreadsheet.apply"), new FlatApplyIcon());
         contentPane.add(export, "span, alignx right");
         export.addActionListener(e -> export());
+    }
+
+    private void updatePropertiesPanel(CardLayout cardLayout, JPanel panel) {
+        selectedType = switch (EXTENSION.getFileType(filename.getText()).toLowerCase()) {
+            case EXTENSION_CSV -> TYPE_CSV;
+            case EXTENSION_XLSX, EXTENSION_ODS -> TYPE_COMPLEX;
+            default -> TYPE_INVALID;
+        };
+        cardLayout.show(panel, selectedType);
     }
 
     private static class CSVPropertiesPanel extends JPanel {
