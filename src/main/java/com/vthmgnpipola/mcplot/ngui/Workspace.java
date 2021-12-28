@@ -22,6 +22,7 @@ import com.formdev.flatlaf.icons.FlatFileViewFileIcon;
 import com.formdev.flatlaf.icons.FlatFileViewFloppyDriveIcon;
 import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
+import com.vthmgnpipola.mcplot.ngui.icons.FlatAddFileIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatHelpIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatPictureIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatSettingsIcon;
@@ -74,6 +75,14 @@ public class Workspace extends JFrame {
 
         JMenu file = new JMenu(BUNDLE.getString("workspace.menu.file"));
         menuBar.add(file);
+
+        JMenuItem newWorkspace = new JMenuItem(BUNDLE.getString("workspace.menu.file.new"), new FlatAddFileIcon());
+        file.add(newWorkspace);
+        newWorkspace.setAccelerator(KeyStroke.getKeyStroke("control shift n"));
+        newWorkspace.addActionListener(e -> {
+            MathEventStreamer.getInstance().reset();
+            this.init();
+        });
 
         JMenuItem save = new JMenuItem(BUNDLE.getString("workspace.menu.file.save"),
                 new FlatFileViewFloppyDriveIcon());
