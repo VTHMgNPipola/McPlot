@@ -29,6 +29,9 @@ import com.vthmgnpipola.mcplot.ngui.icons.FlatSelectAllIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatUnselectAllIcon;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
+import de.siegmar.fastcsv.writer.CsvWriter;
+import de.siegmar.fastcsv.writer.LineDelimiter;
+import de.siegmar.fastcsv.writer.QuoteStrategy;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.io.IOException;
@@ -125,8 +128,71 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         }
     }
 
-    private void exportCsv(Map<Function, Future<double[]>> results) {
+    private void exportCsv(Map<Function, Future<double[]>> results) throws ExecutionException, InterruptedException,
+            IOException {
+        char cellSeparator = 0;
+        if (csvPropertiesPanel.commaSeparator.isSelected()) {
+            cellSeparator = ',';
+        } else if (csvPropertiesPanel.semicolonSeparator.isSelected()) {
+            cellSeparator = ';';
+        } else if (csvPropertiesPanel.tabSeparator.isSelected()) {
+            cellSeparator = '\t';
+        } else if (csvPropertiesPanel.spaceSeparator.isSelected()) {
+            cellSeparator = ' ';
+        }
 
+        LineDelimiter lineSeparator = LineDelimiter.PLATFORM;
+        if (csvPropertiesPanel.unixSeparator.isSelected()) {
+            lineSeparator = LineDelimiter.LF;
+        } else if (csvPropertiesPanel.windowsSeparator.isSelected()) {
+            lineSeparator = LineDelimiter.CRLF;
+        } else if (csvPropertiesPanel.macosSeparator.isSelected()) {
+            lineSeparator = LineDelimiter.CR;
+        }
+
+        try (CsvWriter writer = CsvWriter.builder().fieldSeparator(cellSeparator).lineDelimiter(lineSeparator)
+                .quoteCharacter('"').quoteStrategy(QuoteStrategy.ALWAYS)
+                .build(Files.newBufferedWriter(Path.of(filename.getText())))) {
+            boolean hasExportableConstants = constants != null &&
+                    constants.parallelStream().anyMatch(c -> c.getActualValue() != null && c.getName() != null &&
+                            !c.getName().isBlank());
+            if (exportConstants.isSelected() && hasExportableConstants) {
+                if (exportHeaders.isSelected()) {
+                    writer.writeRow(BUNDLE.getString("export.spreadsheet.constantName"),
+                            BUNDLE.getString("export.spreadsheet.constantDefinition"),
+                            BUNDLE.getString("export.spreadsheet.constantValue"));
+                }
+
+                for (Constant constant : constants) {
+                    if (constant.getActualValue() != null && constant.getName() != null && !constant.getName().isBlank()) {
+                        writer.writeRow(constant.getName(), constant.getDefinition(), constant.getActualValue().toString());
+                    }
+                }
+
+                writer.writeRow();
+            }
+
+            if (exportHeaders.isSelected()) {
+                String xLabel = BUNDLE.getString("export.spreadsheet.functionX");
+                String resultLabel = BUNDLE.getString("export.spreadsheet.functionResult");
+                if (exportFunctionDefinition.isSelected()) {
+                    writer.writeRow(BUNDLE.getString("export.spreadsheet.functionDefinition"), xLabel, resultLabel);
+                } else {
+                    writer.writeRow(xLabel, resultLabel);
+                }
+            }
+            for (Map.Entry<Function, Future<double[]>> functionEntry : results.entrySet()) {
+                double[] values = functionEntry.getValue().get();
+                for (int i = 0; i < values.length; i++) {
+                    String firstColumn = i == 0 ? functionEntry.getKey().getDefinition() : "";
+                    if (exportFunctionDefinition.isSelected()) {
+                        writer.writeRow(firstColumn, String.valueOf(values[i++]), String.valueOf(values[i]));
+                    } else {
+                        writer.writeRow(String.valueOf(values[i++]), String.valueOf(values[i]));
+                    }
+                }
+            }
+        }
     }
 
     private void exportOds(Map<Function, Future<double[]>> results) throws IOException, ExecutionException,
@@ -135,6 +201,7 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         AnonymousOdsFileWriter writer = odsFactory.createWriter();
         OdsDocument document = writer.document();
 
+        // Initial sheet
         String tableName;
         AtomicInteger functionSheetIndex = new AtomicInteger(1);
         boolean hasExportableConstants = constants != null &&
@@ -159,6 +226,7 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         Table currentTable = document.addTable(tableName);
         TableCellWalker walker = currentTable.getWalker();
 
+        // Constants table
         if (exportConstants.isSelected() && hasExportableConstants) {
             if (exportHeaders.isSelected()) {
                 walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantName"));
@@ -183,6 +251,7 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
             walker.nextRow();
         }
 
+        // Function sheets
         String functionDefinitionLabel = BUNDLE.getString("export.spreadsheet.functionDefinition");
         String xLabel = BUNDLE.getString("export.spreadsheet.functionX");
         String resultLabel = BUNDLE.getString("export.spreadsheet.functionResult");
