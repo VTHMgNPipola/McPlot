@@ -75,6 +75,7 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
     private JTextField filename;
     private JCheckBox exportConstants;
     private JCheckBox exportFunctionDefinition;
+    private JCheckBox exportHeaders;
     private CSVPropertiesPanel csvPropertiesPanel;
     private ComplexPropertiesPanel complexPropertiesPanel;
     private String selectedType;
@@ -140,11 +141,15 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
                 constants.parallelStream().anyMatch(c -> c.getActualValue() != null && c.getName() != null &&
                         !c.getName().isBlank());
         boolean firstFunctionSheet = false;
-        if (exportConstants.isSelected() && complexPropertiesPanel.separateAll.isSelected() && hasExportableConstants) {
+        if (exportConstants.isSelected() && complexPropertiesPanel.separateConstants.isSelected() && hasExportableConstants) {
             tableName = BUNDLE.getString("export.spreadsheet.constantSheetName");
-        } else if (complexPropertiesPanel.separateAll.isSelected()) {
+        } else if (complexPropertiesPanel.separateFunctions.isSelected()) {
             tableName = MessageFormat.format(BUNDLE.getString("export.spreadsheet.functionSheetName"),
                     functionSheetIndex.getAndIncrement());
+            firstFunctionSheet = true;
+        } else if ((!exportConstants.isSelected() || !hasExportableConstants) &&
+                !complexPropertiesPanel.separateFunctions.isSelected()) {
+            tableName = BUNDLE.getString("export.spreadsheet.generalFunctionsSheetName");
             firstFunctionSheet = true;
         } else {
             tableName = BUNDLE.getString("export.spreadsheet.generalSheetName");
@@ -155,12 +160,14 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         TableCellWalker walker = currentTable.getWalker();
 
         if (exportConstants.isSelected() && hasExportableConstants) {
-            walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantName"));
-            walker.next();
-            walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantDefinition"));
-            walker.next();
-            walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantValue"));
-            walker.nextRow();
+            if (exportHeaders.isSelected()) {
+                walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantName"));
+                walker.next();
+                walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantDefinition"));
+                walker.next();
+                walker.setStringValue(BUNDLE.getString("export.spreadsheet.constantValue"));
+                walker.nextRow();
+            }
 
             for (Constant constant : constants) {
                 if (constant.getActualValue() != null && constant.getName() != null && !constant.getName().isBlank()) {
@@ -184,15 +191,24 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         for (Map.Entry<Function, Future<double[]>> functionEntry : results.entrySet()) {
             double[] result = functionEntry.getValue().get();
 
-            if (complexPropertiesPanel.separateAll.isSelected() && ((hasExportableConstants || !firstFunctionSheet) ^
-                    (!exportConstants.isSelected() && firstFunctionSheet))) {
-                tableName = MessageFormat.format(tableLabel, functionSheetIndex.getAndIncrement());
-                currentTable = document.addTable(tableName);
-                walker = currentTable.getWalker();
+            // Create new sheet if necessary
+            if (((hasExportableConstants || !firstFunctionSheet) ^ (!exportConstants.isSelected() &&
+                    firstFunctionSheet))) {
+                if (complexPropertiesPanel.separateFunctions.isSelected()) {
+                    currentTable = document.addTable(MessageFormat.format(tableLabel,
+                            functionSheetIndex.getAndIncrement()));
+                    walker = currentTable.getWalker();
+                } else if (complexPropertiesPanel.separateConstants.isSelected() && functionSheetIndex.get() == 1) {
+                    currentTable = document.addTable(BUNDLE
+                            .getString("export.spreadsheet.generalFunctionsSheetName"));
+                    walker = currentTable.getWalker();
+                }
             }
 
+            // Add function definition
             if (exportFunctionDefinitionValue) {
-                if (complexPropertiesPanel.separateAll.isSelected() || firstFunctionSheet) {
+                if (exportHeaders.isSelected() && (complexPropertiesPanel.separateFunctions.isSelected() ||
+                        functionSheetIndex.get() == 1 || firstFunctionSheet)) {
                     walker.setStringValue(functionDefinitionLabel);
                     walker.nextRow();
                     walker.setStringValue(functionEntry.getKey().getDefinition().trim());
@@ -204,14 +220,21 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
                     walker.setCellMerge(result.length / 2, 1);
                 }
             }
-            if (complexPropertiesPanel.separateAll.isSelected() || firstFunctionSheet) {
+            // Add header
+            if (exportHeaders.isSelected() && (complexPropertiesPanel.separateFunctions.isSelected() ||
+                    functionSheetIndex.get() == 1 || firstFunctionSheet)) {
                 walker.setStringValue(xLabel);
                 walker.next();
                 walker.setStringValue(resultLabel);
                 walker.nextRow();
             }
+
+            if (functionSheetIndex.get() == 1) {
+                functionSheetIndex.getAndIncrement();
+            }
             firstFunctionSheet = false;
 
+            // Exports calculated data
             for (int i = 0; i < result.length; i++) {
                 if (exportFunctionDefinitionValue) {
                     walker.next();
@@ -224,6 +247,7 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
             }
         }
 
+        // Saves file
         writer.save(Files.newOutputStream(Path.of(filename.getText())));
     }
 
@@ -245,6 +269,10 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         exportFunctionDefinition = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportFunctionDefinition"));
         add(exportFunctionDefinition, "span");
         exportFunctionDefinition.setSelected(true);
+
+        exportHeaders = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportHeaders"));
+        add(exportHeaders, "span");
+        exportHeaders.setSelected(true);
 
         CardLayout cardLayout = new CardLayout();
         JPanel propertiesPanel = new JPanel(cardLayout);
@@ -381,29 +409,31 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
     }
 
     private static class ComplexPropertiesPanel extends JPanel {
-        public JCheckBox separateAll;
-        public JCheckBox exportConstantTable;
-        public JCheckBox exportFunctionTable;
+        public JCheckBox separateConstants;
+        public JCheckBox separateFunctions;
 
         public ComplexPropertiesPanel() {
             super(new MigLayout("insets 0", "[]15", "[]10"));
         }
 
         public void init() {
-            separateAll = new JCheckBox(BUNDLE.getString("export.spreadsheet.separateAll"));
-            add(separateAll, "span");
-            separateAll.setToolTipText(BUNDLE.getString("export.spreadsheet.separateAll.tooltip"));
-            separateAll.setSelected(true);
+            separateConstants = new JCheckBox(BUNDLE.getString("export.spreadsheet.separateConstants"));
+            add(separateConstants, "span");
+            separateConstants.setToolTipText(BUNDLE.getString("export.spreadsheet.separateConstants.tooltip"));
+            separateConstants.setSelected(true);
+            separateConstants.addActionListener(e -> {
+                if (!separateConstants.isSelected()) {
+                    separateFunctions.setSelected(false);
+                    separateFunctions.setEnabled(false);
+                } else {
+                    separateFunctions.setEnabled(true);
+                }
+            });
 
-            exportConstantTable = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportConstantTable"));
-            add(exportConstantTable, "span");
-            exportConstantTable.setToolTipText(BUNDLE.getString("export.spreadsheet.exportConstantTable.tooltip"));
-            exportConstantTable.setSelected(true);
-
-            exportFunctionTable = new JCheckBox(BUNDLE.getString("export.spreadsheet.exportFunctionTable"));
-            add(exportFunctionTable, "span");
-            exportFunctionTable.setToolTipText(BUNDLE.getString("export.spreadsheet.exportFunctionTable.tooltip"));
-            exportFunctionTable.setSelected(true);
+            separateFunctions = new JCheckBox(BUNDLE.getString("export.spreadsheet.separateFunctions"));
+            add(separateFunctions, "span");
+            separateFunctions.setToolTipText(BUNDLE.getString("export.spreadsheet.separateFunctions.tooltip"));
+            separateFunctions.setSelected(true);
         }
     }
 }
