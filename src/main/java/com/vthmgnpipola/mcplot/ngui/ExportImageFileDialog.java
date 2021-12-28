@@ -45,7 +45,7 @@ import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class ExportImageFileFrame extends ExportFunctionsFrame {
+public class ExportImageFileDialog extends ExportFunctionsDialog {
     private static final FileChooserExtension EXTENSION = new FileChooserExtension(
             BUNDLE.getString("export.image.extensionFilter"), "png",
             "png", "jpg", "tiff", "bmp");
@@ -55,8 +55,8 @@ public class ExportImageFileFrame extends ExportFunctionsFrame {
     private JTextField filename;
     private JCheckBox enableAntialias;
 
-    public ExportImageFileFrame(Map<String, Function> functionMap, Collection<Constant> constants,
-                                Map<String, Double> constantValues, PlottingPanel plottingPanel) {
+    public ExportImageFileDialog(Map<String, Function> functionMap, Collection<Constant> constants,
+                                 Map<String, Double> constantValues, PlottingPanel plottingPanel) {
         super(BUNDLE.getString("export.image.title"), functionMap, constants, constantValues, plottingPanel);
     }
 

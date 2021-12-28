@@ -19,7 +19,7 @@
 package com.vthmgnpipola.mcplot.ngui.components;
 
 import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
-import com.vthmgnpipola.mcplot.ngui.FunctionSettingsFrame;
+import com.vthmgnpipola.mcplot.ngui.FunctionSettingsDialog;
 import com.vthmgnpipola.mcplot.ngui.FunctionsPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatMoreSettingsIcon;
@@ -39,6 +39,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
@@ -74,9 +75,10 @@ public class FunctionCard extends JPanel {
         add(otherSettings, "growy");
         otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettings.tooltip"));
         otherSettings.addActionListener(e -> {
-            FunctionSettingsFrame functionSettingsFrame = new FunctionSettingsFrame(functionEvaluator, index);
-            functionSettingsFrame.init(plottingPanel);
-            functionSettingsFrame.setVisible(true);
+            FunctionSettingsDialog functionSettingsDialog = new FunctionSettingsDialog(functionEvaluator, index,
+                    SwingUtilities.getWindowAncestor(this));
+            functionSettingsDialog.init(plottingPanel);
+            functionSettingsDialog.setVisible(true);
         });
 
         visible = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"),

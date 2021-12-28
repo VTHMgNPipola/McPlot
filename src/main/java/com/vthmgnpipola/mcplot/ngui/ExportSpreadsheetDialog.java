@@ -67,7 +67,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
+public class ExportSpreadsheetDialog extends ExportFunctionsDialog {
     private static final String EXTENSION_CSV = "csv";
     private static final String EXTENSION_ODS = "ods";
     private static final String EXTENSION_XLSX = "xlsx";
@@ -91,8 +91,8 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
     private String selectedType;
     private FunctionSelectionPanel exportedFunctions;
 
-    public ExportSpreadsheetFrame(Map<String, Function> functionMap, Collection<Constant> constants,
-                                  Map<String, Double> constantValues, PlottingPanel plottingPanel) {
+    public ExportSpreadsheetDialog(Map<String, Function> functionMap, Collection<Constant> constants,
+                                   Map<String, Double> constantValues, PlottingPanel plottingPanel) {
         super(BUNDLE.getString("export.spreadsheet.title"), functionMap, constants, constantValues, plottingPanel);
     }
 

@@ -101,8 +101,9 @@ public class Workspace extends JFrame {
         JMenuItem exportSpreadsheet = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.spreadsheet"),
                 new FlatFileViewFileIcon());
         export.add(exportSpreadsheet);
+        exportSpreadsheet.setAccelerator(KeyStroke.getKeyStroke("control P"));
         exportSpreadsheet.addActionListener(e -> {
-            ExportSpreadsheetFrame exportSpreadsheetFrame = new ExportSpreadsheetFrame(
+            ExportSpreadsheetDialog exportSpreadsheetFrame = new ExportSpreadsheetDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
                     plottingPanel);
@@ -113,8 +114,9 @@ public class Workspace extends JFrame {
         JMenuItem exportText = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.text"),
                 new FlatTextFileIcon());
         export.add(exportText);
+        exportText.setAccelerator(KeyStroke.getKeyStroke("control T"));
         exportText.addActionListener(e -> {
-            ExportTextFileFrame exportTextFileFrame = new ExportTextFileFrame(
+            ExportTextFileDialog exportTextFileFrame = new ExportTextFileDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
                     plottingPanel);
@@ -128,8 +130,9 @@ public class Workspace extends JFrame {
         JMenuItem exportPicture = new JMenuItem(BUNDLE.getString("workspace.menu.file.export.picture"),
                 new FlatPictureIcon());
         export.add(exportPicture);
+        exportPicture.setAccelerator(KeyStroke.getKeyStroke("control I"));
         exportPicture.addActionListener(e -> {
-            ExportImageFileFrame exportImageFileFrame = new ExportImageFileFrame(
+            ExportImageFileDialog exportImageFileFrame = new ExportImageFileDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
                     plottingPanel);
@@ -141,20 +144,22 @@ public class Workspace extends JFrame {
 
         JMenuItem settings = new JMenuItem(BUNDLE.getString("generics.settings"), new FlatSettingsIcon());
         file.add(settings);
+        settings.setAccelerator(KeyStroke.getKeyStroke("control alt S"));
         settings.addActionListener(e -> {
-            SettingsFrame settingsFrame = new SettingsFrame(plottingPanel, this);
-            settingsFrame.init();
-            settingsFrame.setVisible(true);
+            SettingsDialog settingsDialog = new SettingsDialog(plottingPanel, this);
+            settingsDialog.init();
+            settingsDialog.setVisible(true);
         });
 
         file.addSeparator();
 
         JMenuItem about = new JMenuItem(BUNDLE.getString("workspace.menu.file.about"), new FlatHelpIcon());
         file.add(about);
+        about.setAccelerator(KeyStroke.getKeyStroke("control shift ?"));
         about.addActionListener(e -> {
-            AboutFrame aboutFrame = new AboutFrame(this);
-            aboutFrame.init();
-            aboutFrame.setVisible(true);
+            AboutDialog aboutDialog = new AboutDialog(this);
+            aboutDialog.init();
+            aboutDialog.setVisible(true);
         });
 
         file.addSeparator();
@@ -162,6 +167,7 @@ public class Workspace extends JFrame {
         JMenuItem exit = new JMenuItem(BUNDLE.getString("workspace.menu.file.exit"),
                 new FlatTabbedPaneCloseIcon());
         file.add(exit);
+        exit.setAccelerator(KeyStroke.getKeyStroke("control Q"));
         exit.addActionListener(e -> System.exit(0));
     }
 

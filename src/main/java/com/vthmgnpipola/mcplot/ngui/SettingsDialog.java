@@ -20,19 +20,20 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.GeneralSettingsPanel;
 import com.vthmgnpipola.mcplot.ngui.components.PlottingPanelSettingsPanel;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class SettingsFrame extends JFrame {
+public class SettingsDialog extends JDialog {
     private final PlottingPanel plottingPanel;
     private final Workspace workspace;
 
-    public SettingsFrame(PlottingPanel plottingPanel, Workspace workspace) {
-        super(BUNDLE.getString("settings.title"));
+    public SettingsDialog(PlottingPanel plottingPanel, Workspace workspace) {
+        super(SwingUtilities.getWindowAncestor(workspace), BUNDLE.getString("settings.title"),
+                ModalityType.APPLICATION_MODAL);
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 

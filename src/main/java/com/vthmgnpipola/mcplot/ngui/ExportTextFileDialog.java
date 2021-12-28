@@ -44,7 +44,7 @@ import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class ExportTextFileFrame extends ExportFunctionsFrame {
+public class ExportTextFileDialog extends ExportFunctionsDialog {
     private static final FileChooserExtension EXTENSION = new FileChooserExtension(
             BUNDLE.getString("export.text.extensionFilter"), "txt", "txt");
 
@@ -59,8 +59,8 @@ public class ExportTextFileFrame extends ExportFunctionsFrame {
     private JRadioButton macosSeparator;
     private FunctionSelectionPanel exportedFunctions;
 
-    public ExportTextFileFrame(Map<String, Function> functionMap, Collection<Constant> constants,
-                               Map<String, Double> constantValues, PlottingPanel plottingPanel) {
+    public ExportTextFileDialog(Map<String, Function> functionMap, Collection<Constant> constants,
+                                Map<String, Double> constantValues, PlottingPanel plottingPanel) {
         super(BUNDLE.getString("export.text.title"), functionMap, constants, constantValues, plottingPanel);
     }
 

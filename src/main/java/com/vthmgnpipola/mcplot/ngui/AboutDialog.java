@@ -21,7 +21,7 @@ package com.vthmgnpipola.mcplot.ngui;
 import java.awt.Font;
 import java.awt.Window;
 import java.text.MessageFormat;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
@@ -29,11 +29,11 @@ import net.miginfocom.swing.MigLayout;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 import static com.vthmgnpipola.mcplot.Main.VERSION;
 
-public class AboutFrame extends JFrame {
+public class AboutDialog extends JDialog {
     private final Window parent;
 
-    public AboutFrame(Window parent) {
-        super(BUNDLE.getString("about.title"));
+    public AboutDialog(Window parent) {
+        super(parent, BUNDLE.getString("about.title"), ModalityType.APPLICATION_MODAL);
         setResizable(false);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 

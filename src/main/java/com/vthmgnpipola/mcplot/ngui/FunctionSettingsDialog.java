@@ -20,11 +20,12 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
+import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
 import javax.swing.JCheckBox;
-import javax.swing.JFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -33,11 +34,12 @@ import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class FunctionSettingsFrame extends JFrame {
+public class FunctionSettingsDialog extends JDialog {
     private final FunctionEvaluator functionEvaluator;
 
-    public FunctionSettingsFrame(FunctionEvaluator functionEvaluator, int index) {
-        super(MessageFormat.format(BUNDLE.getString("functionSettings.title"), index));
+    public FunctionSettingsDialog(FunctionEvaluator functionEvaluator, int index, Window owner) {
+        super(owner, MessageFormat.format(BUNDLE.getString("functionSettings.title"), index),
+                ModalityType.APPLICATION_MODAL);
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
