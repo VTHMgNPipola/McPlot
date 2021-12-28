@@ -412,7 +412,8 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
             }
 
             // Add headers
-            if (exportHeaders.isSelected()) {
+            if (exportHeaders.isSelected() && (complexPropertiesPanel.separateFunctions.isSelected() ||
+                    firstFunctionSheet)) {
                 Row headerRow = currentSheet.createRow(rowNumber++);
                 int currentCell = 0;
                 // Add function definition header
