@@ -73,7 +73,8 @@ public class MathPanel extends JPanel {
     }
 
     public void recalculateAllFunctions() {
-        MathEventStreamer.getInstance().functionUpdate(false);
+        // FIXME: This is still broken for some reason
+        MathEventStreamer.getInstance().functionUpdate(true);
     }
 
     public void save() {
