@@ -35,6 +35,7 @@ import de.siegmar.fastcsv.writer.QuoteStrategy;
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
@@ -57,6 +58,12 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import net.miginfocom.swing.MigLayout;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -320,8 +327,143 @@ public class ExportSpreadsheetFrame extends ExportFunctionsFrame {
         writer.save(Files.newOutputStream(Path.of(filename.getText())));
     }
 
-    private void exportXlsx(Map<Function, Future<double[]>> results) {
+    private void exportXlsx(Map<Function, Future<double[]>> results) throws ExecutionException, InterruptedException,
+            IOException {
+        SXSSFWorkbook workbook = new SXSSFWorkbook(50);
 
+        // Initial sheet
+        String sheetName;
+        AtomicInteger functionSheetIndex = new AtomicInteger(1);
+        boolean hasExportableConstants = constants != null &&
+                constants.parallelStream().anyMatch(c -> c.getActualValue() != null && c.getName() != null &&
+                        !c.getName().isBlank());
+        boolean firstFunctionSheet = false;
+        if (exportConstants.isSelected() && complexPropertiesPanel.separateConstants.isSelected() && hasExportableConstants) {
+            sheetName = BUNDLE.getString("export.spreadsheet.constantSheetName");
+        } else if (complexPropertiesPanel.separateFunctions.isSelected()) {
+            sheetName = MessageFormat.format(BUNDLE.getString("export.spreadsheet.functionSheetName"),
+                    functionSheetIndex.getAndIncrement());
+            firstFunctionSheet = true;
+        } else if ((!exportConstants.isSelected() || !hasExportableConstants) &&
+                !complexPropertiesPanel.separateFunctions.isSelected()) {
+            sheetName = BUNDLE.getString("export.spreadsheet.generalFunctionsSheetName");
+            firstFunctionSheet = true;
+        } else {
+            sheetName = BUNDLE.getString("export.spreadsheet.generalSheetName");
+            firstFunctionSheet = true;
+        }
+
+        Sheet currentSheet = workbook.createSheet(sheetName);
+        int rowNumber = 0;
+
+        // Constants table
+        if (exportConstants.isSelected() && hasExportableConstants) {
+            if (exportHeaders.isSelected()) {
+                Row row = currentSheet.createRow(rowNumber++);
+
+                Cell nameCell = row.createCell(0, CellType.STRING);
+                nameCell.setCellValue(BUNDLE.getString("export.spreadsheet.constantName"));
+
+                Cell definitionCell = row.createCell(1, CellType.STRING);
+                definitionCell.setCellValue(BUNDLE.getString("export.spreadsheet.constantDefinition"));
+
+                Cell valueCell = row.createCell(2, CellType.STRING);
+                valueCell.setCellValue(BUNDLE.getString("export.spreadsheet.constantValue"));
+            }
+
+            for (Constant constant : constants) {
+                if (constant.getActualValue() != null && constant.getName() != null && !constant.getName().isBlank()) {
+                    Row row = currentSheet.createRow(rowNumber++);
+
+                    Cell nameCell = row.createCell(0, CellType.STRING);
+                    nameCell.setCellValue(constant.getName());
+
+                    Cell definitionCell = row.createCell(1, CellType.STRING);
+                    definitionCell.setCellValue(constant.getDefinition());
+
+                    Cell valueCell = row.createCell(2, CellType.NUMERIC);
+                    valueCell.setCellValue(constant.getActualValue());
+                }
+            }
+
+            rowNumber++;
+        }
+
+        // Function sheets
+        String functionDefinitionLabel = BUNDLE.getString("export.spreadsheet.functionDefinition");
+        String xLabel = BUNDLE.getString("export.spreadsheet.functionX");
+        String resultLabel = BUNDLE.getString("export.spreadsheet.functionResult");
+        String sheetLabel = BUNDLE.getString("export.spreadsheet.functionSheetName");
+        for (Map.Entry<Function, Future<double[]>> functionEntry : results.entrySet()) {
+            double[] result = functionEntry.getValue().get();
+
+            // Create new sheet if necessary
+            if (((hasExportableConstants || !firstFunctionSheet) ^ (!exportConstants.isSelected() &&
+                    firstFunctionSheet))) {
+                if (complexPropertiesPanel.separateFunctions.isSelected()) {
+                    currentSheet = workbook.createSheet(MessageFormat.format(sheetLabel,
+                            functionSheetIndex.getAndIncrement()));
+                    rowNumber = 0;
+                } else if (complexPropertiesPanel.separateConstants.isSelected() && functionSheetIndex.get() == 1) {
+                    currentSheet = workbook.createSheet(BUNDLE
+                            .getString("export.spreadsheet.generalFunctionsSheetName"));
+                    rowNumber = 0;
+                }
+            }
+
+            // Add headers
+            if (exportHeaders.isSelected()) {
+                Row headerRow = currentSheet.createRow(rowNumber++);
+                int currentCell = 0;
+                // Add function definition header
+                if (exportFunctionDefinition.isSelected() && (complexPropertiesPanel.separateFunctions.isSelected()
+                        || functionSheetIndex.get() == 1 || firstFunctionSheet)) {
+                    Cell definitionHeaderCell = headerRow.createCell(currentCell++, CellType.STRING);
+                    definitionHeaderCell.setCellValue(functionDefinitionLabel);
+                }
+                if (complexPropertiesPanel.separateFunctions.isSelected() ||
+                        functionSheetIndex.get() == 1 || firstFunctionSheet) {
+                    Cell xHeaderCell = headerRow.createCell(currentCell++, CellType.STRING);
+                    xHeaderCell.setCellValue(xLabel);
+
+                    Cell resultHeaderCell = headerRow.createCell(currentCell, CellType.STRING);
+                    resultHeaderCell.setCellValue(resultLabel);
+                }
+            }
+
+            if (functionSheetIndex.get() == 1) {
+                functionSheetIndex.getAndIncrement();
+            }
+            firstFunctionSheet = false;
+
+            // Exports calculated data
+            for (int i = 0; i < result.length; i++) {
+                Row row = currentSheet.createRow(rowNumber++);
+                int cellNumber = 0;
+                if (exportFunctionDefinition.isSelected()) {
+                    if (i == 0) {
+                        Cell definitionCell = row.createCell(0, CellType.STRING);
+                        definitionCell.setCellValue(functionEntry.getKey().getDefinition().trim());
+                        currentSheet.addMergedRegion(new CellRangeAddress(rowNumber - 1,
+                                rowNumber + result.length / 2 - 2, 0, 0));
+                    }
+
+                    cellNumber++;
+                }
+
+                Cell xCell = row.createCell(cellNumber++, CellType.NUMERIC);
+                xCell.setCellValue(result[i++]);
+
+                Cell resultCell = row.createCell(cellNumber, CellType.NUMERIC);
+                resultCell.setCellValue(result[i]);
+            }
+        }
+
+        try (OutputStream outputStream = Files.newOutputStream(Path.of(filename.getText()))) {
+            workbook.write(outputStream);
+        } finally {
+            workbook.dispose();
+        }
     }
 
     private void initContentPane() {
