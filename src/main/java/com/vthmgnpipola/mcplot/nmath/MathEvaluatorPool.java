@@ -88,9 +88,18 @@ public class MathEvaluatorPool {
                 path.reset();
                 path.moveTo(domainStart, expression.evaluate());
 
+                boolean moving = false;
                 for (double i = domainStart + step; i <= domainEnd; i += step) {
                     expression.setVariable(variableName, i);
-                    path.lineTo(i, expression.evaluate());
+                    double value = expression.evaluate();
+                    if (Double.isNaN(value)) {
+                        moving = true;
+                    } else if (moving) {
+                        path.moveTo(i, value);
+                        moving = false;
+                    } else {
+                        path.lineTo(i, value);
+                    }
                 }
                 plot.setPath(path);
 
