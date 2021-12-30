@@ -23,10 +23,12 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.vthmgnpipola.mcplot.ngui.Workspace;
 import java.awt.Frame;
+import java.awt.Window;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
@@ -102,6 +104,9 @@ public class Main {
 
         for (Frame frame : JFrame.getFrames()) {
             SwingUtilities.updateComponentTreeUI(frame);
+        }
+        for (Window dialog : JDialog.getWindows()) {
+            SwingUtilities.updateComponentTreeUI(dialog);
         }
     }
 }
