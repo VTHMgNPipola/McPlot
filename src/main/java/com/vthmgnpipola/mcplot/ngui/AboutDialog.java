@@ -21,7 +21,6 @@ package com.vthmgnpipola.mcplot.ngui;
 import java.awt.Font;
 import java.awt.Window;
 import java.text.MessageFormat;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
@@ -29,7 +28,7 @@ import net.miginfocom.swing.MigLayout;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 import static com.vthmgnpipola.mcplot.Main.VERSION;
 
-public class AboutDialog extends JDialog {
+public class AboutDialog extends MDialog {
     private final Window parent;
 
     public AboutDialog(Window parent) {
@@ -40,6 +39,7 @@ public class AboutDialog extends JDialog {
         this.parent = parent;
     }
 
+    @Override
     public void init() {
         initContentPane();
         pack();

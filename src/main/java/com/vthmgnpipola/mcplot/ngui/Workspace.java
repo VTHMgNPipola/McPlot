@@ -31,7 +31,6 @@ import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.text.MessageFormat;
-import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -44,7 +43,7 @@ import static com.vthmgnpipola.mcplot.Main.VERSION;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_OPEN_MAXIMIZED;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
 
-public class Workspace extends JFrame {
+public class Workspace extends MFrame {
     private MathPanel mathPanel;
     private PlottingPanel plottingPanel;
     private JSplitPane splitPane;
@@ -55,6 +54,7 @@ public class Workspace extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
+    @Override
     public void init() {
         initContentPane();
         initMenu();

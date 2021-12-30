@@ -20,14 +20,13 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.GeneralSettingsPanel;
 import com.vthmgnpipola.mcplot.ngui.components.PlottingPanelSettingsPanel;
-import javax.swing.JDialog;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class SettingsDialog extends JDialog {
+public class SettingsDialog extends MDialog {
     private final PlottingPanel plottingPanel;
     private final Workspace workspace;
 
@@ -41,6 +40,7 @@ public class SettingsDialog extends JDialog {
         this.workspace = workspace;
     }
 
+    @Override
     public void init() {
         initContentPane();
         pack();

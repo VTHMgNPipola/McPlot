@@ -24,10 +24,14 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.vthmgnpipola.mcplot.ngui.Workspace;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.LookAndFeel;
@@ -70,6 +74,18 @@ public class Main {
      * long to run on the AWT EventDispatcher
      */
     public static final ExecutorService EXECUTOR_THREAD = Executors.newSingleThreadExecutor();
+
+    public static BufferedImage FRAME_ICON = null;
+
+    static {
+        try {
+            FRAME_ICON = ImageIO
+                    .read(Objects.requireNonNull(Main.class.getResourceAsStream("/mcplot-logo.png")));
+        } catch (IOException e) {
+            System.err.println("Unable to find McPlot icon!");
+            e.printStackTrace();
+        }
+    }
 
     /**
      * First method called by the JVM. Used to initialize the LookAndFeel and the AWT EventDispatcher to start the GUI.

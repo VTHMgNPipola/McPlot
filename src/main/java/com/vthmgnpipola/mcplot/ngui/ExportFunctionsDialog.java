@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -42,7 +41,7 @@ import net.objecthunter.exp4j.Expression;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public abstract class ExportFunctionsDialog extends JDialog {
+public abstract class ExportFunctionsDialog extends MDialog {
     protected static final JFileChooser FILE_CHOOSER = new JFileChooser();
 
     protected final PlottingPanel plottingPanel;
@@ -62,8 +61,6 @@ public abstract class ExportFunctionsDialog extends JDialog {
 
         this.plottingPanel = plottingPanel;
     }
-
-    public abstract void init();
 
     public abstract void export();
 

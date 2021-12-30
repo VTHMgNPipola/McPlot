@@ -25,7 +25,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -34,7 +33,7 @@ import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class FunctionSettingsDialog extends JDialog {
+public class FunctionSettingsDialog extends MDialog {
     private final FunctionEvaluator functionEvaluator;
 
     public FunctionSettingsDialog(FunctionEvaluator functionEvaluator, int index, Window owner) {
@@ -44,6 +43,12 @@ public class FunctionSettingsDialog extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         this.functionEvaluator = functionEvaluator;
+    }
+
+    @Override
+    public void init() {
+        throw new UnsupportedOperationException("A function settings dialog can't be created without a plotting panel" +
+                " bound to it!");
     }
 
     public void init(PlottingPanel plottingPanel) {
