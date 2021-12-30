@@ -46,6 +46,10 @@ public class PreferencesHelper {
     public static final String KEY_TRACE_WIDTH = "traceWidth";
     public static final String KEY_ENABLE_ANTIALIAS = "antialias";
     public static final String KEY_ENABLE_FUNCTION_LEGENDS = "functionLegends";
+    public static final String KEY_DRAW_MINOR_GRID = "minorGrid";
+    public static final String KEY_DRAW_GRID = "grid";
+    public static final String KEY_DRAW_AXIS_VALUES = "axisValues";
+    public static final String KEY_MINOR_GRID_DIVISIONS = "minorGridDiv";
     public static final String KEY_FILL_TRANSPARENCY = "fillTransparency";
 
     public static final String KEY_CUSTOM_X_UNIT_NAME = "unitXName";

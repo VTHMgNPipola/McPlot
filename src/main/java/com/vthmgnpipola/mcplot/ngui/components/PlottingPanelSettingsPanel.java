@@ -60,6 +60,59 @@ public class PlottingPanelSettingsPanel extends JPanel {
         enableFuncLegends.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableFuncLegends.tooltip"));
         enableFuncLegends.addActionListener(e -> plottingPanel.setFunctionLegends(enableFuncLegends.isSelected()));
 
+        // Draw grid
+        JCheckBox drawMinorGrid = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawMinorGrid"),
+                plottingPanel.isDrawMinorGrid());
+        JCheckBox drawAxisValues = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawAxisValues"),
+                plottingPanel.isDrawAxisValues());
+        JSpinner minorGridDivisions = new JSpinner(new SpinnerNumberModel(plottingPanel.getMinorGridDivisions(), 1,
+                10, 1));
+
+        JCheckBox drawGrid = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawGrid"),
+                plottingPanel.isDrawGrid());
+        add(drawGrid, "span");
+        drawGrid.setToolTipText(BUNDLE.getString("settings.plottingPanel.drawGrid.tooltip"));
+        drawGrid.addActionListener(e -> {
+            if (!drawGrid.isSelected()) {
+                drawMinorGrid.setSelected(false);
+                drawMinorGrid.setEnabled(false);
+
+                drawAxisValues.setSelected(false);
+                drawAxisValues.setEnabled(false);
+
+                minorGridDivisions.setEnabled(false);
+            } else {
+                drawMinorGrid.setSelected(plottingPanel.isDrawMinorGrid());
+                drawMinorGrid.setEnabled(true);
+
+                drawAxisValues.setSelected(plottingPanel.isDrawAxisValues());
+                drawAxisValues.setEnabled(true);
+
+                minorGridDivisions.setEnabled(drawMinorGrid.isSelected());
+            }
+            plottingPanel.setDrawGrid(drawGrid.isSelected());
+        });
+
+        // Draw minor grid
+        add(drawMinorGrid, "span");
+        drawMinorGrid.addActionListener(e -> {
+            minorGridDivisions.setEnabled(drawMinorGrid.isSelected());
+            plottingPanel.setDrawMinorGrid(drawMinorGrid.isSelected());
+        });
+
+        // Draw axis values
+        add(drawAxisValues, "span");
+        drawAxisValues.addActionListener(e -> plottingPanel.setDrawAxisValues(drawAxisValues.isSelected()));
+
+        // Minor grid divisions
+        JLabel minorGridDivisionsLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.minorGridDiv"));
+        add(minorGridDivisionsLabel);
+        add(minorGridDivisions, "growx, span 2, wrap");
+        minorGridDivisions.setToolTipText(BUNDLE.getString("settings.plottingPanel.minorGridDiv.tooltip"));
+        enableCommitsOnValidEdit(minorGridDivisions);
+        minorGridDivisions.addChangeListener(e ->
+                plottingPanel.setMinorGridDivisions((int) minorGridDivisions.getValue()));
+
         // X Axis Unit
         JLabeledTextField axisXUnitName = new JLabeledTextField();
         JLabeledTextField axisXUnitDefinition = new JLabeledTextField();
