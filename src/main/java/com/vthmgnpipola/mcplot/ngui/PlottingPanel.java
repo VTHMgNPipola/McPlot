@@ -42,21 +42,20 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_BACKGROUND_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_ENABLE_ANTIALIAS;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_ENABLE_FUNCTION_LEGENDS;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GLOBAL_AXIS_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_X;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_Y;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAJOR_GRID_COLOR;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_LAF;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAX_STEP;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MINOR_GRID_COLOR;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SAMPLES_PER_CELL;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SCALE_X;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SCALE_Y;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_TRACE_WIDTH;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_DARK_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_LIGHT_LAF;
 
 public class PlottingPanel extends JPanel {
     private static final int INITIAL_PIXELS_PER_STEP = 75;
@@ -85,10 +84,10 @@ public class PlottingPanel extends JPanel {
     private double fillTransparency = PREFERENCES.getDouble(KEY_FILL_TRANSPARENCY, 25);
     private GraphUnit unitX = GraphUnit.getUnit(PREFERENCES.get(KEY_GRAPH_UNIT_X, ""));
     private GraphUnit unitY = GraphUnit.getUnit(PREFERENCES.get(KEY_GRAPH_UNIT_Y, ""));
-    private Color backgroundColor = new Color(PREFERENCES.getInt(KEY_BACKGROUND_COLOR, Color.white.getRGB()));
-    private Color minorGridColor = new Color(PREFERENCES.getInt(KEY_MINOR_GRID_COLOR, -1513240));
-    private Color majorGridColor = new Color(PREFERENCES.getInt(KEY_MAJOR_GRID_COLOR, Color.lightGray.getRGB()));
-    private Color globalAxisColor = new Color(PREFERENCES.getInt(KEY_GLOBAL_AXIS_COLOR, Color.black.getRGB()));
+    private Color backgroundColor;
+    private Color minorGridColor;
+    private Color majorGridColor;
+    private Color globalAxisColor;
     private Stroke traceStroke;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
     private FontMetrics fontMetrics;
@@ -241,6 +240,22 @@ public class PlottingPanel extends JPanel {
 
         previousWidth = getWidth();
         previousHeight = getHeight();
+
+        resetColors();
+    }
+
+    public void resetColors() {
+        if (PREFERENCES.get(KEY_LAF, VALUE_LIGHT_LAF).equals(VALUE_DARK_LAF)) {
+            backgroundColor = new Color(60, 60, 60);
+            minorGridColor = new Color(96, 96, 96);
+            majorGridColor = Color.gray;
+            globalAxisColor = Color.lightGray;
+        } else {
+            backgroundColor = Color.white;
+            minorGridColor = new Color(-1513240);
+            majorGridColor = Color.lightGray;
+            globalAxisColor = Color.black;
+        }
     }
 
     @Override
@@ -463,46 +478,6 @@ public class PlottingPanel extends JPanel {
     public void setFont(Font font) {
         this.font = font;
         fontMetrics = null;
-        repaint();
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColor;
-    }
-
-    public void setBackgroundColor(Color backgroundColor) {
-        this.backgroundColor = backgroundColor;
-        PREFERENCES.putInt(KEY_BACKGROUND_COLOR, backgroundColor.getRGB());
-        repaint();
-    }
-
-    public Color getMinorGridColor() {
-        return minorGridColor;
-    }
-
-    public void setMinorGridColor(Color minorGridColor) {
-        this.minorGridColor = minorGridColor;
-        PREFERENCES.putInt(KEY_MINOR_GRID_COLOR, minorGridColor.getRGB());
-        repaint();
-    }
-
-    public Color getMajorGridColor() {
-        return majorGridColor;
-    }
-
-    public void setMajorGridColor(Color majorGridColor) {
-        this.majorGridColor = majorGridColor;
-        PREFERENCES.putInt(KEY_MAJOR_GRID_COLOR, majorGridColor.getRGB());
-        repaint();
-    }
-
-    public Color getGlobalAxisColor() {
-        return globalAxisColor;
-    }
-
-    public void setGlobalAxisColor(Color globalAxisColor) {
-        this.globalAxisColor = globalAxisColor;
-        PREFERENCES.putInt(KEY_GLOBAL_AXIS_COLOR, globalAxisColor.getRGB());
         repaint();
     }
 

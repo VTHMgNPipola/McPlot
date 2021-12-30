@@ -47,10 +47,6 @@ public class PreferencesHelper {
     public static final String KEY_ENABLE_ANTIALIAS = "antialias";
     public static final String KEY_ENABLE_FUNCTION_LEGENDS = "functionLegends";
     public static final String KEY_FILL_TRANSPARENCY = "fillTransparency";
-    public static final String KEY_BACKGROUND_COLOR = "backgroundColor";
-    public static final String KEY_MINOR_GRID_COLOR = "minorGridColor";
-    public static final String KEY_MAJOR_GRID_COLOR = "majorGridColor";
-    public static final String KEY_GLOBAL_AXIS_COLOR = "globalAxisColor";
 
     public static final String KEY_CUSTOM_X_UNIT_NAME = "unitXName";
     public static final String KEY_CUSTOM_X_UNIT_DEFINITION = "unitXDefinition";

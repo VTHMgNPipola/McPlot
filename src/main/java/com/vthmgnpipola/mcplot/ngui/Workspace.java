@@ -197,4 +197,10 @@ public class Workspace extends JFrame {
         splitPane.setLeftComponent(mathPanel);
         mathPanel.init(plottingPanel);
     }
+
+    @Override
+    public void validate() {
+        super.validate();
+        plottingPanel.resetColors();
+    }
 }

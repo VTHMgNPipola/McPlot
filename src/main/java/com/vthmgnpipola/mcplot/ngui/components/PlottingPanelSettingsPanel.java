@@ -227,38 +227,6 @@ public class PlottingPanelSettingsPanel extends JPanel {
         fillTransparency.addChangeListener(e -> plottingPanel.setFillTransparency((double) fillTransparency.getValue()));
         JLabel fillTransparencyUnit = new JLabel("%");
         add(fillTransparencyUnit, "alignx left, wrap");
-
-        // Background color
-        JLabel backgroundColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.backgroundColor"));
-        add(backgroundColorLabel);
-        ColorChooserButton backgroundColor = new ColorChooserButton();
-        add(backgroundColor, "pushx, growy, wrap");
-        backgroundColor.setSelectedColor(plottingPanel.getBackgroundColor());
-        backgroundColor.setColorChooserListener(plottingPanel::setBackgroundColor);
-
-        // Minor grid color
-        JLabel minorGridColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.minorGridColor"));
-        add(minorGridColorLabel);
-        ColorChooserButton minorGridColor = new ColorChooserButton();
-        add(minorGridColor, "pushx, growy, wrap");
-        minorGridColor.setSelectedColor(plottingPanel.getMinorGridColor());
-        minorGridColor.setColorChooserListener(plottingPanel::setMinorGridColor);
-
-        // Major grid color
-        JLabel majorGridColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.majorGridColor"));
-        add(majorGridColorLabel);
-        ColorChooserButton majorGridColor = new ColorChooserButton();
-        add(majorGridColor, "pushx, growy, wrap");
-        majorGridColor.setSelectedColor(plottingPanel.getMajorGridColor());
-        majorGridColor.setColorChooserListener(plottingPanel::setMajorGridColor);
-
-        // Global axis color
-        JLabel globalAxisColorLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.globalAxisColor"));
-        add(globalAxisColorLabel);
-        ColorChooserButton globalAxisColor = new ColorChooserButton();
-        add(globalAxisColor, "pushx, growy");
-        globalAxisColor.setSelectedColor(plottingPanel.getGlobalAxisColor());
-        globalAxisColor.setColorChooserListener(plottingPanel::setGlobalAxisColor);
     }
 
     private void enableCommitsOnValidEdit(JSpinner spinner) {
