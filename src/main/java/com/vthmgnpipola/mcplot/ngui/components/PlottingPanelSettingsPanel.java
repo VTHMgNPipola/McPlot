@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 package com.vthmgnpipola.mcplot.ngui.components;
 
 import com.vthmgnpipola.mcplot.GraphUnit;
-import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
+import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -34,42 +34,35 @@ import javax.swing.text.DefaultFormatter;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_CUSTOM_X_UNIT_DEFINITION;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_CUSTOM_X_UNIT_NAME;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_CUSTOM_Y_UNIT_DEFINITION;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_CUSTOM_Y_UNIT_NAME;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_X;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_Y;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
 
 public class PlottingPanelSettingsPanel extends JPanel {
-    public PlottingPanelSettingsPanel(PlottingPanel plottingPanel) {
+    public PlottingPanelSettingsPanel(PlottingPanelContext context) {
         setLayout(new MigLayout("insets 15", "[]15", "[]10"));
 
         // Enable antialias
         JCheckBox enableAntialias = new JCheckBox(BUNDLE.getString("settings.plottingPanel.enableAntialias"),
-                plottingPanel.isAntialias());
+                context.antialias);
         add(enableAntialias, "span");
         enableAntialias.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableAntialias.tooltip"));
-        enableAntialias.addActionListener(e -> plottingPanel.setAntialias(enableAntialias.isSelected()));
+        enableAntialias.addActionListener(e -> context.setAntialias(enableAntialias.isSelected()));
 
         // Enable function legends
         JCheckBox enableFuncLegends = new JCheckBox(BUNDLE.getString("settings.plottingPanel.enableFuncLegends"),
-                plottingPanel.isFunctionLegends());
+                context.functionLegends);
         add(enableFuncLegends, "span");
         enableFuncLegends.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableFuncLegends.tooltip"));
-        enableFuncLegends.addActionListener(e -> plottingPanel.setFunctionLegends(enableFuncLegends.isSelected()));
+        enableFuncLegends.addActionListener(e -> context.setFunctionLegends(enableFuncLegends.isSelected()));
 
         // Draw grid
         JCheckBox drawMinorGrid = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawMinorGrid"),
-                plottingPanel.isDrawMinorGrid());
+                context.drawMinorGrid);
         JCheckBox drawAxisValues = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawAxisValues"),
-                plottingPanel.isDrawAxisValues());
-        JSpinner minorGridDivisions = new JSpinner(new SpinnerNumberModel(plottingPanel.getMinorGridDivisions(), 1,
+                context.drawAxisValues);
+        JSpinner minorGridDivisions = new JSpinner(new SpinnerNumberModel(context.minorGridDivisions, 1,
                 10, 1));
 
         JCheckBox drawGrid = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawGrid"),
-                plottingPanel.isDrawGrid());
+                context.drawGrid);
         add(drawGrid, "span");
         drawGrid.setToolTipText(BUNDLE.getString("settings.plottingPanel.drawGrid.tooltip"));
         drawGrid.addActionListener(e -> {
@@ -82,27 +75,27 @@ public class PlottingPanelSettingsPanel extends JPanel {
 
                 minorGridDivisions.setEnabled(false);
             } else {
-                drawMinorGrid.setSelected(plottingPanel.isDrawMinorGrid());
+                drawMinorGrid.setSelected(context.drawMinorGrid);
                 drawMinorGrid.setEnabled(true);
 
-                drawAxisValues.setSelected(plottingPanel.isDrawAxisValues());
+                drawAxisValues.setSelected(context.drawAxisValues);
                 drawAxisValues.setEnabled(true);
 
                 minorGridDivisions.setEnabled(drawMinorGrid.isSelected());
             }
-            plottingPanel.setDrawGrid(drawGrid.isSelected());
+            context.setDrawGrid(drawGrid.isSelected());
         });
 
         // Draw minor grid
         add(drawMinorGrid, "span");
         drawMinorGrid.addActionListener(e -> {
             minorGridDivisions.setEnabled(drawMinorGrid.isSelected());
-            plottingPanel.setDrawMinorGrid(drawMinorGrid.isSelected());
+            context.setDrawMinorGrid(drawMinorGrid.isSelected());
         });
 
         // Draw axis values
         add(drawAxisValues, "span");
-        drawAxisValues.addActionListener(e -> plottingPanel.setDrawAxisValues(drawAxisValues.isSelected()));
+        drawAxisValues.addActionListener(e -> context.setDrawAxisValues(drawAxisValues.isSelected()));
 
         // Minor grid divisions
         JLabel minorGridDivisionsLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.minorGridDiv"));
@@ -111,7 +104,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         minorGridDivisions.setToolTipText(BUNDLE.getString("settings.plottingPanel.minorGridDiv.tooltip"));
         enableCommitsOnValidEdit(minorGridDivisions);
         minorGridDivisions.addChangeListener(e ->
-                plottingPanel.setMinorGridDivisions((int) minorGridDivisions.getValue()));
+                context.setMinorGridDivisions((int) minorGridDivisions.getValue()));
 
         // X Axis Unit
         JLabeledTextField axisXUnitName = new JLabeledTextField();
@@ -122,10 +115,9 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JComboBox<GraphUnit> axisXUnit = new JComboBox<>(new GraphUnit[]{GraphUnit.DEFAULT, GraphUnit.PI,
                 GraphUnit.EULER, GraphUnit.CUSTOM_X_UNIT});
         add(axisXUnit, "growx, span 2, wrap");
-        axisXUnit.setSelectedItem(plottingPanel.getUnitX());
+        axisXUnit.setSelectedItem(context.unitX);
         axisXUnit.addActionListener(e -> {
-            plottingPanel.setUnitX((GraphUnit) axisXUnit.getSelectedItem());
-            PREFERENCES.put(KEY_GRAPH_UNIT_X, GraphUnit.getString((GraphUnit) axisXUnit.getSelectedItem()));
+            context.setUnitX((GraphUnit) axisXUnit.getSelectedItem());
             MathEventStreamer.getInstance().functionUpdate(false);
 
             if (axisXUnit.getSelectedItem() != GraphUnit.CUSTOM_X_UNIT) {
@@ -147,7 +139,6 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_X_UNIT.setSymbol(axisXUnitName.getText());
-                PREFERENCES.put(KEY_CUSTOM_X_UNIT_NAME, axisXUnitName.getText());
                 MathEventStreamer.getInstance().functionUpdate(false);
             }
         });
@@ -160,7 +151,6 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_X_UNIT.getUnitValueEvaluator().setDefinition(axisXUnitDefinition.getText());
-                PREFERENCES.put(KEY_CUSTOM_X_UNIT_DEFINITION, axisXUnitDefinition.getText());
                 MathEventStreamer.getInstance().functionUpdate(false);
             }
         });
@@ -174,10 +164,9 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JComboBox<GraphUnit> axisYUnit = new JComboBox<>(new GraphUnit[]{GraphUnit.DEFAULT, GraphUnit.PI,
                 GraphUnit.EULER, GraphUnit.CUSTOM_Y_UNIT});
         add(axisYUnit, "growx, span 2, wrap");
-        axisYUnit.setSelectedItem(plottingPanel.getUnitY());
+        axisYUnit.setSelectedItem(context.unitY);
         axisYUnit.addActionListener(e -> {
-            plottingPanel.setUnitY((GraphUnit) axisYUnit.getSelectedItem());
-            PREFERENCES.put(KEY_GRAPH_UNIT_Y, GraphUnit.getString((GraphUnit) axisYUnit.getSelectedItem()));
+            context.setUnitY((GraphUnit) axisYUnit.getSelectedItem());
             MathEventStreamer.getInstance().functionUpdate(false);
 
             if (axisYUnit.getSelectedItem() != GraphUnit.CUSTOM_Y_UNIT) {
@@ -199,7 +188,6 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_Y_UNIT.setSymbol(axisYUnitName.getText());
-                PREFERENCES.put(KEY_CUSTOM_Y_UNIT_NAME, axisYUnitName.getText());
                 MathEventStreamer.getInstance().functionUpdate(false);
             }
         });
@@ -212,7 +200,6 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_Y_UNIT.getUnitValueEvaluator().setDefinition(axisYUnitDefinition.getText());
-                PREFERENCES.put(KEY_CUSTOM_Y_UNIT_DEFINITION, axisYUnitDefinition.getText());
                 MathEventStreamer.getInstance().functionUpdate(false);
             }
         });
@@ -220,64 +207,64 @@ public class PlottingPanelSettingsPanel extends JPanel {
         // Samples per cell
         JLabel samplesPerCellLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.samplesPerCell"));
         add(samplesPerCellLabel);
-        JSpinner samplesPerCell = new JSpinner(new SpinnerNumberModel(plottingPanel.getSamplesPerCell(), 1,
+        JSpinner samplesPerCell = new JSpinner(new SpinnerNumberModel(context.samplesPerCell, 1,
                 1000000000, 1));
         add(samplesPerCell, "growx, span 2, wrap");
         samplesPerCell.setToolTipText(BUNDLE.getString("settings.plottingPanel.samplesPerCell.tooltip"));
         enableCommitsOnValidEdit(samplesPerCell);
-        samplesPerCell.addChangeListener(e -> plottingPanel.setSamplesPerCell((int) samplesPerCell.getValue()));
+        samplesPerCell.addChangeListener(e -> context.setSamplesPerCell((int) samplesPerCell.getValue()));
 
         // Maximum step
         JLabel maxStepLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.maxStep"));
         add(maxStepLabel);
-        JSpinner maxStep = new JSpinner(new SpinnerNumberModel(plottingPanel.getMaxStep(), 0.000000001,
+        JSpinner maxStep = new JSpinner(new SpinnerNumberModel(context.maxStep, 0.000000001,
                 1000000000d, 0.01));
         add(maxStep, "growx, span 2, wrap");
         maxStep.setToolTipText(BUNDLE.getString("settings.plottingPanel.maxStep.tooltip"));
         enableCommitsOnValidEdit(maxStep);
-        maxStep.addChangeListener(e -> plottingPanel.setMaxStep((double) maxStep.getValue()));
+        maxStep.addChangeListener(e -> context.setMaxStep((double) maxStep.getValue()));
 
         // X Scale
         JLabel scaleXLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleX"));
         add(scaleXLabel);
-        JSpinner scaleX = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleX(), 0.000000001,
+        JSpinner scaleX = new JSpinner(new SpinnerNumberModel(context.scaleX, 0.000000001,
                 1000000000d, 0.5));
         add(scaleX, "growx");
         enableCommitsOnValidEdit(scaleX);
-        scaleX.addChangeListener(e -> plottingPanel.setScaleX((double) scaleX.getValue()));
+        scaleX.addChangeListener(e -> context.setScaleX((double) scaleX.getValue()));
         JLabel scaleXUnit = new JLabel("x");
         add(scaleXUnit, "alignx left, wrap");
 
         // Y Scale
         JLabel scaleYLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleY"));
         add(scaleYLabel);
-        JSpinner scaleY = new JSpinner(new SpinnerNumberModel(plottingPanel.getScaleY(), 0.000000001,
+        JSpinner scaleY = new JSpinner(new SpinnerNumberModel(context.scaleY, 0.000000001,
                 1000000000d, 0.5));
         add(scaleY, "growx");
         enableCommitsOnValidEdit(scaleY);
-        scaleY.addChangeListener(e -> plottingPanel.setScaleY((double) scaleY.getValue()));
+        scaleY.addChangeListener(e -> context.setScaleY((double) scaleY.getValue()));
         JLabel scaleYUnit = new JLabel("x");
         add(scaleYUnit, "alignx left, wrap");
 
         // Trace width
         JLabel traceWidthLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.traceWidth"));
         add(traceWidthLabel);
-        JSpinner traceWidth = new JSpinner(new SpinnerNumberModel(plottingPanel.getTraceWidth(), 1, 10, 1));
+        JSpinner traceWidth = new JSpinner(new SpinnerNumberModel(context.traceWidth, 1, 10, 1));
         add(traceWidth, "growx");
         enableCommitsOnValidEdit(traceWidth);
-        traceWidth.addChangeListener(e -> plottingPanel.setTraceWidth((int) traceWidth.getValue()));
+        traceWidth.addChangeListener(e -> context.setTraceWidth((int) traceWidth.getValue()));
         JLabel traceWidthUnit = new JLabel("px");
         add(traceWidthUnit, "alignx left, wrap");
 
         // Fill transparency
         JLabel fillTransparencyLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.fillTransparency"));
         add(fillTransparencyLabel);
-        JSpinner fillTransparency = new JSpinner(new SpinnerNumberModel(plottingPanel.getFillTransparency(), 0,
+        JSpinner fillTransparency = new JSpinner(new SpinnerNumberModel(context.fillTransparency, 0,
                 100, 0.5));
         add(fillTransparency, "growx");
         fillTransparency.setToolTipText(BUNDLE.getString("settings.plottingPanel.fillTransparency.tooltip"));
         enableCommitsOnValidEdit(fillTransparency);
-        fillTransparency.addChangeListener(e -> plottingPanel.setFillTransparency((double) fillTransparency.getValue()));
+        fillTransparency.addChangeListener(e -> context.setFillTransparency((double) fillTransparency.getValue()));
         JLabel fillTransparencyUnit = new JLabel("%");
         add(fillTransparencyUnit, "alignx left, wrap");
     }

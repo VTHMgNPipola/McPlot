@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.vthmgnpipola.mcplot.GraphUnit;
 import com.vthmgnpipola.mcplot.MathSessionHelper;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
@@ -35,6 +36,7 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 public class MathPanel extends JPanel {
     private List<Function> functions;
     private List<Constant> constants;
+    private PlottingPanelContext context;
 
     public MathPanel() {
         setLayout(new BorderLayout());
@@ -48,8 +50,8 @@ public class MathPanel extends JPanel {
         removeAll();
 
         MathEventStreamer.getInstance().setPlottingPanel(plottingPanel);
-        plottingPanel.setMathPanel(this);
         MathEvaluatorPool.getInstance().addFunctionsDoneTask(plottingPanel::repaint);
+        context = plottingPanel.getContext();
 
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.WRAP_TAB_LAYOUT);
 
@@ -72,24 +74,32 @@ public class MathPanel extends JPanel {
         add(tabbedPane, BorderLayout.CENTER);
     }
 
-    public void recalculateAllFunctions() {
-        // FIXME: This is still broken for some reason
-        MathEventStreamer.getInstance().functionUpdate(true);
-    }
-
     public void save() {
-        MathSessionHelper.saveSession(functions, constants, false);
+        MathSessionHelper.saveSession(functions, constants, context, false);
     }
 
     public void saveAs() {
-        MathSessionHelper.saveSession(functions, constants, true);
+        MathSessionHelper.saveSession(functions, constants, context, true);
     }
 
     public void open(PlottingPanel plottingPanel) {
-        MathSessionHelper.openSession((f, c) -> {
+        MathSessionHelper.openSession(state -> {
             plottingPanel.getFunctions().clear();
             MathEventStreamer.getInstance().reset();
-            init(plottingPanel, f, c);
+
+            GraphUnit.CUSTOM_X_UNIT.setSymbol(state.customUnitX.getSymbol());
+            GraphUnit.CUSTOM_X_UNIT.setDefinition(state.customUnitX.getDefinition());
+
+            GraphUnit.CUSTOM_Y_UNIT.setSymbol(state.customUnitY.getSymbol());
+            GraphUnit.CUSTOM_Y_UNIT.setDefinition(state.customUnitY.getDefinition());
+
+            init(plottingPanel, state.functions, state.constants);
+            context.getBase().setContext(state.context);
+
+            context = state.context;
+            context.unitX = GraphUnit.getUnit(state.unitX);
+            context.unitY = GraphUnit.getUnit(state.unitY);
+
             updateUI();
             MathEventStreamer.getInstance().constantUpdate();
         });

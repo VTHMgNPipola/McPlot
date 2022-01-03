@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ public class Workspace extends MFrame {
             ExportSpreadsheetDialog exportSpreadsheetFrame = new ExportSpreadsheetDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
-                    plottingPanel);
+                    plottingPanel.getContext());
             exportSpreadsheetFrame.init();
             exportSpreadsheetFrame.setVisible(true);
         });
@@ -128,7 +128,7 @@ public class Workspace extends MFrame {
             ExportTextFileDialog exportTextFileFrame = new ExportTextFileDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
-                    plottingPanel);
+                    plottingPanel.getContext());
             exportTextFileFrame.init();
             exportTextFileFrame.setVisible(true);
         });
@@ -144,7 +144,7 @@ public class Workspace extends MFrame {
             ExportImageFileDialog exportImageFileFrame = new ExportImageFileDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
-                    plottingPanel);
+                    plottingPanel.getContext());
             exportImageFileFrame.init();
             exportImageFileFrame.setVisible(true);
         });
@@ -155,7 +155,7 @@ public class Workspace extends MFrame {
         file.add(settings);
         settings.setAccelerator(KeyStroke.getKeyStroke("control alt S"));
         settings.addActionListener(e -> {
-            SettingsDialog settingsDialog = new SettingsDialog(plottingPanel, this);
+            SettingsDialog settingsDialog = new SettingsDialog(plottingPanel.getContext(), this);
             settingsDialog.init();
             settingsDialog.setVisible(true);
         });

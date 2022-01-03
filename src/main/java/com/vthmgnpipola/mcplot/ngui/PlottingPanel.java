@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
-import com.vthmgnpipola.mcplot.GraphUnit;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
 import java.awt.BasicStroke;
@@ -42,73 +41,38 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_DRAW_AXIS_VALUES;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_DRAW_GRID;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_DRAW_MINOR_GRID;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_ENABLE_ANTIALIAS;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_ENABLE_FUNCTION_LEGENDS;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_FILL_TRANSPARENCY;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_X;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_GRAPH_UNIT_Y;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_LAF;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MAX_STEP;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_MINOR_GRID_DIVISIONS;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SAMPLES_PER_CELL;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SCALE_X;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_SCALE_Y;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_TRACE_WIDTH;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_DARK_LAF;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_LIGHT_LAF;
+import static com.vthmgnpipola.mcplot.ngui.PlottingPanelContext.INITIAL_PIXELS_PER_STEP;
 
 public class PlottingPanel extends JPanel {
-    private static final int INITIAL_PIXELS_PER_STEP = 75;
-
-    private int cameraX, cameraY;
-    private double scaleX = PREFERENCES.getDouble(KEY_SCALE_X, 1);
-    private double scaleY = PREFERENCES.getDouble(KEY_SCALE_Y, 1);
     private final int[] zoomArray = new int[]{1, 2, 5};
-    private int pixelsPerStep = INITIAL_PIXELS_PER_STEP;
-    private double zoom = 1;
-    private int zoomPos = 0;
     private int previousWidth, previousHeight;
-    private int samplesPerCell = PREFERENCES.getInt(KEY_SAMPLES_PER_CELL, 25);
-    private double maxStep = PREFERENCES.getDouble(KEY_MAX_STEP, 0.5);
-    private int traceWidth = PREFERENCES.getInt(KEY_TRACE_WIDTH, 3);
-    private boolean antialias = PREFERENCES.getBoolean(KEY_ENABLE_ANTIALIAS, false);
-    private int flPositionX = 20;
-    private int flPositionY = 20;
     private int flWidth = 0;
     private int flHeight = 0;
-    private boolean functionLegends = PREFERENCES.getBoolean(KEY_ENABLE_FUNCTION_LEGENDS, false);
-    private boolean drawMinorGrid = PREFERENCES.getBoolean(KEY_DRAW_MINOR_GRID, true);
-    private boolean drawGrid = PREFERENCES.getBoolean(KEY_DRAW_GRID, true);
-    private boolean drawAxisValues = PREFERENCES.getBoolean(KEY_DRAW_AXIS_VALUES, true);
-    private int minorGridDivisions = PREFERENCES.getInt(KEY_MINOR_GRID_DIVISIONS, 5);
+    private PlottingPanelContext context;
     private final AffineTransform zoomTx;
     private final Map<Function, FunctionPlot> functions;
 
     private Font font;
-    private double fillTransparency = PREFERENCES.getDouble(KEY_FILL_TRANSPARENCY, 25);
-    private GraphUnit unitX = GraphUnit.getUnit(PREFERENCES.get(KEY_GRAPH_UNIT_X, ""));
-    private GraphUnit unitY = GraphUnit.getUnit(PREFERENCES.get(KEY_GRAPH_UNIT_Y, ""));
     private Color backgroundColor;
     private Color minorGridColor;
     private Color majorGridColor;
     private Color globalAxisColor;
-    private Stroke traceStroke;
     private final DecimalFormat decimalFormat = new DecimalFormat("#.#####");
     private FontMetrics fontMetrics;
-    private MathPanel mathPanel;
 
     public PlottingPanel() {
         setDoubleBuffered(true);
         functions = new HashMap<>();
 
+        context = new PlottingPanelContext(this);
         font = new Font("Monospaced", Font.PLAIN, 12);
-        traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
         zoomTx = new AffineTransform();
-        zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
+        zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom,
+                -context.scaleY * context.pixelsPerStep * context.zoom);
 
         final int[] dragging = new int[1]; // 1: dragging plotting panel; 2: dragging function legend panel
         final int[] startPos = new int[2]; // 0: X position; 1: Y position
@@ -119,8 +83,8 @@ public class PlottingPanel extends JPanel {
                 startPos[0] = e.getXOnScreen();
                 startPos[1] = e.getYOnScreen();
 
-                if ((e.getX() >= flPositionX && e.getX() <= flPositionX + flWidth) &&
-                        (e.getY() >= flPositionY && e.getY() <= flPositionY + flHeight)) {
+                if ((e.getX() >= context.flPositionX && e.getX() <= context.flPositionX + flWidth) &&
+                        (e.getY() >= context.flPositionY && e.getY() <= context.flPositionY + flHeight)) {
                     dragging[0] = 2;
                 } else if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
                     dragging[0] = 1;
@@ -152,20 +116,20 @@ public class PlottingPanel extends JPanel {
                     int currentMouseX = e.getXOnScreen();
                     int currentMouseY = e.getYOnScreen();
 
-                    cameraX += startPos[0] - currentMouseX;
-                    cameraY += startPos[1] - currentMouseY;
+                    context.cameraX += startPos[0] - currentMouseX;
+                    context.cameraY += startPos[1] - currentMouseY;
 
                     startPos[0] = currentMouseX;
                     startPos[1] = currentMouseY;
 
-                    mathPanel.recalculateAllFunctions();
+                    context.recalculateAllFunctions();
                     repaint();
                 } else if (dragging[0] == 2) {
                     int currentMouseX = e.getXOnScreen();
                     int currentMouseY = e.getYOnScreen();
 
-                    flPositionX += currentMouseX - startPos[0];
-                    flPositionY += currentMouseY - startPos[1];
+                    context.flPositionX += currentMouseX - startPos[0];
+                    context.flPositionY += currentMouseY - startPos[1];
 
                     startPos[0] = currentMouseX;
                     startPos[1] = currentMouseY;
@@ -199,29 +163,30 @@ public class PlottingPanel extends JPanel {
             final int MAX_ZOOM = 3;
 
             int wheelRotation = -e.getWheelRotation();
-            pixelsPerStep += wheelRotation * ZOOM_PER_CLICK;
-            if (pixelsPerStep < INITIAL_PIXELS_PER_STEP - (ZOOM_PER_CLICK * MAX_ZOOM)) {
-                pixelsPerStep = INITIAL_PIXELS_PER_STEP;
-                zoomPos--;
-            } else if (pixelsPerStep > INITIAL_PIXELS_PER_STEP + (ZOOM_PER_CLICK * MAX_ZOOM)) {
-                pixelsPerStep = INITIAL_PIXELS_PER_STEP;
-                zoomPos++;
+            context.pixelsPerStep += wheelRotation * ZOOM_PER_CLICK;
+            if (context.pixelsPerStep < INITIAL_PIXELS_PER_STEP - (ZOOM_PER_CLICK * MAX_ZOOM)) {
+                context.pixelsPerStep = INITIAL_PIXELS_PER_STEP;
+                context.zoomPos--;
+            } else if (context.pixelsPerStep > INITIAL_PIXELS_PER_STEP + (ZOOM_PER_CLICK * MAX_ZOOM)) {
+                context.pixelsPerStep = INITIAL_PIXELS_PER_STEP;
+                context.zoomPos++;
             }
 
-            if (zoomPos >= 0 && zoomPos < zoomArray.length) {
-                zoom = zoomArray[zoomPos];
-            } else if (zoomPos >= zoomArray.length) {
-                int timesCircled = zoomPos / zoomArray.length;
-                int arrayPos = zoomPos % zoomArray.length;
-                zoom = zoomArray[arrayPos] * Math.pow(10, timesCircled);
+            if (context.zoomPos >= 0 && context.zoomPos < zoomArray.length) {
+                context.zoom = zoomArray[context.zoomPos];
+            } else if (context.zoomPos >= zoomArray.length) {
+                int timesCircled = context.zoomPos / zoomArray.length;
+                int arrayPos = context.zoomPos % zoomArray.length;
+                context.zoom = zoomArray[arrayPos] * Math.pow(10, timesCircled);
             } else {
-                int timesCircled = -zoomPos / zoomArray.length;
-                int arrayPos = (-zoomPos + zoomArray.length) % zoomArray.length;
-                zoom = (double) 1 / (zoomArray[arrayPos] * Math.pow(10, timesCircled));
+                int timesCircled = -context.zoomPos / zoomArray.length;
+                int arrayPos = (-context.zoomPos + zoomArray.length) % zoomArray.length;
+                context.zoom = (double) 1 / (zoomArray[arrayPos] * Math.pow(10, timesCircled));
             }
 
-            zoomTx.setToScale(scaleX * pixelsPerStep * zoom, -scaleY * pixelsPerStep * zoom);
-            mathPanel.recalculateAllFunctions();
+            zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom,
+                    -context.scaleY * context.pixelsPerStep * context.zoom);
+            context.recalculateAllFunctions();
             repaint();
         }));
 
@@ -229,13 +194,13 @@ public class PlottingPanel extends JPanel {
             @Override
             public void componentResized(ComponentEvent e) {
                 EXECUTOR_THREAD.submit(() -> {
-                    cameraX -= (e.getComponent().getWidth() - previousWidth) / 2;
-                    cameraY -= (e.getComponent().getHeight() - previousHeight) / 2;
+                    context.cameraX -= (e.getComponent().getWidth() - previousWidth) / 2;
+                    context.cameraY -= (e.getComponent().getHeight() - previousHeight) / 2;
 
                     previousWidth = e.getComponent().getWidth();
                     previousHeight = e.getComponent().getHeight();
 
-                    mathPanel.recalculateAllFunctions();
+                    context.recalculateAllFunctions();
                     repaint();
                 });
             }
@@ -243,8 +208,10 @@ public class PlottingPanel extends JPanel {
     }
 
     public void init() {
-        cameraX = -getWidth() / 2;
-        cameraY = -getHeight() / 2;
+        context = new PlottingPanelContext(this);
+
+        context.cameraX = -getWidth() / 2;
+        context.cameraY = -getHeight() / 2;
 
         previousWidth = getWidth();
         previousHeight = getHeight();
@@ -282,54 +249,64 @@ public class PlottingPanel extends JPanel {
         g.fillRect(0, 0, getWidth(), getHeight());
 
         // Camera translation
-        g.translate(-cameraX, -cameraY);
+        g.translate(-context.cameraX, -context.cameraY);
 
         // Minor grid
-        if (drawGrid) {
-            if (drawMinorGrid) {
+        if (context.drawGrid) {
+            if (context.drawMinorGrid) {
                 // X
                 g.setColor(minorGridColor);
-                for (double i = cameraX - (cameraX % ((double) pixelsPerStep / minorGridDivisions));
-                     i < cameraX + getWidth(); i += (double) pixelsPerStep / minorGridDivisions) {
-                    g.drawLine((int) i, cameraY, (int) i, cameraY + getHeight());
+                double step = (double) context.pixelsPerStep / context.minorGridDivisions;
+
+                double initialMinorX = context.cameraX -
+                        (context.cameraX % ((double) context.pixelsPerStep / context.minorGridDivisions));
+                double endMinorX = context.cameraX + getWidth();
+                for (double i = initialMinorX; i < endMinorX; i += step) {
+                    g.drawLine((int) i, context.cameraY, (int) i, context.cameraY + getHeight());
                 }
 
                 // Y
-                for (double i = cameraY - (cameraY % ((double) pixelsPerStep / minorGridDivisions));
-                     i < cameraY + getHeight(); i += (double) pixelsPerStep / minorGridDivisions) {
-                    g.drawLine(cameraX, (int) i, cameraX + getWidth(), (int) i);
+                double initialMinorY = context.cameraY -
+                        (context.cameraY % ((double) context.pixelsPerStep / context.minorGridDivisions));
+                double endMinorY = context.cameraY + getHeight();
+                for (double i = initialMinorY; i < endMinorY; i += step) {
+                    g.drawLine(context.cameraX, (int) i, context.cameraX + getWidth(), (int) i);
                 }
             }
 
             // Major grid and steps
             // X
-            for (int i = cameraX - (cameraX % pixelsPerStep); i < cameraX + getWidth(); i += pixelsPerStep) {
+            int initialMajorX = context.cameraX - (context.cameraX % context.pixelsPerStep);
+            int endMajorX = context.cameraX + getWidth();
+            for (int i = initialMajorX; i < endMajorX; i += context.pixelsPerStep) {
                 // Major grid
                 g.setColor(majorGridColor);
-                g.drawLine(i, cameraY, i, cameraY + getHeight());
+                g.drawLine(i, context.cameraY, i, context.cameraY + getHeight());
 
                 // Step
-                if (i != 0 && drawAxisValues) {
+                if (i != 0 && context.drawAxisValues) {
                     g.setColor(globalAxisColor);
                     g.drawLine(i, -5, i, 5);
-                    double stepValue = (((double) i / pixelsPerStep) / (scaleX * zoom));
-                    String step = unitX.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
+                    double stepValue = (((double) i / context.pixelsPerStep) / (context.scaleX * context.zoom));
+                    String step = context.unitX.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
                     g.drawString(step, i - fontMetrics.stringWidth(step) / 2, 7 + fontMetrics.getAscent());
                 }
             }
 
             // Y
-            for (int i = cameraY - (cameraY % pixelsPerStep); i < cameraY + getHeight(); i += pixelsPerStep) {
+            int initialMajorY = context.cameraY - (context.cameraY % context.pixelsPerStep);
+            int endMajorY = context.cameraY + getHeight();
+            for (int i = initialMajorY; i < endMajorY; i += context.pixelsPerStep) {
                 // Major grid
                 g.setColor(majorGridColor);
-                g.drawLine(cameraX, i, cameraX + getWidth(), i);
+                g.drawLine(context.cameraX, i, context.cameraX + getWidth(), i);
 
                 // Step
-                if (i != 0 && drawAxisValues) {
+                if (i != 0 && context.drawAxisValues) {
                     g.setColor(globalAxisColor);
                     g.drawLine(-5, i, 5, i);
-                    double stepValue = -(((double) i / pixelsPerStep) / (scaleY * zoom));
-                    String step = unitY.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
+                    double stepValue = -(((double) i / context.pixelsPerStep) / (context.scaleY * context.zoom));
+                    String step = context.unitY.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
                     g.drawString(step, -7 - fontMetrics.stringWidth(step), i + fontMetrics.getAscent() / 2);
                 }
             }
@@ -337,18 +314,18 @@ public class PlottingPanel extends JPanel {
 
         // Global axis
         g.setColor(globalAxisColor);
-        g.drawLine(cameraX, 0, cameraX + getWidth(), 0);
-        g.drawLine(0, cameraY, 0, cameraY + getHeight());
+        g.drawLine(context.cameraX, 0, context.cameraX + getWidth(), 0);
+        g.drawLine(0, context.cameraY, 0, context.cameraY + getHeight());
 
         // Functions
-        if (antialias) {
+        if (context.antialias) {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
 
-        zoomTx.setToScale(scaleX * pixelsPerStep * zoom * unitX.getScale(),
-                -scaleY * pixelsPerStep * zoom * unitY.getScale());
+        zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom * context.unitX.getScale(),
+                -context.scaleY * context.pixelsPerStep * context.zoom * context.unitY.getScale());
 
-        g.setStroke(traceStroke);
+        g.setStroke(context.traceStroke);
         int visibleFunctions = 0;
         int longestFunction = 0;
         for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
@@ -366,7 +343,7 @@ public class PlottingPanel extends JPanel {
                 fill.closePath();
 
                 Color fillColor = new Color(traceColor.getRed(), traceColor.getGreen(), traceColor.getBlue(),
-                        (int) Math.min((fillTransparency * 2.55), 255));
+                        (int) Math.min((context.fillTransparency * 2.55), 255));
                 g.setColor(fillColor);
                 g.fill(zoomTx.createTransformedShape(fill));
             }
@@ -379,18 +356,18 @@ public class PlottingPanel extends JPanel {
         }
 
         // Function legends
-        if (functionLegends && visibleFunctions != 0) {
-            g.translate(cameraX, cameraY);
+        if (context.functionLegends && visibleFunctions != 0) {
+            g.translate(context.cameraX, context.cameraY);
             g.setStroke(baseStroke);
 
             int panelHeight = flHeight = 20 + fontMetrics.getHeight() * visibleFunctions;
             int panelWidth = flWidth = 70 + longestFunction;
             g.setColor(backgroundColor);
-            g.fillRect(flPositionX, flPositionY, panelWidth, panelHeight);
+            g.fillRect(context.flPositionX, context.flPositionY, panelWidth, panelHeight);
             g.setColor(globalAxisColor);
-            g.drawRect(flPositionX, flPositionY, panelWidth, panelHeight);
+            g.drawRect(context.flPositionX, context.flPositionY, panelWidth, panelHeight);
 
-            g.translate(flPositionX, flPositionY);
+            g.translate(context.flPositionX, context.flPositionY);
             int i = 0;
             for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
                 Function function = functionEntry.getKey();
@@ -400,7 +377,7 @@ public class PlottingPanel extends JPanel {
                     continue;
                 }
 
-                g.setStroke(traceStroke);
+                g.setStroke(context.traceStroke);
                 g.setColor(traceColor);
                 int y = fontMetrics.getHeight() * i + fontMetrics.getHeight() / 2 + 10;
                 g.drawLine(10, y, 50, y);
@@ -417,72 +394,6 @@ public class PlottingPanel extends JPanel {
         }
     }
 
-    public int getCameraX() {
-        return cameraX;
-    }
-
-    public int getCameraY() {
-        return cameraY;
-    }
-
-    public double getScaleX() {
-        return scaleX;
-    }
-
-    public void setScaleX(double scaleX) {
-        this.scaleX = scaleX;
-        PREFERENCES.putDouble(KEY_SCALE_X, scaleX);
-        mathPanel.recalculateAllFunctions();
-    }
-
-    public double getScaleY() {
-        return scaleY;
-    }
-
-    public void setScaleY(double scaleY) {
-        this.scaleY = scaleY;
-        PREFERENCES.putDouble(KEY_SCALE_Y, scaleY);
-        mathPanel.recalculateAllFunctions();
-    }
-
-    public int getPixelsPerStep() {
-        return pixelsPerStep;
-    }
-
-    public double getZoom() {
-        return zoom;
-    }
-
-    public int getSamplesPerCell() {
-        return samplesPerCell;
-    }
-
-    public void setSamplesPerCell(int samplesPerCell) {
-        this.samplesPerCell = samplesPerCell;
-        PREFERENCES.putInt(KEY_SAMPLES_PER_CELL, samplesPerCell);
-        mathPanel.recalculateAllFunctions();
-    }
-
-    public double getMaxStep() {
-        return maxStep;
-    }
-
-    public void setMaxStep(double maxStep) {
-        this.maxStep = maxStep;
-        PREFERENCES.putDouble(KEY_MAX_STEP, maxStep);
-        mathPanel.recalculateAllFunctions();
-    }
-
-    public boolean isAntialias() {
-        return antialias;
-    }
-
-    public void setAntialias(boolean antialias) {
-        this.antialias = antialias;
-        PREFERENCES.putBoolean(KEY_ENABLE_ANTIALIAS, antialias);
-        repaint();
-    }
-
     @Override
     public Font getFont() {
         return font;
@@ -495,100 +406,17 @@ public class PlottingPanel extends JPanel {
         repaint();
     }
 
-    public int getTraceWidth() {
-        return traceWidth;
-    }
-
-    public void setTraceWidth(int traceWidth) {
-        this.traceWidth = traceWidth;
-        PREFERENCES.putInt(KEY_TRACE_WIDTH, traceWidth);
-        traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-        repaint();
-    }
-
-    public double getFillTransparency() {
-        return fillTransparency;
-    }
-
-    public void setFillTransparency(double fillTransparency) {
-        this.fillTransparency = fillTransparency;
-        PREFERENCES.putDouble(KEY_FILL_TRANSPARENCY, fillTransparency);
-        repaint();
-    }
-
-    public GraphUnit getUnitX() {
-        return unitX;
-    }
-
-    public void setUnitX(GraphUnit unitX) {
-        this.unitX = unitX;
-        repaint();
-    }
-
-    public GraphUnit getUnitY() {
-        return unitY;
-    }
-
-    public void setUnitY(GraphUnit unitY) {
-        this.unitY = unitY;
-        repaint();
-    }
-
-    public boolean isFunctionLegends() {
-        return functionLegends;
-    }
-
-    public void setFunctionLegends(boolean functionLegends) {
-        this.functionLegends = functionLegends;
-        PREFERENCES.putBoolean(KEY_ENABLE_FUNCTION_LEGENDS, functionLegends);
-        repaint();
-    }
-
-    public boolean isDrawMinorGrid() {
-        return drawMinorGrid;
-    }
-
-    public void setDrawMinorGrid(boolean drawMinorGrid) {
-        this.drawMinorGrid = drawMinorGrid;
-        PREFERENCES.putBoolean(KEY_DRAW_MINOR_GRID, drawMinorGrid);
-        repaint();
-    }
-
-    public boolean isDrawGrid() {
-        return drawGrid;
-    }
-
-    public void setDrawGrid(boolean drawGrid) {
-        this.drawGrid = drawGrid;
-        PREFERENCES.putBoolean(KEY_DRAW_GRID, drawGrid);
-        repaint();
-    }
-
-    public boolean isDrawAxisValues() {
-        return drawAxisValues;
-    }
-
-    public void setDrawAxisValues(boolean drawAxisValues) {
-        this.drawAxisValues = drawAxisValues;
-        PREFERENCES.putBoolean(KEY_DRAW_AXIS_VALUES, drawAxisValues);
-        repaint();
-    }
-
-    public int getMinorGridDivisions() {
-        return minorGridDivisions;
-    }
-
-    public void setMinorGridDivisions(int minorGridDivisions) {
-        this.minorGridDivisions = minorGridDivisions;
-        PREFERENCES.putInt(KEY_MINOR_GRID_DIVISIONS, minorGridDivisions);
-        repaint();
-    }
-
     public Map<Function, FunctionPlot> getFunctions() {
         return functions;
     }
 
-    public void setMathPanel(MathPanel mathPanel) {
-        this.mathPanel = mathPanel;
+    public PlottingPanelContext getContext() {
+        return context;
+    }
+
+    void setContext(PlottingPanelContext context) {
+        this.context = context;
+        context.setBase(this);
+        context.traceStroke = new BasicStroke(context.traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     }
 }

@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,26 +36,6 @@ public class PreferencesHelper {
     public static final String KEY_LANGUAGE = "language";
     public static final String KEY_LAF = "laf";
     public static final String KEY_OPEN_MAXIMIZED = "openMaximized";
-
-    public static final String KEY_SAMPLES_PER_CELL = "samplesPerCell";
-    public static final String KEY_MAX_STEP = "maxStep";
-    public static final String KEY_GRAPH_UNIT_X = "unitX";
-    public static final String KEY_GRAPH_UNIT_Y = "unitY";
-    public static final String KEY_SCALE_X = "scaleX";
-    public static final String KEY_SCALE_Y = "scaleY";
-    public static final String KEY_TRACE_WIDTH = "traceWidth";
-    public static final String KEY_ENABLE_ANTIALIAS = "antialias";
-    public static final String KEY_ENABLE_FUNCTION_LEGENDS = "functionLegends";
-    public static final String KEY_DRAW_MINOR_GRID = "minorGrid";
-    public static final String KEY_DRAW_GRID = "grid";
-    public static final String KEY_DRAW_AXIS_VALUES = "axisValues";
-    public static final String KEY_MINOR_GRID_DIVISIONS = "minorGridDiv";
-    public static final String KEY_FILL_TRANSPARENCY = "fillTransparency";
-
-    public static final String KEY_CUSTOM_X_UNIT_NAME = "unitXName";
-    public static final String KEY_CUSTOM_X_UNIT_DEFINITION = "unitXDefinition";
-    public static final String KEY_CUSTOM_Y_UNIT_NAME = "unitYName";
-    public static final String KEY_CUSTOM_Y_UNIT_DEFINITION = "unitYDefinition";
 
     public static final String VALUE_LIGHT_LAF = "light";
     public static final String VALUE_DARK_LAF = "dark";

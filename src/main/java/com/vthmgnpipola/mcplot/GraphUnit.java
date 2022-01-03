@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,31 +20,30 @@ package com.vthmgnpipola.mcplot;
 
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.ConstantEvaluator;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_CUSTOM_X_UNIT_DEFINITION;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_CUSTOM_X_UNIT_NAME;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_CUSTOM_Y_UNIT_DEFINITION;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_CUSTOM_Y_UNIT_NAME;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
 
-public class GraphUnit {
+public class GraphUnit implements Serializable {
+    public static final GraphUnit CUSTOM_X_UNIT = new GraphUnit(BUNDLE.getString(
+            "settings.plottingPanel.axisUnit.custom"), "", "");
+
     public static final GraphUnit DEFAULT = new GraphUnit(BUNDLE.getString("settings.plottingPanel.axisUnit.default"),
             "", "1");
     public static final GraphUnit PI = new GraphUnit(BUNDLE.getString("settings.plottingPanel.axisUnit.pi"),
             "π", "pi");
     public static final GraphUnit EULER = new GraphUnit(BUNDLE.getString("settings.plottingPanel.axisUnit.euler"),
             "e", "e");
-
-    public static final GraphUnit CUSTOM_X_UNIT = new GraphUnit(BUNDLE.getString(
-            "settings.plottingPanel.axisUnit.custom"), PREFERENCES.get(KEY_CUSTOM_X_UNIT_NAME, ""),
-            PREFERENCES.get(KEY_CUSTOM_X_UNIT_DEFINITION, ""));
     public static final GraphUnit CUSTOM_Y_UNIT = new GraphUnit(BUNDLE.getString(
-            "settings.plottingPanel.axisUnit.custom"), PREFERENCES.get(KEY_CUSTOM_Y_UNIT_NAME, ""),
-            PREFERENCES.get(KEY_CUSTOM_Y_UNIT_DEFINITION, ""));
-
-    private final String name;
-    private final ConstantEvaluator unitValueEvaluator;
+            "settings.plottingPanel.axisUnit.custom"), "", "");
+    @Serial
+    private static final long serialVersionUID = -7412684447239118802L;
+    private transient final String name;
+    private transient ConstantEvaluator unitValueEvaluator;
     private String symbol;
 
     public GraphUnit(String name, String symbol, String definition) {
@@ -113,5 +112,27 @@ public class GraphUnit {
     @Override
     public String toString() {
         return name;
+    }
+
+    public String getDefinition() {
+        return unitValueEvaluator.getConstant().getDefinition();
+    }
+
+    public void setDefinition(String definition) {
+        unitValueEvaluator.setDefinition(definition);
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+        symbol = ois.readUTF();
+
+        unitValueEvaluator = new ConstantEvaluator(new Constant());
+        unitValueEvaluator.setDefinition(ois.readUTF());
+    }
+
+    @Serial
+    private void writeObject(ObjectOutputStream ois) throws ClassNotFoundException, IOException {
+        ois.writeUTF(symbol);
+        ois.writeUTF(unitValueEvaluator.getConstant().getDefinition());
     }
 }

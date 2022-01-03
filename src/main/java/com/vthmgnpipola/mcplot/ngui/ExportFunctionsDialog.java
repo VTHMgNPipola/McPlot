@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,22 +44,22 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 public abstract class ExportFunctionsDialog extends MDialog {
     protected static final JFileChooser FILE_CHOOSER = new JFileChooser();
 
-    protected final PlottingPanel plottingPanel;
+    protected final PlottingPanelContext context;
 
     protected final Map<String, Function> functionMap;
     protected final Collection<Constant> constants;
     protected final Map<String, Double> constantValues;
 
     public ExportFunctionsDialog(String title, Map<String, Function> functionMap, Collection<Constant> constants,
-                                 Map<String, Double> constantValues, PlottingPanel plottingPanel) {
-        super(SwingUtilities.getWindowAncestor(plottingPanel), title, ModalityType.APPLICATION_MODAL);
+                                 Map<String, Double> constantValues, PlottingPanelContext context) {
+        super(SwingUtilities.getWindowAncestor(context.getBaseFrame()), title, ModalityType.APPLICATION_MODAL);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         this.functionMap = functionMap;
         this.constants = constants;
         this.constantValues = constantValues;
 
-        this.plottingPanel = plottingPanel;
+        this.context = context;
     }
 
     public abstract void export();
@@ -111,9 +111,9 @@ public abstract class ExportFunctionsDialog extends MDialog {
 
             double domainStart = function.getDomainStart().getActualValue();
             double domainEnd = function.getDomainEnd().getActualValue();
-            double step = Math.min(plottingPanel.getMaxStep(), (domainEnd - domainStart) /
-                    ((double) (plottingPanel.getWidth() / plottingPanel.getPixelsPerStep()) *
-                            plottingPanel.getSamplesPerCell()));
+            double step = Math.min(context.maxStep, (domainEnd - domainStart) /
+                    ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
+                            context.samplesPerCell));
             Expression expression = FunctionEvaluator.processExpression(function, functionMap, constantValues);
 
             results.put(function, MathEvaluatorPool.getInstance().evaluateFunctionRaw(function, expression,

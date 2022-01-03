@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
@@ -56,15 +55,15 @@ public class ExportImageFileDialog extends ExportFunctionsDialog {
     private JCheckBox enableAntialias;
 
     public ExportImageFileDialog(Map<String, Function> functionMap, Collection<Constant> constants,
-                                 Map<String, Double> constantValues, PlottingPanel plottingPanel) {
-        super(BUNDLE.getString("export.image.title"), functionMap, constants, constantValues, plottingPanel);
+                                 Map<String, Double> constantValues, PlottingPanelContext context) {
+        super(BUNDLE.getString("export.image.title"), functionMap, constants, constantValues, context);
     }
 
     @Override
     public void init() {
         initContentPane();
         pack();
-        setLocationRelativeTo(SwingUtilities.getWindowAncestor(plottingPanel));
+        setLocationRelativeTo(context.getBaseFrame());
     }
 
     @Override
@@ -102,13 +101,13 @@ public class ExportImageFileDialog extends ExportFunctionsDialog {
     }
 
     private BufferedImage getExportedImage() {
-        BufferedImage image = new BufferedImage(plottingPanel.getWidth(), plottingPanel.getHeight(),
+        BufferedImage image = new BufferedImage(context.getBase().getWidth(), context.getBase().getHeight(),
                 BufferedImage.TYPE_INT_RGB);
         Graphics2D g = image.createGraphics();
         if (enableAntialias.isSelected()) {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
-        plottingPanel.paintComponent(g);
+        context.getBase().paintComponent(g);
         return image;
     }
 

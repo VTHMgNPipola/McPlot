@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
@@ -60,15 +59,15 @@ public class ExportTextFileDialog extends ExportFunctionsDialog {
     private FunctionSelectionPanel exportedFunctions;
 
     public ExportTextFileDialog(Map<String, Function> functionMap, Collection<Constant> constants,
-                                Map<String, Double> constantValues, PlottingPanel plottingPanel) {
-        super(BUNDLE.getString("export.text.title"), functionMap, constants, constantValues, plottingPanel);
+                                Map<String, Double> constantValues, PlottingPanelContext context) {
+        super(BUNDLE.getString("export.text.title"), functionMap, constants, constantValues, context);
     }
 
     @Override
     public void init() {
         initContentPane();
         pack();
-        setLocationRelativeTo(SwingUtilities.getWindowAncestor(plottingPanel));
+        setLocationRelativeTo(context.getBaseFrame());
     }
 
     private void initContentPane() {

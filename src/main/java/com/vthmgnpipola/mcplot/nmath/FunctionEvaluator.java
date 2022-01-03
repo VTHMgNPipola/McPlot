@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 package com.vthmgnpipola.mcplot.nmath;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
+import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 import java.awt.Color;
 import java.util.Map;
 import java.util.Objects;
@@ -41,7 +42,7 @@ public class FunctionEvaluator {
 
     private final Function function;
     private final MathEventStreamer parent;
-    private final PlottingPanel plottingPanel;
+    private final PlottingPanel owner;
 
     private final ConstantEvaluator domainStartEvaluator;
     private final ConstantEvaluator domainEndEvaluator;
@@ -53,13 +54,13 @@ public class FunctionEvaluator {
      * Creates a new FunctionEvaluator and binds it to a function, event streamer and plotting panel. Also registers
      * two constant evaluators in the parent event streamer for the domain start and domain end values.
      *
-     * @param function      Function this function evaluator "takes care" of.
-     * @param plottingPanel Plotting panel where the function will be plotted.
+     * @param function Function this function evaluator "takes care" of.
+     * @param owner    Plotting panel where the function will be plotted.
      */
-    public FunctionEvaluator(Function function, PlottingPanel plottingPanel) {
+    public FunctionEvaluator(Function function, PlottingPanel owner) {
         this.function = function;
         this.parent = MathEventStreamer.getInstance();
-        this.plottingPanel = plottingPanel;
+        this.owner = owner;
 
         parent.registerFunctionEvaluator(this);
 
@@ -68,7 +69,7 @@ public class FunctionEvaluator {
         domainEndEvaluator = new ConstantEvaluator(function.getDomainEnd());
 
         plot = new FunctionPlot();
-        plottingPanel.getFunctions().put(function, plot);
+        owner.getFunctions().put(function, plot);
     }
 
     public Function getFunction() {
@@ -110,7 +111,7 @@ public class FunctionEvaluator {
      */
     public void setTraceColor(Color traceColor) {
         function.setTraceColor(traceColor);
-        plottingPanel.repaint();
+        owner.repaint();
     }
 
     /**
@@ -122,7 +123,7 @@ public class FunctionEvaluator {
      */
     public void setFilled(boolean filled) {
         function.setFilled(filled);
-        plottingPanel.repaint();
+        owner.repaint();
     }
 
     /**
@@ -136,7 +137,7 @@ public class FunctionEvaluator {
         if (visible) {
             evaluate();
         }
-        plottingPanel.repaint();
+        owner.repaint();
     }
 
     /**
@@ -149,13 +150,14 @@ public class FunctionEvaluator {
      * graph width and zoom.
      */
     public void evaluate() {
-        double zoomX = plottingPanel.getScaleX() * plottingPanel.getPixelsPerStep() * plottingPanel.getZoom() *
-                plottingPanel.getUnitX().getScale();
-        double domainStart = plottingPanel.getCameraX() / zoomX;
-        double domainEnd = (plottingPanel.getCameraX() + plottingPanel.getWidth()) / zoomX;
-        double step = Math.min(plottingPanel.getMaxStep(), (domainEnd - domainStart) /
-                ((double) (plottingPanel.getWidth() / plottingPanel.getPixelsPerStep()) *
-                        plottingPanel.getSamplesPerCell()));
+        PlottingPanelContext context = owner.getContext();
+        double zoomX = context.scaleX * context.pixelsPerStep * context.zoom *
+                context.unitX.getScale();
+        double domainStart = context.cameraX / zoomX;
+        double domainEnd = (context.cameraX + owner.getWidth()) / zoomX;
+        double step = Math.min(context.maxStep, (domainEnd - domainStart) /
+                ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
+                        context.samplesPerCell));
 
         if (function.getDomainStart().getActualValue() == null) {
             domainStart -= step;

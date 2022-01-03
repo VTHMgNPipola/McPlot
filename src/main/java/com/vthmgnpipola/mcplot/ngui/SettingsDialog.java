@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,16 +27,16 @@ import javax.swing.SwingUtilities;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class SettingsDialog extends MDialog {
-    private final PlottingPanel plottingPanel;
+    private final PlottingPanelContext context;
     private final Workspace workspace;
 
-    public SettingsDialog(PlottingPanel plottingPanel, Workspace workspace) {
+    public SettingsDialog(PlottingPanelContext context, Workspace workspace) {
         super(SwingUtilities.getWindowAncestor(workspace), BUNDLE.getString("settings.title"),
                 ModalityType.APPLICATION_MODAL);
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        this.plottingPanel = plottingPanel;
+        this.context = context;
         this.workspace = workspace;
     }
 
@@ -44,14 +44,14 @@ public class SettingsDialog extends MDialog {
     public void init() {
         initContentPane();
         pack();
-        setLocationRelativeTo(SwingUtilities.getWindowAncestor(plottingPanel));
+        setLocationRelativeTo(workspace);
     }
 
     private void initContentPane() {
         JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP, JTabbedPane.SCROLL_TAB_LAYOUT);
         getContentPane().add(tabbedPane);
 
-        PlottingPanelSettingsPanel plottingPanelSettingsPanel = new PlottingPanelSettingsPanel(plottingPanel);
+        PlottingPanelSettingsPanel plottingPanelSettingsPanel = new PlottingPanelSettingsPanel(context);
         tabbedPane.addTab(BUNDLE.getString("settings.plottingPanel.title"),
                 new JScrollPane(plottingPanelSettingsPanel));
 
