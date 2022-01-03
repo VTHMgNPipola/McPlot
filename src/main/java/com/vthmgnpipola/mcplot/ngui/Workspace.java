@@ -34,6 +34,7 @@ import java.text.MessageFormat;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
@@ -78,10 +79,16 @@ public class Workspace extends MFrame {
 
         JMenuItem newWorkspace = new JMenuItem(BUNDLE.getString("workspace.menu.file.new"), new FlatAddFileIcon());
         file.add(newWorkspace);
-        newWorkspace.setAccelerator(KeyStroke.getKeyStroke("control shift n"));
+        newWorkspace.setAccelerator(KeyStroke.getKeyStroke("control shift N"));
         newWorkspace.addActionListener(e -> {
-            MathEventStreamer.getInstance().reset();
-            this.init();
+            int option = JOptionPane.showConfirmDialog(this,
+                    BUNDLE.getString("workspace.menu.file.new.confirmMessage"),
+                    BUNDLE.getString("workspace.menu.file.new.confirmTitle"),
+                    JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                MathEventStreamer.getInstance().reset();
+                this.init();
+            }
         });
 
         JMenuItem save = new JMenuItem(BUNDLE.getString("workspace.menu.file.save"),
