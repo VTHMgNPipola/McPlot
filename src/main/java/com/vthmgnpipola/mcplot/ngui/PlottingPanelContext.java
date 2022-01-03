@@ -31,7 +31,8 @@ public class PlottingPanelContext implements Serializable {
     public static final int INITIAL_PIXELS_PER_STEP = 75;
     @Serial
     private static final long serialVersionUID = 3754069167198513615L;
-    public int cameraX, cameraY;
+    public int cameraX;
+    public int cameraY;
     public int pixelsPerStep = INITIAL_PIXELS_PER_STEP;
     public double zoom;
     public int zoomPos;
