@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,11 +33,13 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class ConstantsPanel extends JPanel {
     private final List<ConstantCard> constantCards;
+    private final List<Constant> constants;
 
     private AtomicInteger index;
 
     public ConstantsPanel(List<Constant> constants) {
         super(new MigLayout());
+        this.constants = constants;
         this.constantCards = new ArrayList<>();
         index = new AtomicInteger(1);
 
@@ -84,6 +86,8 @@ public class ConstantsPanel extends JPanel {
     public void removeConstantCard(ConstantCard constantCard) {
         remove(constantCard);
         constantCards.remove(constantCard);
+
+        constants.remove(constantCard.getConstant());
 
         index = new AtomicInteger(1);
         constantCards.forEach(fc -> fc.setIndex(index.getAndIncrement()));

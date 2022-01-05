@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ public class FunctionCard extends JPanel {
     private static final Random RANDOM = new Random();
 
     private final JCheckBox visible;
+    private final Function function;
 
     public FunctionCard(FunctionEvaluator functionEvaluator, PlottingPanel plottingPanel, FunctionsPanel parent,
                         int index) {
@@ -55,7 +56,7 @@ public class FunctionCard extends JPanel {
 
         setIndex(index);
 
-        Function function = functionEvaluator.getFunction();
+        function = functionEvaluator.getFunction();
 
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy, split 3");
@@ -125,5 +126,9 @@ public class FunctionCard extends JPanel {
     public void setIndex(int index) {
         setBorder(BorderFactory.createTitledBorder(
                 MessageFormat.format(BUNDLE.getString("functionCard.functionId"), index)));
+    }
+
+    public Function getFunction() {
+        return function;
     }
 }

@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,10 +33,13 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionsPanel extends JPanel {
     private final List<FunctionCard> functionCards;
+    private final List<Function> functions;
 
     private AtomicInteger index;
 
     public FunctionsPanel(List<Function> functions, PlottingPanel plottingPanel) {
+        this.functions = functions;
+
         setLayout(new MigLayout());
         this.functionCards = new ArrayList<>();
         index = new AtomicInteger(1);
@@ -80,6 +83,8 @@ public class FunctionsPanel extends JPanel {
     public void removeFunctionCard(FunctionCard functionCard) {
         remove(functionCard);
         functionCards.remove(functionCard);
+
+        functions.remove(functionCard.getFunction());
 
         index = new AtomicInteger(1);
         functionCards.forEach(fc -> fc.setIndex(index.getAndIncrement()));

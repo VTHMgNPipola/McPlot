@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package com.vthmgnpipola.mcplot.ngui.components;
 
 import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.vthmgnpipola.mcplot.ngui.ConstantsPanel;
+import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.ConstantEvaluator;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.event.FocusAdapter;
@@ -117,5 +118,9 @@ public class ConstantCard extends JPanel {
     public void setIndex(int index) {
         setBorder(BorderFactory.createTitledBorder(
                 MessageFormat.format(BUNDLE.getString("constantCard.constantId"), index)));
+    }
+
+    public Constant getConstant() {
+        return constantEvaluator.getConstant();
     }
 }
