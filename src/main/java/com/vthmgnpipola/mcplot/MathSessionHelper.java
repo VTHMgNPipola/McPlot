@@ -98,6 +98,7 @@ public class MathSessionHelper {
 
         int option = FILE_CHOOSER.showOpenDialog(null);
         if (option == JFileChooser.APPROVE_OPTION) {
+            lastPath = null;
             String chosenPath = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
             PreferencesHelper.PREFERENCES.put(PreferencesHelper.KEY_CURRENT_DIRECTORY_OPEN, chosenPath);
             try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Path.of(chosenPath)))) {
