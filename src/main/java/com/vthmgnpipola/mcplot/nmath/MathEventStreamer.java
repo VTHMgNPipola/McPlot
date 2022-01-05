@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package com.vthmgnpipola.mcplot.nmath;
 import com.vthmgnpipola.mcplot.Main;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class MathEventStreamer {
     }
 
     public void reset() {
-        constantEvaluators = new ArrayList<>();
+        constantEvaluators = Collections.synchronizedList(new ArrayList<>());
         functionEvaluators = new ArrayList<>();
 
         constants = new ArrayList<>();
