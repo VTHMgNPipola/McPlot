@@ -108,11 +108,11 @@ public class PlottingPanelContext implements Serializable {
     public void updateTraces() {
         defaultTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
         dashedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
-                new float[]{10f, 5f}, 0);
+                new float[]{10f, 7f}, 0);
         dottedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
-                new float[]{traceWidth, 5f}, 0);
+                new float[]{3f, 7f}, 0);
         dashedDottedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
-                new float[]{10f, 5f, traceWidth, 5f}, 0);
+                new float[]{10f, 7f, 3f, 7f}, 0);
     }
 
     public void setTraceWidth(int traceWidth) {
