@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,15 @@ public class Function implements Serializable {
     @Serial
     private static final long serialVersionUID = -3144429444076124342L;
 
+    public static final String TRACE_TYPE_DEFAULT = "default";
+    public static final String TRACE_TYPE_DASHED = "dashed";
+    public static final String TRACE_TYPE_DOTTED = "dotted";
+    public static final String TRACE_TYPE_DASHED_DOTTED = "dashed-dotted";
+
     private String definition;
     private transient String name, variableName, formationLaw;
 
+    private String traceType;
     private Color traceColor;
     private Constant domainStart;
     private Constant domainEnd;
@@ -60,6 +66,14 @@ public class Function implements Serializable {
     public void setDefinition(String definition) {
         this.definition = definition;
         doDecomposition();
+    }
+
+    public String getTraceType() {
+        return traceType;
+    }
+
+    public void setTraceType(String traceType) {
+        this.traceType = traceType;
     }
 
     /**

@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,9 @@ import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
+import java.util.Objects;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -34,6 +36,17 @@ import net.miginfocom.swing.MigLayout;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionSettingsDialog extends MDialog {
+    private static final FunctionTraceType TRACE_DEFAULT = new FunctionTraceType(Function.TRACE_TYPE_DEFAULT,
+            BUNDLE.getString("functionSettings.traceType.default"));
+    private static final FunctionTraceType TRACE_DASHED = new FunctionTraceType(Function.TRACE_TYPE_DASHED,
+            BUNDLE.getString("functionSettings.traceType.dashed"));
+    private static final FunctionTraceType TRACE_DOTTED = new FunctionTraceType(Function.TRACE_TYPE_DOTTED,
+            BUNDLE.getString("functionSettings.traceType.dotted"));
+    private static final FunctionTraceType TRACE_DASHED_DOTTED = new FunctionTraceType(Function.TRACE_TYPE_DASHED_DOTTED,
+            BUNDLE.getString("functionSettings.traceType.dashedDotted"));
+    private static final FunctionTraceType[] TRACES = new FunctionTraceType[]{TRACE_DEFAULT, TRACE_DASHED,
+            TRACE_DOTTED, TRACE_DASHED_DOTTED};
+
     private final FunctionEvaluator functionEvaluator;
 
     public FunctionSettingsDialog(FunctionEvaluator functionEvaluator, int index, Window owner) {
@@ -92,9 +105,36 @@ public class FunctionSettingsDialog extends MDialog {
             }
         });
 
+        JLabel traceTypeLabel = new JLabel(BUNDLE.getString("functionSettings.traceType"));
+        contentPane.add(traceTypeLabel);
+        JComboBox<FunctionTraceType> traceType = new JComboBox<>(TRACES);
+        contentPane.add(traceType, "growx, wrap");
+        traceType.setSelectedItem(getSelectedTraceType(function.getTraceType()));
+        traceType.addActionListener(e -> functionEvaluator
+                .setTraceType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType));
+
         JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"), function.isFilled());
         contentPane.add(fillArea, "span");
         fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillArea.tooltip"));
         fillArea.addActionListener(e -> functionEvaluator.setFilled(fillArea.isSelected()));
+    }
+
+    private FunctionTraceType getSelectedTraceType(String traceType) {
+        if (traceType == null) {
+            return TRACE_DEFAULT;
+        }
+        return switch (traceType) {
+            case Function.TRACE_TYPE_DASHED -> TRACE_DASHED;
+            case Function.TRACE_TYPE_DOTTED -> TRACE_DOTTED;
+            case Function.TRACE_TYPE_DASHED_DOTTED -> TRACE_DASHED_DOTTED;
+            default -> TRACE_DEFAULT;
+        };
+    }
+
+    private record FunctionTraceType(String traceType, String description) {
+        @Override
+        public String toString() {
+            return description;
+        }
     }
 }

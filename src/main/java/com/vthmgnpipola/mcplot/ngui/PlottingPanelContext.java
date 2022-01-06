@@ -52,7 +52,7 @@ public class PlottingPanelContext implements Serializable {
     public double fillTransparency;
     public GraphUnit unitX;
     public GraphUnit unitY;
-    public transient Stroke traceStroke;
+    public transient Stroke defaultTraceStroke, dashedTraceStroke, dottedTraceStroke, dashedDottedTraceStroke;
     private transient PlottingPanel base;
 
     public PlottingPanelContext(PlottingPanel base) {
@@ -77,7 +77,7 @@ public class PlottingPanelContext implements Serializable {
         unitX = GraphUnit.DEFAULT;
         unitY = GraphUnit.DEFAULT;
 
-        traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        updateTraces();
     }
 
     public void setScaleX(double scaleX) {
@@ -105,9 +105,19 @@ public class PlottingPanelContext implements Serializable {
         base.repaint();
     }
 
+    public void updateTraces() {
+        defaultTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        dashedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
+                new float[]{10f, 5f}, 0);
+        dottedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
+                new float[]{traceWidth, 5f}, 0);
+        dashedDottedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
+                new float[]{10f, 5f, traceWidth, 5f}, 0);
+    }
+
     public void setTraceWidth(int traceWidth) {
         this.traceWidth = traceWidth;
-        traceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        updateTraces();
         base.repaint();
     }
 

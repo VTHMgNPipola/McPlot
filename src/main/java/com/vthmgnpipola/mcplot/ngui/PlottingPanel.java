@@ -20,7 +20,6 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -325,7 +324,6 @@ public class PlottingPanel extends JPanel {
         zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom * context.unitX.getScale(),
                 -context.scaleY * context.pixelsPerStep * context.zoom * context.unitY.getScale());
 
-        g.setStroke(context.traceStroke);
         int visibleFunctions = 0;
         int longestFunction = 0;
         for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
@@ -347,6 +345,7 @@ public class PlottingPanel extends JPanel {
                 g.setColor(fillColor);
                 g.fill(zoomTx.createTransformedShape(fill));
             }
+            g.setStroke(getStroke(function.getTraceType()));
             g.setColor(traceColor);
             g.draw(zoomTx.createTransformedShape(plot.getPath()));
 
@@ -377,7 +376,7 @@ public class PlottingPanel extends JPanel {
                     continue;
                 }
 
-                g.setStroke(context.traceStroke);
+                g.setStroke(getStroke(functionEntry.getKey().getTraceType()));
                 g.setColor(traceColor);
                 int y = fontMetrics.getHeight() * i + fontMetrics.getHeight() / 2 + 10;
                 g.drawLine(10, y, 50, y);
@@ -417,6 +416,18 @@ public class PlottingPanel extends JPanel {
     void setContext(PlottingPanelContext context) {
         this.context = context;
         context.setBase(this);
-        context.traceStroke = new BasicStroke(context.traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+        context.updateTraces();
+    }
+
+    private Stroke getStroke(String traceType) {
+        if (traceType == null) {
+            return context.defaultTraceStroke;
+        }
+        return switch (traceType) {
+            case Function.TRACE_TYPE_DASHED -> context.dashedTraceStroke;
+            case Function.TRACE_TYPE_DOTTED -> context.dottedTraceStroke;
+            case Function.TRACE_TYPE_DASHED_DOTTED -> context.dashedDottedTraceStroke;
+            default -> context.defaultTraceStroke;
+        };
     }
 }

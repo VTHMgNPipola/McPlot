@@ -103,6 +103,11 @@ public class FunctionEvaluator {
         domainEndEvaluator.setDefinition(domainEnd);
     }
 
+    public void setTraceType(String traceType) {
+        function.setTraceType(traceType);
+        owner.repaint();
+    }
+
     /**
      * Sets a new trace color on the function bound to this function evaluator and repaints the plotting panel
      * (doesn't recalculate any functions or constants while doing so).
