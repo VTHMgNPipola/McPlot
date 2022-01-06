@@ -22,9 +22,9 @@ import com.vthmgnpipola.mcplot.Main;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class MathEventStreamer {
@@ -50,13 +50,13 @@ public class MathEventStreamer {
 
     public void reset() {
         constantEvaluators = Collections.synchronizedList(new ArrayList<>());
-        functionEvaluators = new ArrayList<>();
+        functionEvaluators = Collections.synchronizedList(new ArrayList<>());
 
         constants = new ArrayList<>();
         functions = new ArrayList<>();
 
-        constantValues = new HashMap<>();
-        functionMap = new HashMap<>();
+        constantValues = new TreeMap<>();
+        functionMap = new TreeMap<>();
     }
 
     public void setPlottingPanel(PlottingPanel plottingPanel) {

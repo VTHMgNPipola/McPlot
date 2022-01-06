@@ -26,7 +26,7 @@ import java.io.Serializable;
  * This class is used to store information about each function created by the user. It doesn't process any data,
  * except for the decomposition of the definition string into function name, variable name and formation law.
  */
-public class Function implements Serializable {
+public class Function implements Serializable, Comparable<Function> {
     @Serial
     private static final long serialVersionUID = -3144429444076124342L;
 
@@ -36,6 +36,7 @@ public class Function implements Serializable {
     public static final String TRACE_TYPE_DASHED_DOTTED = "dashed-dotted";
 
     private String definition;
+    private transient int index;
     private transient String name, variableName, formationLaw;
 
     private String traceType;
@@ -48,6 +49,10 @@ public class Function implements Serializable {
     public Function() {
         domainStart = new Constant();
         domainEnd = new Constant();
+    }
+
+    public int getIndex() {
+        return index;
     }
 
     /**
@@ -66,6 +71,10 @@ public class Function implements Serializable {
     public void setDefinition(String definition) {
         this.definition = definition;
         doDecomposition();
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
     public String getTraceType() {
@@ -214,5 +223,10 @@ public class Function implements Serializable {
         if (name == null || variableName == null || formationLaw == null) {
             doDecomposition();
         }
+    }
+
+    @Override
+    public int compareTo(Function o) {
+        return Integer.compare(o.getIndex(), index);
     }
 }

@@ -57,6 +57,7 @@ public class FunctionCard extends JPanel {
         setIndex(index);
 
         function = functionEvaluator.getFunction();
+        function.setIndex(index);
 
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy, split 3");
