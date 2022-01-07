@@ -93,6 +93,9 @@ public class MathPanel extends JPanel {
             GraphUnit.CUSTOM_Y_UNIT.setSymbol(state.customUnitY.getSymbol());
             GraphUnit.CUSTOM_Y_UNIT.setDefinition(state.customUnitY.getDefinition());
 
+            MathEventStreamer.getInstance().registerConstantEvaluator(GraphUnit.CUSTOM_X_UNIT.getUnitValueEvaluator());
+            MathEventStreamer.getInstance().registerConstantEvaluator(GraphUnit.CUSTOM_Y_UNIT.getUnitValueEvaluator());
+
             init(plottingPanel, state.functions, state.constants);
             context.getBase().setContext(state.context);
 
