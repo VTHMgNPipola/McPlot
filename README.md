@@ -1,5 +1,7 @@
 # McPlot
 
+![McPlot Logo](mcplot-logo.svg)
+
 McPlot is a lightweight graphing calculator written in Java 17, free for anyone to use.
 
 My goal with McPlot is to create a reliable, powerful and lightweight graphing calculator that is also free and
@@ -27,6 +29,7 @@ java -jar <generated-jar-file>
 * Custom independent units for each axis
 * Show function area
 * Quickly zoom in and out and pan through the graph with minimal lag
+* Independent trace types for each function
 * Almost fully customize how to graph is displayed
 * Relatively small memory footprint
 * Save and load your functions and constants to a file
@@ -40,6 +43,7 @@ java -jar <generated-jar-file>
 * Gather and present data from functions
 * Show functions as splines instead of straight lines from each sample point
 * Option to use a "speed" standard expression evaluator and a "precision" slower evaluator
+* Possibility to do all calculations in a separate server
 
 And some features which I want to implement, but may never do so:
 
