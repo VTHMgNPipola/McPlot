@@ -75,7 +75,6 @@ public class PlottingPanel extends JPanel {
 
         final int[] dragging = new int[1]; // 1: dragging plotting panel; 2: dragging function legend panel
         final int[] startPos = new int[2]; // 0: X position; 1: Y position
-        // TODO: Start dragging when shift is pressed
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
