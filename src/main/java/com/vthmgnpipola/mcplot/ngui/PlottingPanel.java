@@ -35,6 +35,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.swing.JPanel;
@@ -65,7 +66,7 @@ public class PlottingPanel extends JPanel {
 
     public PlottingPanel() {
         setDoubleBuffered(true);
-        functions = new TreeMap<>();
+        functions = Collections.synchronizedSortedMap(new TreeMap<>());
 
         context = new PlottingPanelContext(this);
         font = new Font("Monospaced", Font.PLAIN, 12);

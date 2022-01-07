@@ -52,11 +52,11 @@ public class MathEventStreamer {
         constantEvaluators = Collections.synchronizedList(new ArrayList<>());
         functionEvaluators = Collections.synchronizedList(new ArrayList<>());
 
-        constants = new ArrayList<>();
-        functions = new ArrayList<>();
+        constants = Collections.synchronizedList(new ArrayList<>());
+        functions = Collections.synchronizedList(new ArrayList<>());
 
-        constantValues = new TreeMap<>();
-        functionMap = new TreeMap<>();
+        constantValues = Collections.synchronizedSortedMap(new TreeMap<>());
+        functionMap = Collections.synchronizedSortedMap(new TreeMap<>());
     }
 
     public void setPlottingPanel(PlottingPanel plottingPanel) {
