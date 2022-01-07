@@ -1,6 +1,6 @@
 <!--
   ~ McPlot - a reliable, powerful, lightweight and free graphing calculator
-  ~ Copyright (C) 2021  VTHMgNPipola
+  ~ Copyright (C) 2022  VTHMgNPipola
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.vthmgnpipola</groupId>
     <artifactId>mcplot</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

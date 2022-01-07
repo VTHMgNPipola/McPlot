@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ public class Main {
     /**
      * McPlot version, displayed in the Workspace window title and About window.
      */
-    public static final String VERSION = "0.3-SNAPSHOT";
+    public static final String VERSION = "0.3";
 
     /**
      * Single threaded executor for general tasks done by the application. Normally used when a task might be too
