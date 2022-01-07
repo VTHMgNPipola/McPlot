@@ -73,6 +73,8 @@ public class PlottingPanel extends JPanel {
         zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom,
                 -context.scaleY * context.pixelsPerStep * context.zoom);
 
+        final int DRAGGING_PLOTTING_PANEL = 1;
+        final int DRAGGING_LEGEND_PANEL = 2;
         final int[] dragging = new int[1]; // 1: dragging plotting panel; 2: dragging function legend panel
         final int[] startPos = new int[2]; // 0: X position; 1: Y position
         addMouseListener(new MouseAdapter() {
@@ -83,9 +85,9 @@ public class PlottingPanel extends JPanel {
 
                 if ((e.getX() >= context.flPositionX && e.getX() <= context.flPositionX + flWidth) &&
                         (e.getY() >= context.flPositionY && e.getY() <= context.flPositionY + flHeight)) {
-                    dragging[0] = 2;
+                    dragging[0] = DRAGGING_LEGEND_PANEL;
                 } else if (e.getButton() == MouseEvent.BUTTON2 || e.getButton() == MouseEvent.BUTTON3) {
-                    dragging[0] = 1;
+                    dragging[0] = DRAGGING_PLOTTING_PANEL;
                 }
             }
 
@@ -110,7 +112,7 @@ public class PlottingPanel extends JPanel {
             }
 
             private void moveCamera(MouseEvent e) {
-                if (dragging[0] == 1) {
+                if (dragging[0] == DRAGGING_PLOTTING_PANEL) {
                     int currentMouseX = e.getXOnScreen();
                     int currentMouseY = e.getYOnScreen();
 
@@ -122,7 +124,7 @@ public class PlottingPanel extends JPanel {
 
                     context.recalculateAllFunctions();
                     repaint();
-                } else if (dragging[0] == 2) {
+                } else if (dragging[0] == DRAGGING_LEGEND_PANEL) {
                     int currentMouseX = e.getXOnScreen();
                     int currentMouseY = e.getYOnScreen();
 
