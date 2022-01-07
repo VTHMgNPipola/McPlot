@@ -30,7 +30,7 @@ java -jar <generated-jar-file>
 * Show function area
 * Quickly zoom in and out and pan through the graph with minimal lag
 * Independent trace types for each function
-* Almost fully customize how to graph is displayed
+* Almost fully customize how the graph is displayed
 * Relatively small memory footprint
 * Save and load your functions and constants to a file
 * Export data to spreadsheets, pictures and text files
