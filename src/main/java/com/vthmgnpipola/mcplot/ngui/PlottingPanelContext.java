@@ -82,22 +82,22 @@ public class PlottingPanelContext implements Serializable {
 
     public void setScaleX(double scaleX) {
         this.scaleX = scaleX;
-        recalculateAllFunctions();
+        recalculateAllFunctions(true);
     }
 
     public void setScaleY(double scaleY) {
         this.scaleY = scaleY;
-        recalculateAllFunctions();
+        recalculateAllFunctions(true);
     }
 
     public void setSamplesPerCell(int samplesPerCell) {
         this.samplesPerCell = samplesPerCell;
-        recalculateAllFunctions();
+        recalculateAllFunctions(true);
     }
 
     public void setMaxStep(double maxStep) {
         this.maxStep = maxStep;
-        recalculateAllFunctions();
+        recalculateAllFunctions(true);
     }
 
     public void setAntialias(boolean antialias) {
@@ -179,7 +179,7 @@ public class PlottingPanelContext implements Serializable {
         this.base = base;
     }
 
-    public void recalculateAllFunctions() {
-        MathEventStreamer.getInstance().functionUpdate(true, false);
+    public void recalculateAllFunctions(boolean force) {
+        MathEventStreamer.getInstance().functionUpdate(true, force);
     }
 }

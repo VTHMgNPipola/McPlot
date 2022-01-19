@@ -123,7 +123,7 @@ public class PlottingPanel extends JPanel {
                     startPos[0] = currentMouseX;
                     startPos[1] = currentMouseY;
 
-                    context.recalculateAllFunctions();
+                    context.recalculateAllFunctions(false);
                     repaint();
                 } else if (dragging[0] == DRAGGING_LEGEND_PANEL) {
                     int currentMouseX = e.getXOnScreen();
@@ -187,7 +187,7 @@ public class PlottingPanel extends JPanel {
 
             zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom,
                     -context.scaleY * context.pixelsPerStep * context.zoom);
-            context.recalculateAllFunctions();
+            context.recalculateAllFunctions(true);
             repaint();
         }));
 
@@ -201,7 +201,7 @@ public class PlottingPanel extends JPanel {
                     previousWidth = e.getComponent().getWidth();
                     previousHeight = e.getComponent().getHeight();
 
-                    context.recalculateAllFunctions();
+                    context.recalculateAllFunctions(false);
                     repaint();
                 });
             }
