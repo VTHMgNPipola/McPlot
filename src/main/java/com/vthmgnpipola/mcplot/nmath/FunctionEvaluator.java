@@ -78,7 +78,7 @@ public class FunctionEvaluator {
 
     public void setDefinition(String definition) {
         function.setDefinition(definition);
-        parent.functionUpdate(true);
+        parent.functionUpdate(true, true);
     }
 
     /**
@@ -140,7 +140,7 @@ public class FunctionEvaluator {
     public void setVisible(boolean visible) {
         function.setVisible(visible);
         if (visible) {
-            evaluate();
+            evaluate(true);
         }
         owner.repaint();
     }
@@ -154,7 +154,7 @@ public class FunctionEvaluator {
      * if they are defined. If so, it uses their values, otherwise it calculates them based on the camera position,
      * graph width and zoom.
      */
-    public void evaluate() {
+    public void evaluate(boolean force) {
         PlottingPanelContext context = owner.getContext();
         double zoomX = context.scaleX * context.pixelsPerStep * context.zoom *
                 context.unitX.getScale();
@@ -165,19 +165,25 @@ public class FunctionEvaluator {
                         context.samplesPerCell));
 
         if (function.getDomainStart().getActualValue() == null) {
-            domainStart -= step;
+            domainStart -= ((domainEnd - domainStart) / 2) + step;
         } else {
             domainStart = Math.max(domainStart, function.getDomainStart().getActualValue());
         }
 
         if (function.getDomainEnd().getActualValue() == null) {
-            domainEnd += step;
+            domainEnd += ((domainEnd - domainStart) / 2) + step;
         } else {
             domainEnd = Math.min(domainEnd, function.getDomainEnd().getActualValue());
         }
 
-        MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
-                parent.getConstantValues());
+        if (force || (plot != null && (context.cameraX / zoomX - plot.getStartX() < step ||
+                plot.getEndX() - (context.cameraX + owner.getWidth()) / zoomX < step))) {
+            step = Math.min(context.maxStep, (domainEnd - domainStart) /
+                    ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
+                            context.samplesPerCell)); // Recalculate step, for if domain start or end values changed
+            MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
+                    parent.getConstantValues());
+        }
     }
 
     public static Expression processExpression(Function function, Map<String, Function> functionMap,

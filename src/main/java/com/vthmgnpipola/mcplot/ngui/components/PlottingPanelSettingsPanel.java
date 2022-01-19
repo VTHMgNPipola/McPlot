@@ -118,7 +118,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         axisXUnit.setSelectedItem(context.unitX);
         axisXUnit.addActionListener(e -> {
             context.setUnitX((GraphUnit) axisXUnit.getSelectedItem());
-            MathEventStreamer.getInstance().functionUpdate(false);
+            MathEventStreamer.getInstance().functionUpdate(false, true);
 
             if (axisXUnit.getSelectedItem() != GraphUnit.CUSTOM_X_UNIT) {
                 axisXUnitName.setEnabled(false);
@@ -139,7 +139,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_X_UNIT.setSymbol(axisXUnitName.getText());
-                MathEventStreamer.getInstance().functionUpdate(false);
+                MathEventStreamer.getInstance().functionUpdate(false, true);
             }
         });
 
@@ -151,7 +151,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_X_UNIT.getUnitValueEvaluator().setDefinition(axisXUnitDefinition.getText());
-                MathEventStreamer.getInstance().functionUpdate(false);
+                MathEventStreamer.getInstance().functionUpdate(false, true);
             }
         });
 
@@ -167,7 +167,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         axisYUnit.setSelectedItem(context.unitY);
         axisYUnit.addActionListener(e -> {
             context.setUnitY((GraphUnit) axisYUnit.getSelectedItem());
-            MathEventStreamer.getInstance().functionUpdate(false);
+            MathEventStreamer.getInstance().functionUpdate(false, true);
 
             if (axisYUnit.getSelectedItem() != GraphUnit.CUSTOM_Y_UNIT) {
                 axisYUnitName.setEnabled(false);
@@ -188,7 +188,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_Y_UNIT.setSymbol(axisYUnitName.getText());
-                MathEventStreamer.getInstance().functionUpdate(false);
+                MathEventStreamer.getInstance().functionUpdate(false, true);
             }
         });
 
@@ -200,7 +200,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_Y_UNIT.getUnitValueEvaluator().setDefinition(axisYUnitDefinition.getText());
-                MathEventStreamer.getInstance().functionUpdate(false);
+                MathEventStreamer.getInstance().functionUpdate(false, true);
             }
         });
 

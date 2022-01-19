@@ -180,6 +180,6 @@ public class PlottingPanelContext implements Serializable {
     }
 
     public void recalculateAllFunctions() {
-        MathEventStreamer.getInstance().functionUpdate(true);
+        MathEventStreamer.getInstance().functionUpdate(true, false);
     }
 }

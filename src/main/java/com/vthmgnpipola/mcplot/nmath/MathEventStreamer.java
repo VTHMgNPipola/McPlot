@@ -84,7 +84,7 @@ public class MathEventStreamer {
         functionEvaluators.remove(functionEvaluator);
         functions.remove(functionEvaluator.getFunction());
 
-        functionUpdate(true);
+        functionUpdate(true, true);
     }
 
     public List<Constant> getConstants() {
@@ -113,7 +113,7 @@ public class MathEventStreamer {
                 functionEvaluators.forEach(fe -> {
                     if (fe.getFunction().isVisible()) {
                         fe.processExpression();
-                        fe.evaluate();
+                        fe.evaluate(true);
                     }
                 });
             } finally {
@@ -124,7 +124,7 @@ public class MathEventStreamer {
         });
     }
 
-    public void functionUpdate(boolean processExpressions) {
+    public void functionUpdate(boolean processExpressions, boolean force) {
         Main.EXECUTOR_THREAD.submit(() -> {
             try {
                 functionMap = functions.stream().sequential()
@@ -135,7 +135,7 @@ public class MathEventStreamer {
                             fe.processExpression();
                         }
 
-                        fe.evaluate();
+                        fe.evaluate(force);
                     }
                 });
             } finally {
