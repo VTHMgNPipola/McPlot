@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui.components;
 
+import com.vthmgnpipola.mcplot.GraphAxis;
 import com.vthmgnpipola.mcplot.GraphUnit;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
@@ -238,6 +239,17 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JLabel scaleXUnit = new JLabel("x");
         add(scaleXUnit, "alignx left, wrap");
 
+        // X Type
+        JLabel typeXLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.typeX"));
+        add(typeXLabel);
+        JComboBox<GraphAxis.AxisType> typeX = new JComboBox<>(GraphAxis.AxisType.TYPES);
+        add(typeX, "growx, span 2, wrap");
+        typeX.setSelectedItem(context.axisX.type);
+        typeX.addActionListener(e -> {
+            context.axisX.type = (GraphAxis.AxisType) typeX.getSelectedItem();
+            context.recalculateAllFunctions(true);
+        });
+
         // Y Scale
         JLabel scaleYLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleY"));
         add(scaleYLabel);
@@ -251,6 +263,17 @@ public class PlottingPanelSettingsPanel extends JPanel {
         });
         JLabel scaleYUnit = new JLabel("x");
         add(scaleYUnit, "alignx left, wrap");
+
+        // Y Type
+        JLabel typeYLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.typeY"));
+        add(typeYLabel);
+        JComboBox<GraphAxis.AxisType> typeY = new JComboBox<>(GraphAxis.AxisType.TYPES);
+        add(typeY, "growx, span 2, wrap");
+        typeY.setSelectedItem(context.axisY.type);
+        typeY.addActionListener(e -> {
+            context.axisY.type = (GraphAxis.AxisType) typeY.getSelectedItem();
+            context.recalculateAllFunctions(true);
+        });
 
         // Trace width
         JLabel traceWidthLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.traceWidth"));
