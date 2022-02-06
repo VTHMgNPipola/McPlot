@@ -33,8 +33,8 @@ public class GraphAxis {
 
     public enum AxisType {
         LINEAR(BUNDLE.getString("settings.plottingPanel.axisType.linear")),
-        LOG_NATURAL(BUNDLE.getString("settings.plottingPanel.axisType.logNatural")),
-        LOG10(BUNDLE.getString("settings.plottingPanel.axisType.log10"));
+        LOG10(BUNDLE.getString("settings.plottingPanel.axisType.log10")),
+        LOG_NATURAL(BUNDLE.getString("settings.plottingPanel.axisType.logNatural"));
 
         public static final AxisType[] TYPES = new AxisType[]{LINEAR, LOG_NATURAL, LOG10};
 
