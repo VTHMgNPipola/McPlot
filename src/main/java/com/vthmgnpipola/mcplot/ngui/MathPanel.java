@@ -100,8 +100,8 @@ public class MathPanel extends JPanel {
             context.getBase().setContext(state.context);
 
             context = state.context;
-            context.unitX = GraphUnit.getUnit(state.unitX);
-            context.unitY = GraphUnit.getUnit(state.unitY);
+            context.axisX.unit = GraphUnit.getUnit(state.unitX);
+            context.axisY.unit = GraphUnit.getUnit(state.unitY);
 
             updateUI();
             MathEventStreamer.getInstance().constantUpdate();

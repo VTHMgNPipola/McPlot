@@ -76,8 +76,8 @@ public class MathSessionHelper {
             state.constants = constants;
             state.functions = functions;
             state.context = context;
-            state.unitX = GraphUnit.getString(context.unitX);
-            state.unitY = GraphUnit.getString(context.unitY);
+            state.unitX = GraphUnit.getString(context.axisX.unit);
+            state.unitY = GraphUnit.getString(context.axisY.unit);
             state.customUnitX = GraphUnit.CUSTOM_X_UNIT;
             state.customUnitY = GraphUnit.CUSTOM_Y_UNIT;
 

@@ -156,8 +156,8 @@ public class FunctionEvaluator {
      */
     public void evaluate(boolean force) {
         PlottingPanelContext context = owner.getContext();
-        double zoomX = context.scaleX * context.pixelsPerStep * context.zoom *
-                context.unitX.getScale();
+        double zoomX = context.axisX.scale * context.pixelsPerStep * context.zoom *
+                context.axisX.unit.getScale();
         double domainStart = context.cameraX / zoomX;
         double domainEnd = (context.cameraX + owner.getWidth()) / zoomX;
         double step = Math.min(context.maxStep, (domainEnd - domainStart) /

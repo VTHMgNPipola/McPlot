@@ -115,10 +115,10 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JComboBox<GraphUnit> axisXUnit = new JComboBox<>(new GraphUnit[]{GraphUnit.DEFAULT, GraphUnit.PI,
                 GraphUnit.EULER, GraphUnit.CUSTOM_X_UNIT});
         add(axisXUnit, "growx, span 2, wrap");
-        axisXUnit.setSelectedItem(context.unitX);
+        axisXUnit.setSelectedItem(context.axisX.unit);
         axisXUnit.addActionListener(e -> {
-            context.setUnitX((GraphUnit) axisXUnit.getSelectedItem());
-            MathEventStreamer.getInstance().functionUpdate(false, true);
+            context.axisX.unit = (GraphUnit) axisXUnit.getSelectedItem();
+            context.recalculateAllFunctions(true);
 
             if (axisXUnit.getSelectedItem() != GraphUnit.CUSTOM_X_UNIT) {
                 axisXUnitName.setEnabled(false);
@@ -164,10 +164,10 @@ public class PlottingPanelSettingsPanel extends JPanel {
         JComboBox<GraphUnit> axisYUnit = new JComboBox<>(new GraphUnit[]{GraphUnit.DEFAULT, GraphUnit.PI,
                 GraphUnit.EULER, GraphUnit.CUSTOM_Y_UNIT});
         add(axisYUnit, "growx, span 2, wrap");
-        axisYUnit.setSelectedItem(context.unitY);
+        axisYUnit.setSelectedItem(context.axisY.unit);
         axisYUnit.addActionListener(e -> {
-            context.setUnitY((GraphUnit) axisYUnit.getSelectedItem());
-            MathEventStreamer.getInstance().functionUpdate(false, true);
+            context.axisY.unit = (GraphUnit) axisYUnit.getSelectedItem();
+            context.recalculateAllFunctions(true);
 
             if (axisYUnit.getSelectedItem() != GraphUnit.CUSTOM_Y_UNIT) {
                 axisYUnitName.setEnabled(false);
@@ -227,22 +227,28 @@ public class PlottingPanelSettingsPanel extends JPanel {
         // X Scale
         JLabel scaleXLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleX"));
         add(scaleXLabel);
-        JSpinner scaleX = new JSpinner(new SpinnerNumberModel(context.scaleX, 0.000000001,
+        JSpinner scaleX = new JSpinner(new SpinnerNumberModel(context.axisX.scale, 0.000000001,
                 1000000000d, 0.5));
         add(scaleX, "growx");
         enableCommitsOnValidEdit(scaleX);
-        scaleX.addChangeListener(e -> context.setScaleX((double) scaleX.getValue()));
+        scaleX.addChangeListener(e -> {
+            context.axisX.scale = (double) scaleX.getValue();
+            context.recalculateAllFunctions(true);
+        });
         JLabel scaleXUnit = new JLabel("x");
         add(scaleXUnit, "alignx left, wrap");
 
         // Y Scale
         JLabel scaleYLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleY"));
         add(scaleYLabel);
-        JSpinner scaleY = new JSpinner(new SpinnerNumberModel(context.scaleY, 0.000000001,
+        JSpinner scaleY = new JSpinner(new SpinnerNumberModel(context.axisY.scale, 0.000000001,
                 1000000000d, 0.5));
         add(scaleY, "growx");
         enableCommitsOnValidEdit(scaleY);
-        scaleY.addChangeListener(e -> context.setScaleY((double) scaleY.getValue()));
+        scaleY.addChangeListener(e -> {
+            context.axisY.scale = (double) scaleY.getValue();
+            context.recalculateAllFunctions(true);
+        });
         JLabel scaleYUnit = new JLabel("x");
         add(scaleYUnit, "alignx left, wrap");
 

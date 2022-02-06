@@ -18,7 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
-import com.vthmgnpipola.mcplot.GraphUnit;
+import com.vthmgnpipola.mcplot.GraphAxis;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import java.awt.BasicStroke;
 import java.awt.Stroke;
@@ -38,8 +38,8 @@ public class PlottingPanelContext implements Serializable {
     public int zoomPos;
     public int flPositionX;
     public int flPositionY;
-    public double scaleX;
-    public double scaleY;
+    public GraphAxis axisX;
+    public GraphAxis axisY;
     public int samplesPerCell;
     public double maxStep;
     public int traceWidth;
@@ -50,8 +50,6 @@ public class PlottingPanelContext implements Serializable {
     public boolean drawAxisValues;
     public int minorGridDivisions;
     public double fillTransparency;
-    public GraphUnit unitX;
-    public GraphUnit unitY;
     public transient Stroke defaultTraceStroke, dashedTraceStroke, dottedTraceStroke, dashedDottedTraceStroke;
     private transient PlottingPanel base;
 
@@ -62,8 +60,8 @@ public class PlottingPanelContext implements Serializable {
         zoomPos = 0;
         flPositionX = 20;
         flPositionY = 20;
-        scaleX = 1;
-        scaleY = 1;
+        axisX = new GraphAxis();
+        axisY = new GraphAxis();
         samplesPerCell = 25;
         maxStep = 0.5;
         traceWidth = 3;
@@ -74,20 +72,8 @@ public class PlottingPanelContext implements Serializable {
         drawAxisValues = true;
         minorGridDivisions = 5;
         fillTransparency = 25;
-        unitX = GraphUnit.DEFAULT;
-        unitY = GraphUnit.DEFAULT;
 
         updateTraces();
-    }
-
-    public void setScaleX(double scaleX) {
-        this.scaleX = scaleX;
-        recalculateAllFunctions(true);
-    }
-
-    public void setScaleY(double scaleY) {
-        this.scaleY = scaleY;
-        recalculateAllFunctions(true);
     }
 
     public void setSamplesPerCell(int samplesPerCell) {
@@ -123,16 +109,6 @@ public class PlottingPanelContext implements Serializable {
 
     public void setFillTransparency(double fillTransparency) {
         this.fillTransparency = fillTransparency;
-        base.repaint();
-    }
-
-    public void setUnitX(GraphUnit unitX) {
-        this.unitX = unitX;
-        base.repaint();
-    }
-
-    public void setUnitY(GraphUnit unitY) {
-        this.unitY = unitY;
         base.repaint();
     }
 

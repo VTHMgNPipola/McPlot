@@ -71,8 +71,8 @@ public class PlottingPanel extends JPanel {
         context = new PlottingPanelContext(this);
         font = new Font("Monospaced", Font.PLAIN, 12);
         zoomTx = new AffineTransform();
-        zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom,
-                -context.scaleY * context.pixelsPerStep * context.zoom);
+        zoomTx.setToScale(context.axisX.scale * context.pixelsPerStep * context.zoom,
+                -context.axisY.scale * context.pixelsPerStep * context.zoom);
 
         final int DRAGGING_PLOTTING_PANEL = 1;
         final int DRAGGING_LEGEND_PANEL = 2;
@@ -185,8 +185,8 @@ public class PlottingPanel extends JPanel {
                 context.zoom = (double) 1 / (zoomArray[arrayPos] * Math.pow(10, timesCircled));
             }
 
-            zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom,
-                    -context.scaleY * context.pixelsPerStep * context.zoom);
+            zoomTx.setToScale(context.axisX.scale * context.pixelsPerStep * context.zoom,
+                    -context.axisY.scale * context.pixelsPerStep * context.zoom);
             context.recalculateAllFunctions(true);
             repaint();
         }));
@@ -288,8 +288,8 @@ public class PlottingPanel extends JPanel {
                 if (i != 0 && context.drawAxisValues) {
                     g.setColor(globalAxisColor);
                     g.drawLine(i, -5, i, 5);
-                    double stepValue = (((double) i / context.pixelsPerStep) / (context.scaleX * context.zoom));
-                    String step = context.unitX.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
+                    double stepValue = (((double) i / context.pixelsPerStep) / (context.axisX.scale * context.zoom));
+                    String step = context.axisX.unit.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
                     g.drawString(step, i - fontMetrics.stringWidth(step) / 2, 7 + fontMetrics.getAscent());
                 }
             }
@@ -306,8 +306,8 @@ public class PlottingPanel extends JPanel {
                 if (i != 0 && context.drawAxisValues) {
                     g.setColor(globalAxisColor);
                     g.drawLine(-5, i, 5, i);
-                    double stepValue = -(((double) i / context.pixelsPerStep) / (context.scaleY * context.zoom));
-                    String step = context.unitY.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
+                    double stepValue = -(((double) i / context.pixelsPerStep) / (context.axisY.scale * context.zoom));
+                    String step = context.axisY.unit.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
                     g.drawString(step, -7 - fontMetrics.stringWidth(step), i + fontMetrics.getAscent() / 2);
                 }
             }
@@ -323,8 +323,8 @@ public class PlottingPanel extends JPanel {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
 
-        zoomTx.setToScale(context.scaleX * context.pixelsPerStep * context.zoom * context.unitX.getScale(),
-                -context.scaleY * context.pixelsPerStep * context.zoom * context.unitY.getScale());
+        zoomTx.setToScale(context.axisX.scale * context.pixelsPerStep * context.zoom * context.axisX.unit.getScale(),
+                -context.axisY.scale * context.pixelsPerStep * context.zoom * context.axisY.unit.getScale());
 
         int visibleFunctions = 0;
         int longestFunction = 0;
