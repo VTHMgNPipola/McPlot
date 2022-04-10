@@ -103,7 +103,7 @@ public class FunctionEvaluator {
         domainEndEvaluator.setDefinition(domainEnd);
     }
 
-    public void setTraceType(String traceType) {
+    public void setTraceType(Plot.TraceType traceType) {
         function.setTraceType(traceType);
         owner.repaint();
     }

@@ -20,6 +20,7 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
+import com.vthmgnpipola.mcplot.nmath.Plot;
 import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -36,14 +37,14 @@ import net.miginfocom.swing.MigLayout;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionSettingsDialog extends MDialog {
-    private static final FunctionTraceType TRACE_DEFAULT = new FunctionTraceType(Function.TRACE_TYPE_DEFAULT,
+    private static final FunctionTraceType TRACE_DEFAULT = new FunctionTraceType(Plot.TraceType.TRACE_TYPE_DEFAULT,
             BUNDLE.getString("functionSettings.traceType.default"));
-    private static final FunctionTraceType TRACE_DASHED = new FunctionTraceType(Function.TRACE_TYPE_DASHED,
+    private static final FunctionTraceType TRACE_DASHED = new FunctionTraceType(Plot.TraceType.TRACE_TYPE_DASHED,
             BUNDLE.getString("functionSettings.traceType.dashed"));
-    private static final FunctionTraceType TRACE_DOTTED = new FunctionTraceType(Function.TRACE_TYPE_DOTTED,
+    private static final FunctionTraceType TRACE_DOTTED = new FunctionTraceType(Plot.TraceType.TRACE_TYPE_DOTTED,
             BUNDLE.getString("functionSettings.traceType.dotted"));
-    private static final FunctionTraceType TRACE_DASHED_DOTTED = new FunctionTraceType(Function.TRACE_TYPE_DASHED_DOTTED,
-            BUNDLE.getString("functionSettings.traceType.dashedDotted"));
+    private static final FunctionTraceType TRACE_DASHED_DOTTED = new FunctionTraceType(
+            Plot.TraceType.TRACE_TYPE_DASHED_DOTTED, BUNDLE.getString("functionSettings.traceType.dashedDotted"));
     private static final FunctionTraceType[] TRACES = new FunctionTraceType[]{TRACE_DEFAULT, TRACE_DASHED,
             TRACE_DOTTED, TRACE_DASHED_DOTTED};
 
@@ -119,19 +120,19 @@ public class FunctionSettingsDialog extends MDialog {
         fillArea.addActionListener(e -> functionEvaluator.setFilled(fillArea.isSelected()));
     }
 
-    private FunctionTraceType getSelectedTraceType(String traceType) {
+    private FunctionTraceType getSelectedTraceType(Plot.TraceType traceType) {
         if (traceType == null) {
             return TRACE_DEFAULT;
         }
         return switch (traceType) {
-            case Function.TRACE_TYPE_DASHED -> TRACE_DASHED;
-            case Function.TRACE_TYPE_DOTTED -> TRACE_DOTTED;
-            case Function.TRACE_TYPE_DASHED_DOTTED -> TRACE_DASHED_DOTTED;
+            case TRACE_TYPE_DASHED -> TRACE_DASHED;
+            case TRACE_TYPE_DOTTED -> TRACE_DOTTED;
+            case TRACE_TYPE_DASHED_DOTTED -> TRACE_DASHED_DOTTED;
             default -> TRACE_DEFAULT;
         };
     }
 
-    private record FunctionTraceType(String traceType, String description) {
+    private record FunctionTraceType(Plot.TraceType traceType, String description) {
         @Override
         public String toString() {
             return description;

@@ -30,16 +30,11 @@ public class Function implements Serializable, Comparable<Function> {
     @Serial
     private static final long serialVersionUID = -3144429444076124342L;
 
-    public static final String TRACE_TYPE_DEFAULT = "default";
-    public static final String TRACE_TYPE_DASHED = "dashed";
-    public static final String TRACE_TYPE_DOTTED = "dotted";
-    public static final String TRACE_TYPE_DASHED_DOTTED = "dashed-dotted";
-
     private String definition;
     private transient int index;
     private transient String name, variableName, formationLaw;
 
-    private String traceType;
+    private Plot.TraceType traceType;
     private Color traceColor;
     private Constant domainStart;
     private Constant domainEnd;
@@ -77,11 +72,11 @@ public class Function implements Serializable, Comparable<Function> {
         this.index = index;
     }
 
-    public String getTraceType() {
+    public Plot.TraceType getTraceType() {
         return traceType;
     }
 
-    public void setTraceType(String traceType) {
+    public void setTraceType(Plot.TraceType traceType) {
         this.traceType = traceType;
     }
 

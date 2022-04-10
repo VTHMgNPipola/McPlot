@@ -20,6 +20,7 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
+import com.vthmgnpipola.mcplot.nmath.Plot;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -421,14 +422,14 @@ public class PlottingPanel extends JPanel {
         context.updateTraces();
     }
 
-    private Stroke getStroke(String traceType) {
+    private Stroke getStroke(Plot.TraceType traceType) {
         if (traceType == null) {
             return context.defaultTraceStroke;
         }
         return switch (traceType) {
-            case Function.TRACE_TYPE_DASHED -> context.dashedTraceStroke;
-            case Function.TRACE_TYPE_DOTTED -> context.dottedTraceStroke;
-            case Function.TRACE_TYPE_DASHED_DOTTED -> context.dashedDottedTraceStroke;
+            case TRACE_TYPE_DOTTED -> context.dottedTraceStroke;
+            case TRACE_TYPE_DASHED -> context.dashedTraceStroke;
+            case TRACE_TYPE_DASHED_DOTTED -> context.dashedDottedTraceStroke;
             default -> context.defaultTraceStroke;
         };
     }
