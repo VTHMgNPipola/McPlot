@@ -117,7 +117,7 @@ public class FunctionCard extends JPanel {
         add(remove);
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
-            plottingPanel.getFunctions().remove(function);
+            functionEvaluator.removePlotFromOwner();
             MathEventStreamer.getInstance().removeFunctionEvaluator(functionEvaluator);
 
             parent.removeFunctionCard(this);

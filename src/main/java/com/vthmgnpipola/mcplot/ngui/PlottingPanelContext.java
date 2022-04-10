@@ -20,6 +20,7 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.GraphAxis;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
+import com.vthmgnpipola.mcplot.nmath.Plot;
 import java.awt.BasicStroke;
 import java.awt.Stroke;
 import java.io.Serial;
@@ -157,5 +158,17 @@ public class PlottingPanelContext implements Serializable {
 
     public void recalculateAllFunctions(boolean force) {
         MathEventStreamer.getInstance().functionUpdate(true, force);
+    }
+
+    public Stroke getStroke(Plot.TraceType traceType) {
+        if (traceType == null) {
+            return defaultTraceStroke;
+        }
+        return switch (traceType) {
+            case TRACE_TYPE_DOTTED -> dottedTraceStroke;
+            case TRACE_TYPE_DASHED -> dashedTraceStroke;
+            case TRACE_TYPE_DASHED_DOTTED -> dashedDottedTraceStroke;
+            default -> defaultTraceStroke;
+        };
     }
 }

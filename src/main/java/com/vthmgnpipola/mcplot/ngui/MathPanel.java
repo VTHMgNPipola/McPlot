@@ -84,7 +84,7 @@ public class MathPanel extends JPanel {
 
     public void open(PlottingPanel plottingPanel) {
         MathSessionHelper.openSession(state -> {
-            plottingPanel.getFunctions().clear();
+            plottingPanel.getPlots().clear();
             MathEventStreamer.getInstance().reset();
 
             GraphUnit.CUSTOM_X_UNIT.setSymbol(state.customUnitX.getSymbol());

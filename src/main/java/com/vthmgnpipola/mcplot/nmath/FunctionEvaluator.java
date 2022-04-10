@@ -69,7 +69,8 @@ public class FunctionEvaluator {
         domainEndEvaluator = new ConstantEvaluator(function.getDomainEnd());
 
         plot = new FunctionPlot();
-        owner.getFunctions().put(function, plot);
+        plot.setFunction(function);
+        owner.getPlots().add(plot);
     }
 
     public Function getFunction() {
@@ -143,6 +144,10 @@ public class FunctionEvaluator {
             evaluate(true);
         }
         owner.repaint();
+    }
+
+    public void removePlotFromOwner() {
+        owner.getPlots().remove(plot);
     }
 
     /**

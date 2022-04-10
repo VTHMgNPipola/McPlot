@@ -18,12 +18,26 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
+import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
 public interface Plot {
     Path2D.Double getPath();
 
     void setPath(Path2D.Double path);
+
+    String getLegend();
+
+    boolean isInvisible();
+
+    TraceType getTraceType();
+
+    Color getTraceColor();
+
+    void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context);
 
     enum TraceType {
         TRACE_TYPE_DEFAULT, TRACE_TYPE_DASHED, TRACE_TYPE_DOTTED, TRACE_TYPE_DASHED_DOTTED

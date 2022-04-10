@@ -18,8 +18,6 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
-import com.vthmgnpipola.mcplot.nmath.Function;
-import com.vthmgnpipola.mcplot.nmath.FunctionPlot;
 import com.vthmgnpipola.mcplot.nmath.Plot;
 import java.awt.Color;
 import java.awt.Font;
@@ -34,11 +32,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.List;
 import javax.swing.JPanel;
 
 import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
@@ -55,7 +52,7 @@ public class PlottingPanel extends JPanel {
     private int flHeight = 0;
     private PlottingPanelContext context;
     private final AffineTransform zoomTx;
-    private final Map<Function, FunctionPlot> functions;
+    private final List<Plot> plots;
 
     private Font font;
     private Color backgroundColor;
@@ -67,7 +64,7 @@ public class PlottingPanel extends JPanel {
 
     public PlottingPanel() {
         setDoubleBuffered(true);
-        functions = Collections.synchronizedSortedMap(new TreeMap<>());
+        plots = Collections.synchronizedList(new ArrayList<>());
 
         context = new PlottingPanelContext(this);
         font = new Font("Monospaced", Font.PLAIN, 12);
@@ -319,7 +316,7 @@ public class PlottingPanel extends JPanel {
         g.drawLine(context.cameraX, 0, context.cameraX + getWidth(), 0);
         g.drawLine(0, context.cameraY, 0, context.cameraY + getHeight());
 
-        // Functions
+        // Plots
         if (context.antialias) {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
@@ -328,42 +325,26 @@ public class PlottingPanel extends JPanel {
                 -context.axisY.scale * context.pixelsPerStep * context.zoom * context.axisY.unit.getScale());
 
         int visibleFunctions = 0;
-        int longestFunction = 0;
-        for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
-            Function function = functionEntry.getKey();
-            FunctionPlot plot = functionEntry.getValue();
-            Color traceColor = function.getTraceColor();
-            if (!function.isVisible() || plot == null || plot.getPath() == null) {
+        int longestPlot = 0;
+        for (Plot plot : plots) {
+            if (plot == null || plot.getPath() == null || plot.isInvisible()) {
                 continue;
             }
 
-            if (function.isFilled()) {
-                Path2D.Double fill = (Path2D.Double) plot.getPath().clone();
-                fill.lineTo(plot.getEndX(), 0);
-                fill.lineTo(plot.getStartX(), 0);
-                fill.closePath();
+            plot.plot(g, zoomTx, context);
 
-                Color fillColor = new Color(traceColor.getRed(), traceColor.getGreen(), traceColor.getBlue(),
-                        (int) Math.min((context.fillTransparency * 2.55), 255));
-                g.setColor(fillColor);
-                g.fill(zoomTx.createTransformedShape(fill));
-            }
-            g.setStroke(getStroke(function.getTraceType()));
-            g.setColor(traceColor);
-            g.draw(zoomTx.createTransformedShape(plot.getPath()));
-
-            longestFunction = Math.max(longestFunction, fontMetrics.stringWidth(function.getDefinition().trim()));
+            longestPlot = Math.max(longestPlot, fontMetrics.stringWidth(plot.getLegend().trim()));
 
             visibleFunctions++;
         }
 
-        // Function legends
+        // Legends
         if (context.functionLegends && visibleFunctions != 0) {
             g.translate(context.cameraX, context.cameraY);
             g.setStroke(baseStroke);
 
             int panelHeight = flHeight = 20 + fontMetrics.getHeight() * visibleFunctions;
-            int panelWidth = flWidth = 70 + longestFunction;
+            int panelWidth = flWidth = 70 + longestPlot;
             g.setColor(backgroundColor);
             g.fillRect(context.flPositionX, context.flPositionY, panelWidth, panelHeight);
             g.setColor(globalAxisColor);
@@ -371,22 +352,19 @@ public class PlottingPanel extends JPanel {
 
             g.translate(context.flPositionX, context.flPositionY);
             int i = 0;
-            for (Map.Entry<Function, FunctionPlot> functionEntry : functions.entrySet()) {
-                Function function = functionEntry.getKey();
-                FunctionPlot plot = functionEntry.getValue();
-                Color traceColor = function.getTraceColor();
-                if (!function.isVisible() || plot == null || plot.getPath() == null) {
+            for (Plot plot : plots) {
+                if (plot == null || plot.getPath() == null || plot.isInvisible()) {
                     continue;
                 }
 
-                g.setStroke(getStroke(functionEntry.getKey().getTraceType()));
-                g.setColor(traceColor);
+                g.setStroke(context.getStroke(plot.getTraceType()));
+                g.setColor(plot.getTraceColor());
                 int y = fontMetrics.getHeight() * i + fontMetrics.getHeight() / 2 + 10;
                 g.drawLine(10, y, 50, y);
 
                 g.setStroke(baseStroke);
                 g.setColor(globalAxisColor);
-                g.drawString(function.getDefinition().trim(), 60,
+                g.drawString(plot.getLegend().trim(), 60,
                         fontMetrics.getHeight() * i + fontMetrics.getAscent() + 10);
                 i++;
             }
@@ -408,8 +386,8 @@ public class PlottingPanel extends JPanel {
         repaint();
     }
 
-    public Map<Function, FunctionPlot> getFunctions() {
-        return functions;
+    public List<Plot> getPlots() {
+        return plots;
     }
 
     public PlottingPanelContext getContext() {
@@ -420,17 +398,5 @@ public class PlottingPanel extends JPanel {
         this.context = context;
         context.setBase(this);
         context.updateTraces();
-    }
-
-    private Stroke getStroke(Plot.TraceType traceType) {
-        if (traceType == null) {
-            return context.defaultTraceStroke;
-        }
-        return switch (traceType) {
-            case TRACE_TYPE_DOTTED -> context.dottedTraceStroke;
-            case TRACE_TYPE_DASHED -> context.dashedTraceStroke;
-            case TRACE_TYPE_DASHED_DOTTED -> context.dashedDottedTraceStroke;
-            default -> context.defaultTraceStroke;
-        };
     }
 }
