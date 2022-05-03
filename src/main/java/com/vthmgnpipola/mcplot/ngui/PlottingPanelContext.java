@@ -46,6 +46,7 @@ public class PlottingPanelContext implements Serializable {
     public int traceWidth;
     public boolean antialias;
     public boolean functionLegends;
+    public boolean showDecAsFractions;
     public boolean drawMinorGrid;
     public boolean drawGrid;
     public boolean drawAxisValues;
@@ -115,6 +116,11 @@ public class PlottingPanelContext implements Serializable {
 
     public void setFunctionLegends(boolean functionLegends) {
         this.functionLegends = functionLegends;
+        base.repaint();
+    }
+
+    public void setShowDecAsFractions(boolean showDecAsFractions) {
+        this.showDecAsFractions = showDecAsFractions;
         base.repaint();
     }
 

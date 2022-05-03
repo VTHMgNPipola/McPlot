@@ -24,7 +24,7 @@ import java.util.prefs.Preferences;
 import static com.vthmgnpipola.mcplot.Main.PREFERENCES_PATH;
 
 /**
- * Utility class for retrieving and defining settings in a {@link Preferences} object. Constants for all of the used
+ * Utility class for retrieving and defining settings in a {@link Preferences} object. Constants for all the used
  * settings are also defined in this class.
  */
 public class PreferencesHelper {

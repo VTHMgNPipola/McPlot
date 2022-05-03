@@ -32,6 +32,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -287,7 +289,7 @@ public class PlottingPanel extends JPanel {
                     g.setColor(globalAxisColor);
                     g.drawLine(i, -5, i, 5);
                     double stepValue = (((double) i / context.pixelsPerStep) / (context.axisX.scale * context.zoom));
-                    String step = context.axisX.unit.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
+                    String step = context.axisX.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
                     g.drawString(step, i - fontMetrics.stringWidth(step) / 2, 7 + fontMetrics.getAscent());
                 }
             }
@@ -305,7 +307,7 @@ public class PlottingPanel extends JPanel {
                     g.setColor(globalAxisColor);
                     g.drawLine(-5, i, 5, i);
                     double stepValue = -(((double) i / context.pixelsPerStep) / (context.axisY.scale * context.zoom));
-                    String step = context.axisY.unit.getTransformedUnit(stepValue, decimalFormat.format(stepValue));
+                    String step = context.axisY.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
                     g.drawString(step, -7 - fontMetrics.stringWidth(step), i + fontMetrics.getAscent() / 2);
                 }
             }
@@ -398,5 +400,73 @@ public class PlottingPanel extends JPanel {
         this.context = context;
         context.setBase(this);
         context.updateTraces();
+    }
+
+    private String getFormattedDouble(double value) {
+        if (context.showDecAsFractions) {
+            StringBuilder sb = new StringBuilder();
+            int intValue = (int) (value > 0 ? Math.floor(value) : Math.ceil(value));
+            if (intValue != value && intValue == -1) {
+                sb.append("-");
+            } else if (intValue != 0) {
+                sb.append(decimalFormat.format(intValue));
+            }
+
+            intValue = Math.abs(intValue);
+            BigDecimal difference = new BigDecimal(String.valueOf(Math.abs(value)));
+            difference = difference.subtract(BigDecimal.valueOf(intValue));
+            if (difference.compareTo(BigDecimal.ZERO) != 0) {
+                BigDecimal denominator = BigDecimal.ONE.divide(difference, difference.scale() * 2,
+                        RoundingMode.HALF_UP);
+                if (denominator.intValue() == denominator.doubleValue()) {
+                    sb.append("\u00B9\u2044").append(toSubscript(String.valueOf(denominator.intValue())));
+                } else {
+                    int divisor = 1;
+                    BigDecimal result;
+                    do {
+                        divisor++;
+                        BigDecimal scaledDenominator = difference.divide(BigDecimal.valueOf(divisor),
+                                RoundingMode.HALF_UP);
+                        result = BigDecimal.ONE.divide(scaledDenominator, scaledDenominator.scale() * 2,
+                                RoundingMode.HALF_UP);
+                    } while (result.intValue() != result.doubleValue());
+
+                    sb.append(toSuperscript(String.valueOf(divisor))).append("\u2044")
+                            .append(toSubscript(String.valueOf(result.intValue())));
+                }
+            }
+
+            return sb.toString();
+        } else {
+            return decimalFormat.format(value);
+        }
+    }
+
+    private String toSuperscript(String str) {
+        return str
+                .replaceAll("0", "\u2070")
+                .replaceAll("1", "\u00B9")
+                .replaceAll("2", "\u00B2")
+                .replaceAll("3", "\u00B3")
+                .replaceAll("4", "\u2074")
+                .replaceAll("5", "\u2075")
+                .replaceAll("6", "\u2076")
+                .replaceAll("7", "\u2077")
+                .replaceAll("8", "\u2078")
+                .replaceAll("9", "\u2079");
+    }
+
+    private String toSubscript(String str) {
+        return str
+                .replaceAll("0", "\u2080")
+                .replaceAll("1", "\u2081")
+                .replaceAll("2", "\u2082")
+                .replaceAll("3", "\u2083")
+                .replaceAll("4", "\u2084")
+                .replaceAll("5", "\u2085")
+                .replaceAll("6", "\u2086")
+                .replaceAll("7", "\u2087")
+                .replaceAll("8", "\u2088")
+                .replaceAll("9", "\u2089");
     }
 }

@@ -53,6 +53,13 @@ public class PlottingPanelSettingsPanel extends JPanel {
         enableFuncLegends.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableFuncLegends.tooltip"));
         enableFuncLegends.addActionListener(e -> context.setFunctionLegends(enableFuncLegends.isSelected()));
 
+        // Show decimal vales as fractions
+        JCheckBox showDecAsFraction = new JCheckBox(BUNDLE.getString("settings.plottingPanel.showDecAsFractions"),
+                context.showDecAsFractions);
+        add(showDecAsFraction, "span");
+        showDecAsFraction.setToolTipText(BUNDLE.getString("settings.plottingPanel.showDecAsFractions.tooltip"));
+        showDecAsFraction.addActionListener(e -> context.setShowDecAsFractions(showDecAsFraction.isSelected()));
+
         // Draw grid
         JCheckBox drawMinorGrid = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawMinorGrid"),
                 context.drawMinorGrid);
