@@ -443,30 +443,28 @@ public class PlottingPanel extends JPanel {
     }
 
     private String toSuperscript(String str) {
-        return str
-                .replaceAll("0", "\u2070")
-                .replaceAll("1", "\u00B9")
-                .replaceAll("2", "\u00B2")
-                .replaceAll("3", "\u00B3")
-                .replaceAll("4", "\u2074")
-                .replaceAll("5", "\u2075")
-                .replaceAll("6", "\u2076")
-                .replaceAll("7", "\u2077")
-                .replaceAll("8", "\u2078")
-                .replaceAll("9", "\u2079");
+        final char[] replaced = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        final char[] replacement = new char[]{'\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076',
+                '\u2077', '\u2078', '\u2079'};
+        return fastReplace(str, replaced, replacement);
     }
 
     private String toSubscript(String str) {
-        return str
-                .replaceAll("0", "\u2080")
-                .replaceAll("1", "\u2081")
-                .replaceAll("2", "\u2082")
-                .replaceAll("3", "\u2083")
-                .replaceAll("4", "\u2084")
-                .replaceAll("5", "\u2085")
-                .replaceAll("6", "\u2086")
-                .replaceAll("7", "\u2087")
-                .replaceAll("8", "\u2088")
-                .replaceAll("9", "\u2089");
+        final char[] replaced = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        final char[] replacement = new char[]{'\u2080', '\u2081', '\u2082', '\u2083', '\u2084', '\u2085', '\u2086',
+                '\u2086', '\u2088', '\u2089'};
+        return fastReplace(str, replaced, replacement);
+    }
+
+    private String fastReplace(String input, char[] replaced, char[] replacement) {
+        char[] cs = input.toCharArray();
+        for (int i = 0; i < cs.length; i++) {
+            for (int j = 0; j < replaced.length; j++) {
+                if (cs[i] == replaced[j]) {
+                    cs[i] = replacement[j];
+                }
+            }
+        }
+        return new String(cs);
     }
 }
