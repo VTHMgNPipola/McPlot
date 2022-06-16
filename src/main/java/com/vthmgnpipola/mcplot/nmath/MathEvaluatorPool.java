@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2022  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,10 +86,9 @@ public class MathEvaluatorPool {
 
                 Path2D.Double path = new Path2D.Double(Path2D.WIND_NON_ZERO, (int) ((domainEnd - domainStart) / step));
                 path.reset();
-                path.moveTo(domainStart, expression.evaluate());
 
-                boolean moving = false;
-                for (double i = domainStart + step; i <= domainEnd; i += step) {
+                boolean moving = true;
+                for (double i = domainStart; i <= domainEnd; i += step) {
                     expression.setVariable(variableName, i);
                     double value = expression.evaluate();
                     if (Double.isNaN(value)) {
