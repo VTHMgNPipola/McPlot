@@ -236,6 +236,8 @@ public class PlottingPanel extends JPanel {
 
     @Override
     protected void paintComponent(Graphics graphics) {
+        super.paintComponent(graphics);
+
         Graphics2D g = (Graphics2D) graphics;
         g.setFont(font);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
