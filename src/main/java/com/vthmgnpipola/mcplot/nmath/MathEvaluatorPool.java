@@ -174,54 +174,33 @@ public class MathEvaluatorPool {
                 path.reset();
 
                 boolean moving = true;
+                boolean hasPoints = false;
                 double lastI = domainStart;
-//                double[] ypoints = new double[4];
-//                double[] xpoints = new double[4];
-//                int count = 0;
                 for (double i = domainStart; i <= domainEnd; i += step) {
                     if (lastI < 0 && i > 0) {
                         i = 0;
                     }
+
                     expression.setVariable(variableName, i);
                     double value = expression.evaluate();
                     if (Double.isNaN(value)) {
-//                        for (int j = 3; j > 3 - count; j--) {
-//                            path.lineTo(xpoints[j], ypoints[j]);
-//                        } FIXME: Uncomment when catmnull-rom implementation is done
                         moving = true;
-//                        count = 0;
                     } else if (moving) {
                         path.moveTo(i, value);
                         moving = false;
-//                        count = 1;
                     } else {
+                        hasPoints = true;
                         path.lineTo(i, value);
-
-                        // TODO: Generate Catmull-Rom spline
-                        // Shift points
-//                        ypoints[0] = ypoints[1];
-//                        ypoints[1] = ypoints[2];
-//                        ypoints[2] = ypoints[3];
-//                        ypoints[3] = value;
-//
-//                        xpoints[0] = xpoints[1];
-//                        xpoints[1] = xpoints[2];
-//                        xpoints[2] = xpoints[3];
-//                        xpoints[3] = i;
-//
-//                        count++;
-//
-//                        if (count == 4) {
-//                            double t0 = 0d;
-//                            double t1 = getT(t0, xpoints[0], xpoints[1], ypoints[0], ypoints[1]);
-//                            double t2 = getT(t1, xpoints[1], xpoints[2], ypoints[1], ypoints[2]);
-//                            double t3 = getT(t2, xpoints[2], xpoints[3], ypoints[2], ypoints[3]);
-//                            count--;
-//                        }
                     }
                     lastI = i;
                 }
-                plot.setPath(path);
+
+                if (hasPoints) {
+                    plot.setPath(path);
+                    plot.loadFunction(function);
+                } else {
+                    plot.setPath(null);
+                }
 
                 runningFunctions--;
                 if (runningFunctions == 0) {

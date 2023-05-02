@@ -68,7 +68,7 @@ public class FunctionEvaluator {
         domainEndEvaluator = new ConstantEvaluator(function.getDomainEnd());
 
         plot = new FunctionPlot();
-        plot.setFunction(function);
+        plot.loadFunction(function);
         owner.getPlots().add(plot);
     }
 

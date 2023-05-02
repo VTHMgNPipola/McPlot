@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,13 @@
 package com.vthmgnpipola.mcplot.nmath;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
-import java.awt.Color;
-import java.awt.Graphics2D;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
 public class FunctionPlot implements Plot {
-    private Function function;
+    private FunctionParameters parameters;
     private Path2D.Double path;
     private double startX;
     private double endX;
@@ -42,49 +42,46 @@ public class FunctionPlot implements Plot {
 
     @Override
     public String getLegend() {
-        return function.getDefinition();
+        return parameters.legend();
     }
 
     @Override
     public boolean isInvisible() {
-        return !function.isVisible();
+        return !parameters.visible();
     }
 
     @Override
     public TraceType getTraceType() {
-        return function.getTraceType();
+        return parameters.traceType();
     }
 
     @Override
     public Color getTraceColor() {
-        return function.getTraceColor();
+        return parameters.traceColor();
     }
 
     @Override
     public void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context) {
-        if (function.isFilled()) {
+        if (parameters.filled()) {
             Path2D.Double fill = (Path2D.Double) path.clone();
             fill.lineTo(getEndX(), 0);
             fill.lineTo(getStartX(), 0);
             fill.closePath();
 
-            Color traceColor = function.getTraceColor();
+            Color traceColor = parameters.traceColor();
             Color fillColor = new Color(traceColor.getRed(), traceColor.getGreen(), traceColor.getBlue(),
                     (int) Math.min((context.fillTransparency * 2.55), 255));
             g.setColor(fillColor);
             g.fill(tx.createTransformedShape(fill));
         }
-        g.setStroke(context.getStroke(function.getTraceType()));
-        g.setColor(function.getTraceColor());
+        g.setStroke(context.getStroke(parameters.traceType()));
+        g.setColor(parameters.traceColor());
         g.draw(tx.createTransformedShape(path));
     }
 
-    public Function getFunction() {
-        return function;
-    }
-
-    public void setFunction(Function function) {
-        this.function = function;
+    public void loadFunction(Function function) {
+        this.parameters = new FunctionParameters(function.getDefinition(), function.isVisible(), function.isFilled(),
+                function.getTraceType(), function.getTraceColor());
     }
 
     public double getStartX() {
