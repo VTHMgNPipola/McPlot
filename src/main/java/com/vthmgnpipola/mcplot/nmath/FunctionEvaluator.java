@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,14 @@ package com.vthmgnpipola.mcplot.nmath;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
-import java.awt.Color;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
+import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
 
 /**
  * This class is responsible for the "glue logic" between the {@link Function} class, that only stores data about
@@ -35,10 +36,8 @@ import net.objecthunter.exp4j.ExpressionBuilder;
  * {@code FunctionEvaluator} and {@link ConstantEvaluator}.
  */
 public class FunctionEvaluator {
-    private static final Pattern FUNCTION_PATTERN = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\(\s*[a-zA-Z]+\s*\\)" +
-            "\s*=[^=]+");
-    private static final Pattern FUNCTION_CALL_PATTERN = Pattern.compile("\s*[a-zA-Z]+[a-zA-Z0-9]*\s*\\" +
-            "(\s*[a-zA-Z]+\s*\\)");
+    private static final Pattern FUNCTION_CALL_PATTERN = Pattern.compile(" *[a-zA-Z]+[a-zA-Z0-9]* *\\" +
+            "( *[a-zA-Z]+ *\\)");
 
     private final Function function;
     private final MathEventStreamer parent;
@@ -193,8 +192,7 @@ public class FunctionEvaluator {
 
     public static Expression processExpression(Function function, Map<String, Function> functionMap,
                                                Map<String, Double> constants) {
-        if (function == null || function.getDefinition() == null ||
-                !FUNCTION_PATTERN.matcher(function.getDefinition()).matches()) {
+        if (function == null || function.getDefinition() == null) {
             return null;
         }
 

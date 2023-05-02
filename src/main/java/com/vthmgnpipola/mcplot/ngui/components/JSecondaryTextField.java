@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui.components;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 
 /**
  * This text field is called "secondary" because it displays a secondary text in a different color in front of the
@@ -30,7 +28,7 @@ public class JSecondaryTextField extends JLabeledTextField {
     private String secondaryText;
 
     @Override
-    protected void paintComponent(Graphics graphics) {
+    protected synchronized void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
         if (!getText().isEmpty() && secondaryText != null) {

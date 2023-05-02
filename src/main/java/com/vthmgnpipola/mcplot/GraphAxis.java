@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,15 @@
 
 package com.vthmgnpipola.mcplot;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class GraphAxis {
+public class GraphAxis implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 2564912233056771169L;
+
     public double scale;
     public AxisType type;
     public GraphUnit unit;

@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,14 @@ package com.vthmgnpipola.mcplot.ngui;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import com.vthmgnpipola.mcplot.nmath.Plot;
-import java.awt.Window;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
 import java.util.Objects;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -61,17 +57,12 @@ public class FunctionSettingsDialog extends MDialog {
 
     @Override
     public void init() {
-        throw new UnsupportedOperationException("A function settings dialog can't be created without a plotting panel" +
-                " bound to it!");
-    }
-
-    public void init(PlottingPanel plottingPanel) {
-        initContentPane(plottingPanel);
+        initContentPane();
         pack();
-        setLocationRelativeTo(SwingUtilities.getWindowAncestor(plottingPanel));
+        setLocationRelativeTo(getOwner());
     }
 
-    private void initContentPane(PlottingPanel plottingPanel) {
+    private void initContentPane() {
         Function function = functionEvaluator.getFunction();
 
         JPanel contentPane = new JPanel(new MigLayout("insets 15", "[]15",

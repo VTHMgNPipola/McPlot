@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,22 +22,22 @@ import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatAddIcon;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
-public class FunctionsPanel extends JPanel {
+public class PlotsPanel extends JPanel {
     private final List<FunctionCard> functionCards;
     private final List<Function> functions;
 
     private AtomicInteger index;
 
-    public FunctionsPanel(List<Function> functions, PlottingPanel plottingPanel) {
+    public PlotsPanel(List<Function> functions, PlottingPanel plottingPanel) {
         this.functions = functions;
 
         setLayout(new MigLayout());

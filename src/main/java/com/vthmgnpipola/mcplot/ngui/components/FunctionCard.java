@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,16 @@ package com.vthmgnpipola.mcplot.ngui.components;
 
 import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.vthmgnpipola.mcplot.ngui.FunctionSettingsDialog;
-import com.vthmgnpipola.mcplot.ngui.FunctionsPanel;
+import com.vthmgnpipola.mcplot.ngui.PlotsPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatMoreSettingsIcon;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
-import java.awt.Color;
-import java.awt.Dimension;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -35,12 +37,6 @@ import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.Random;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -50,7 +46,7 @@ public class FunctionCard extends JPanel {
     private final JCheckBox visible;
     private final Function function;
 
-    public FunctionCard(FunctionEvaluator functionEvaluator, PlottingPanel plottingPanel, FunctionsPanel parent,
+    public FunctionCard(FunctionEvaluator functionEvaluator, PlottingPanel plottingPanel, PlotsPanel parent,
                         int index) {
         setLayout(new MigLayout());
 
@@ -79,7 +75,7 @@ public class FunctionCard extends JPanel {
         otherSettings.addActionListener(e -> {
             FunctionSettingsDialog functionSettingsDialog = new FunctionSettingsDialog(functionEvaluator, index,
                     SwingUtilities.getWindowAncestor(this));
-            functionSettingsDialog.init(plottingPanel);
+            functionSettingsDialog.init();
             functionSettingsDialog.setVisible(true);
         });
 

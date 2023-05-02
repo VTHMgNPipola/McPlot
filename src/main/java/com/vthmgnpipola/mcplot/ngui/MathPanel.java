@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,11 @@ import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
-import java.awt.BorderLayout;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -65,8 +64,8 @@ public class MathPanel extends JPanel {
             this.constants.addAll(constants);
         }
 
-        FunctionsPanel functionsPanel = new FunctionsPanel(this.functions, plottingPanel);
-        tabbedPane.addTab(BUNDLE.getString("workspace.panels.functions"), new JScrollPane(functionsPanel));
+        PlotsPanel plotsPanel = new PlotsPanel(this.functions, plottingPanel);
+        tabbedPane.addTab(BUNDLE.getString("workspace.panels.functions"), new JScrollPane(plotsPanel));
 
         ConstantsPanel constantsPanel = new ConstantsPanel(this.constants);
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.constants"), new JScrollPane(constantsPanel));

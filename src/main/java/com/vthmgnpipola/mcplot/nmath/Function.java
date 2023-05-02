@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,10 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 /**
  * This class is used to store information about each function created by the user. It doesn't process any data,
@@ -29,6 +30,9 @@ import java.io.Serializable;
 public class Function implements Serializable, Comparable<Function> {
     @Serial
     private static final long serialVersionUID = -3144429444076124342L;
+
+    private static final Pattern FUNCTION_PATTERN = Pattern.compile(" *[a-zA-Z]+[a-zA-Z0-9]* *\\( *[a-zA-Z]+ *\\)" +
+            " *=[^=]+");
 
     private String definition;
     private transient int index;
@@ -200,15 +204,21 @@ public class Function implements Serializable, Comparable<Function> {
      * Splits the definition string into the function name, variable name and formation law.
      */
     private void doDecomposition() {
-        String[] parts = definition.replace(" ", "").split("=");
-        if (parts.length != 2) {
-            return;
+        if (FUNCTION_PATTERN.matcher(definition).matches()) {
+            String[] parts = definition.replace(" ", "").split("=");
+            if (parts.length != 2) {
+                return;
+            }
+
+            formationLaw = parts[1];
+
+            name = parts[0].substring(0, parts[0].indexOf('('));
+            variableName = parts[0].substring(parts[0].indexOf('(') + 1, parts[0].indexOf(')'));
+        } else {
+            name = null;
+            variableName = "x";
+            formationLaw = definition.replace(" ", "");
         }
-
-        formationLaw = parts[1];
-
-        name = parts[0].substring(0, parts[0].indexOf('('));
-        variableName = parts[0].substring(parts[0].indexOf('(') + 1, parts[0].indexOf(')'));
     }
 
     /**
