@@ -162,26 +162,28 @@ public class FunctionEvaluator {
         PlottingPanelContext context = owner.getContext();
         double zoomX = context.axisX.scale * context.pixelsPerStep * context.zoom *
                 context.axisX.unit.getScale();
-        double domainStart = context.cameraX / zoomX;
-        double domainEnd = (context.cameraX + owner.getWidth()) / zoomX;
-        double step = Math.min(context.maxStep, (domainEnd - domainStart) /
+        double cameraStartX = context.cameraX / zoomX;
+        double cameraEndX = cameraStartX + (owner.getWidth() / zoomX);
+
+        double step = Math.min(context.maxStep, (cameraEndX - cameraStartX) /
                 ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
                         context.samplesPerCell));
 
-        if (function.getDomainStart().getActualValue() == null) {
-            domainStart -= ((domainEnd - domainStart) / 2) + step;
-        } else {
+        double domainStart = cameraStartX - ((cameraEndX - cameraStartX) / 2) - step;
+        double domainEnd = cameraEndX + ((cameraEndX - cameraStartX) / 2) + step;
+
+        if (function.getDomainStart().getActualValue() != null) {
             domainStart = Math.max(domainStart, function.getDomainStart().getActualValue());
         }
 
-        if (function.getDomainEnd().getActualValue() == null) {
-            domainEnd += ((domainEnd - domainStart) / 2) + step;
-        } else {
+        if (function.getDomainEnd().getActualValue() != null) {
             domainEnd = Math.min(domainEnd, function.getDomainEnd().getActualValue());
         }
 
-        if (force || (plot != null && (context.cameraX / zoomX - plot.getStartX() < step ||
-                plot.getEndX() - (context.cameraX + owner.getWidth()) / zoomX < step))) {
+        double plotStartXDistance = cameraStartX - plot.getStartX();
+        double plotEndXDistance = plot.getEndX() - cameraEndX;
+        if (force || (plotStartXDistance < step && cameraStartX >= domainStart) ||
+                (plotEndXDistance < step && cameraEndX <= domainEnd)) {
             step = Math.min(context.maxStep, (domainEnd - domainStart) /
                     ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
                             context.samplesPerCell)); // Recalculate step, for if domain start or end values changed
