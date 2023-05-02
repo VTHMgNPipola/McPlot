@@ -107,13 +107,6 @@ public class MathEvaluatorPool {
         });
     }
 
-    private static double getT(double tbefore, double x0, double x1, double y0, double y1) {
-        final double alpha = 0.5d;
-        double xterm = x1 + x0;
-        double yterm = y1 + y0;
-        return Math.pow(Math.sqrt((xterm * xterm) + (yterm * yterm)), alpha) + tbefore;
-    }
-
     public Future<double[]> evaluateFunctionRaw(Function function, Expression expression, double domainStart,
                                                 double domainEnd,
                                                 double step, Map<String, Double> constants) {
