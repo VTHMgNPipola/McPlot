@@ -28,23 +28,22 @@ public class JSecondaryTextField extends JLabeledTextField {
     private String secondaryText;
 
     @Override
-    protected synchronized void paintComponent(Graphics graphics) {
+    protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        if (!getText().isEmpty() && secondaryText != null) {
+        String secondaryTextLocal = secondaryText;
+        if (!getText().isEmpty() && secondaryTextLocal != null) {
             Graphics2D g = (Graphics2D) graphics;
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g.setColor(placeholderColor);
 
-            if (secondaryText != null) {
-                double secondaryY = (double) fontMetrics.getAscent() + getInsets().top;
-                double secondaryX = getInsets().left + fontMetrics.stringWidth(getText());
-                double secondaryWidth = fontMetrics.stringWidth(secondaryText);
-                if (secondaryX + secondaryWidth > getWidth() - getInsets().right) {
-                    secondaryX = getWidth() - getInsets().left - secondaryWidth;
-                }
-                g.drawString(secondaryText, (int) secondaryX, (int) secondaryY);
+            double secondaryY = (double) fontMetrics.getAscent() + getInsets().top;
+            double secondaryX = getInsets().left + fontMetrics.stringWidth(getText());
+            double secondaryWidth = fontMetrics.stringWidth(secondaryTextLocal);
+            if (secondaryX + secondaryWidth > getWidth() - getInsets().right) {
+                secondaryX = getWidth() - getInsets().left - secondaryWidth;
             }
+            g.drawString(secondaryTextLocal, (int) secondaryX, (int) secondaryY);
         }
     }
 
