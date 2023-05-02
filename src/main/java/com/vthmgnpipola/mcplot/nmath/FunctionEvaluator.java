@@ -78,6 +78,7 @@ public class FunctionEvaluator {
 
     public void setDefinition(String definition) {
         function.setDefinition(definition);
+        plot.loadFunction(function);
         parent.functionUpdate(true, true);
     }
 
@@ -105,6 +106,7 @@ public class FunctionEvaluator {
 
     public void setTraceType(Plot.TraceType traceType) {
         function.setTraceType(traceType);
+        plot.loadFunction(function);
         owner.repaint();
     }
 
@@ -116,6 +118,7 @@ public class FunctionEvaluator {
      */
     public void setTraceColor(Color traceColor) {
         function.setTraceColor(traceColor);
+        plot.loadFunction(function);
         owner.repaint();
     }
 
@@ -128,6 +131,7 @@ public class FunctionEvaluator {
      */
     public void setFilled(boolean filled) {
         function.setFilled(filled);
+        plot.loadFunction(function);
         owner.repaint();
     }
 
@@ -139,6 +143,7 @@ public class FunctionEvaluator {
      */
     public void setVisible(boolean visible) {
         function.setVisible(visible);
+        plot.loadFunction(function);
         if (visible) {
             evaluate(true);
         }

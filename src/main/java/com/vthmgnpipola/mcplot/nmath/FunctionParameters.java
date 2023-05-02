@@ -20,6 +20,50 @@ package com.vthmgnpipola.mcplot.nmath;
 
 import java.awt.*;
 
-public record FunctionParameters(String legend, boolean visible, boolean filled, Plot.TraceType traceType,
-                                 Color traceColor) {
+public class FunctionParameters {
+    private String legend;
+    private boolean visible;
+    private boolean filled;
+    private Plot.TraceType traceType;
+    private Color traceColor;
+
+    public String getLegend() {
+        return legend;
+    }
+
+    public void setLegend(String legend) {
+        this.legend = legend;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isFilled() {
+        return filled;
+    }
+
+    public void setFilled(boolean filled) {
+        this.filled = filled;
+    }
+
+    public Plot.TraceType getTraceType() {
+        return traceType;
+    }
+
+    public void setTraceType(Plot.TraceType traceType) {
+        this.traceType = traceType;
+    }
+
+    public Color getTraceColor() {
+        return traceColor;
+    }
+
+    public void setTraceColor(Color traceColor) {
+        this.traceColor = traceColor;
+    }
 }

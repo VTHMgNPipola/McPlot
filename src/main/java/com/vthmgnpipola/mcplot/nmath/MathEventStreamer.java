@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,8 @@ package com.vthmgnpipola.mcplot.nmath;
 
 import com.vthmgnpipola.mcplot.Main;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MathEventStreamer {
@@ -103,11 +100,11 @@ public class MathEventStreamer {
         Main.EXECUTOR_THREAD.execute(() -> {
             try {
                 constantEvaluators.forEach(ConstantEvaluator::evaluate);
-                constantValues = constants.stream().sequential()
+                constantValues = constants.stream()
                         .filter(c -> c.getActualValue() != null && c.getName() != null)
                         .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
 
-                functionMap = functions.stream().sequential()
+                functionMap = functions.stream()
                         .filter(f -> f.getDefinition() != null)
                         .collect(Collectors.toMap(Function::getName, f -> f));
                 functionEvaluators.forEach(fe -> {

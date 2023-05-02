@@ -25,10 +25,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
 public class FunctionPlot implements Plot {
-    private FunctionParameters parameters;
+    private final FunctionParameters parameters;
     private Path2D.Double path;
     private double startX;
     private double endX;
+
+    public FunctionPlot() {
+        parameters = new FunctionParameters();
+    }
 
     @Override
     public Path2D.Double getPath() {
@@ -42,46 +46,49 @@ public class FunctionPlot implements Plot {
 
     @Override
     public String getLegend() {
-        return parameters.legend();
+        return parameters.getLegend();
     }
 
     @Override
     public boolean isInvisible() {
-        return !parameters.visible();
+        return !parameters.isVisible();
     }
 
     @Override
     public TraceType getTraceType() {
-        return parameters.traceType();
+        return parameters.getTraceType();
     }
 
     @Override
     public Color getTraceColor() {
-        return parameters.traceColor();
+        return parameters.getTraceColor();
     }
 
     @Override
     public void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context) {
-        if (parameters.filled()) {
+        if (parameters.isFilled()) {
             Path2D.Double fill = (Path2D.Double) path.clone();
             fill.lineTo(getEndX(), 0);
             fill.lineTo(getStartX(), 0);
             fill.closePath();
 
-            Color traceColor = parameters.traceColor();
+            Color traceColor = parameters.getTraceColor();
             Color fillColor = new Color(traceColor.getRed(), traceColor.getGreen(), traceColor.getBlue(),
                     (int) Math.min((context.fillTransparency * 2.55), 255));
             g.setColor(fillColor);
             g.fill(tx.createTransformedShape(fill));
         }
-        g.setStroke(context.getStroke(parameters.traceType()));
-        g.setColor(parameters.traceColor());
+        g.setStroke(context.getStroke(parameters.getTraceType()));
+        g.setColor(parameters.getTraceColor());
         g.draw(tx.createTransformedShape(path));
     }
 
     public void loadFunction(Function function) {
-        this.parameters = new FunctionParameters(function.getDefinition(), function.isVisible(), function.isFilled(),
-                function.getTraceType(), function.getTraceColor());
+        parameters.setLegend(function.getDefinition());
+        parameters.setVisible(function.isVisible());
+        parameters.setFilled(function.isFilled());
+        parameters.setTraceType(function.getTraceType());
+        parameters.setTraceColor(function.getTraceColor());
     }
 
     public double getStartX() {
