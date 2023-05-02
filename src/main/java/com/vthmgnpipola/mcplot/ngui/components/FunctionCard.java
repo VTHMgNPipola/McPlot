@@ -87,6 +87,7 @@ public class FunctionCard extends JPanel {
 
         JLabeledTextField functionField = new JLabeledTextField();
         add(functionField, "pushx, growx");
+        functionField.setColumns(1);
         functionField.setText(function.getDefinition());
         functionField.setPlaceholderText(BUNDLE.getString("functionCard.functionDefinition.placeholder"));
         functionField.setToolTipText(BUNDLE.getString("functionCard.functionDefinition.tooltip"));
