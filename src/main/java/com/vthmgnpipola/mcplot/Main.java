@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,10 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.vthmgnpipola.mcplot.ngui.Workspace;
-import java.awt.Frame;
-import java.awt.Window;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Locale;
@@ -31,16 +33,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.imageio.ImageIO;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.LookAndFeel;
-import javax.swing.SwingUtilities;
 
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_LAF;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_DARK_LAF;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_LIGHT_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.*;
 
 /**
  * McPlot is a lightweight graphing calculator written in Java 17, free for anyone to use.
@@ -67,7 +61,7 @@ public class Main {
     /**
      * McPlot version, displayed in the Workspace window title and About window.
      */
-    public static final String VERSION = "0.3";
+    public static final String VERSION = "0.4-SNAPSHOT";
 
     /**
      * Single threaded executor for general tasks done by the application. Normally used when a task might be too

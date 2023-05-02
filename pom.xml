@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.vthmgnpipola</groupId>
     <artifactId>mcplot</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
