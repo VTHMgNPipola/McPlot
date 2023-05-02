@@ -47,10 +47,6 @@ public class JSecondaryTextField extends JLabeledTextField {
         }
     }
 
-    public String getSecondaryText() {
-        return secondaryText;
-    }
-
     public void setSecondaryText(String secondaryText) {
         this.secondaryText = secondaryText;
     }
