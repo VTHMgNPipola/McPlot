@@ -124,7 +124,7 @@ public class MathEventStreamer {
     public void functionUpdate(boolean processExpressions, boolean force) {
         Main.EXECUTOR_THREAD.submit(() -> {
             try {
-                functionMap = functions.stream().sequential()
+                functionMap = functions.stream()
                         .collect(Collectors.toMap(Function::getName, f -> f));
                 functionEvaluators.forEach(fe -> {
                     if (fe.getFunction().isVisible()) {
