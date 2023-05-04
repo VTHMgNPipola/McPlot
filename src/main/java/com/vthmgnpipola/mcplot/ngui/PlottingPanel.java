@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,18 +19,10 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Plot;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -38,13 +30,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.swing.JPanel;
 
 import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_LAF;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_DARK_LAF;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_LIGHT_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.*;
 import static com.vthmgnpipola.mcplot.ngui.PlottingPanelContext.INITIAL_PIXELS_PER_STEP;
 
 public class PlottingPanel extends JPanel {
@@ -238,6 +226,7 @@ public class PlottingPanel extends JPanel {
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
+        // Initialization
         Graphics2D g = (Graphics2D) graphics;
         g.setFont(font);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
@@ -254,71 +243,21 @@ public class PlottingPanel extends JPanel {
         // Camera translation
         g.translate(-context.cameraX, -context.cameraY);
 
-        // Minor grid
+        // Grid
         if (context.drawGrid) {
+            // Minor grid
             if (context.drawMinorGrid) {
-                // X
-                g.setColor(minorGridColor);
-                double step = (double) context.pixelsPerStep / context.minorGridDivisions;
-
-                double initialMinorX = context.cameraX -
-                        (context.cameraX % ((double) context.pixelsPerStep / context.minorGridDivisions));
-                double endMinorX = context.cameraX + getWidth();
-                for (double i = initialMinorX; i < endMinorX; i += step) {
-                    g.drawLine((int) i, context.cameraY, (int) i, context.cameraY + getHeight());
-                }
-
-                // Y
-                double initialMinorY = context.cameraY -
-                        (context.cameraY % ((double) context.pixelsPerStep / context.minorGridDivisions));
-                double endMinorY = context.cameraY + getHeight();
-                for (double i = initialMinorY; i < endMinorY; i += step) {
-                    g.drawLine(context.cameraX, (int) i, context.cameraX + getWidth(), (int) i);
-                }
+                drawMinorGrid(g);
             }
 
             // Major grid and steps
-            // X
-            int initialMajorX = context.cameraX - (context.cameraX % context.pixelsPerStep);
-            int endMajorX = context.cameraX + getWidth();
-            for (int i = initialMajorX; i < endMajorX; i += context.pixelsPerStep) {
-                // Major grid
-                g.setColor(majorGridColor);
-                g.drawLine(i, context.cameraY, i, context.cameraY + getHeight());
-
-                // Step
-                if (i != 0 && context.drawAxisValues) {
-                    g.setColor(globalAxisColor);
-                    g.drawLine(i, -5, i, 5);
-                    double stepValue = (((double) i / context.pixelsPerStep) / (context.axisX.scale * context.zoom));
-                    String step = context.axisX.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
-                    g.drawString(step, i - fontMetrics.stringWidth(step) / 2, 7 + fontMetrics.getAscent());
-                }
-            }
-
-            // Y
-            int initialMajorY = context.cameraY - (context.cameraY % context.pixelsPerStep);
-            int endMajorY = context.cameraY + getHeight();
-            for (int i = initialMajorY; i < endMajorY; i += context.pixelsPerStep) {
-                // Major grid
-                g.setColor(majorGridColor);
-                g.drawLine(context.cameraX, i, context.cameraX + getWidth(), i);
-
-                // Step
-                if (i != 0 && context.drawAxisValues) {
-                    g.setColor(globalAxisColor);
-                    g.drawLine(-5, i, 5, i);
-                    double stepValue = -(((double) i / context.pixelsPerStep) / (context.axisY.scale * context.zoom));
-                    String step = context.axisY.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
-                    g.drawString(step, -7 - fontMetrics.stringWidth(step), i + fontMetrics.getAscent() / 2);
-                }
-            }
+            drawMajorGridAndSteps(g, true, !context.drawAxisOverFunc);
         }
 
         // Global axis
-        g.setColor(globalAxisColor);
-        g.drawLine(context.cameraX, 0, context.cameraX + getWidth(), 0);
-        g.drawLine(0, context.cameraY, 0, context.cameraY + getHeight());
+        if (!context.drawAxisOverFunc) {
+            drawGlobalAxis(g);
+        }
 
         // Plots
         if (context.antialias) {
@@ -340,6 +279,13 @@ public class PlottingPanel extends JPanel {
             longestPlot = Math.max(longestPlot, fontMetrics.stringWidth(plot.getLegend().trim()));
 
             visibleFunctions++;
+        }
+
+        // Global axis and steps
+        if (context.drawAxisOverFunc) {
+            g.setStroke(baseStroke);
+            drawGlobalAxis(g);
+            drawMajorGridAndSteps(g, false, true);
         }
 
         // Legends
@@ -402,6 +348,84 @@ public class PlottingPanel extends JPanel {
         this.context = context;
         context.setBase(this);
         context.updateTraces();
+    }
+
+    private void drawGlobalAxis(Graphics2D g) {
+        g.setColor(globalAxisColor);
+        g.drawLine(context.cameraX, 0, context.cameraX + getWidth(), 0);
+        g.drawLine(0, context.cameraY, 0, context.cameraY + getHeight());
+    }
+
+    private void drawMinorGrid(Graphics2D g) {
+        // X
+        g.setColor(minorGridColor);
+        double step = (double) context.pixelsPerStep / context.minorGridDivisions;
+
+        double initialMinorX = context.cameraX -
+                (context.cameraX % ((double) context.pixelsPerStep / context.minorGridDivisions));
+        double endMinorX = context.cameraX + getWidth();
+        for (double i = initialMinorX; i < endMinorX; i += step) {
+            g.drawLine((int) i, context.cameraY, (int) i, context.cameraY + getHeight());
+        }
+
+        // Y
+        double initialMinorY = context.cameraY -
+                (context.cameraY % ((double) context.pixelsPerStep / context.minorGridDivisions));
+        double endMinorY = context.cameraY + getHeight();
+        for (double i = initialMinorY; i < endMinorY; i += step) {
+            g.drawLine(context.cameraX, (int) i, context.cameraX + getWidth(), (int) i);
+        }
+    }
+
+    private void drawMajorGridAndSteps(Graphics2D g, boolean drawGrid, boolean drawSteps) {
+        // X
+        int initialMajorX = context.cameraX - (context.cameraX % context.pixelsPerStep);
+        int endMajorX = context.cameraX + getWidth();
+        int stringHeight = fontMetrics.getAscent();
+        for (int i = initialMajorX; i < endMajorX; i += context.pixelsPerStep) {
+            // Major grid
+            if (drawGrid) {
+                g.setColor(majorGridColor);
+                g.drawLine(i, context.cameraY, i, context.cameraY + getHeight());
+            }
+
+            // Step
+            if (i != 0 && context.drawAxisValues && drawSteps) {
+                g.setColor(globalAxisColor);
+                g.drawLine(i, -5, i, 5);
+                double stepValue = (((double) i / context.pixelsPerStep) / (context.axisX.scale * context.zoom));
+                String step = context.axisX.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
+                int stringWidth = fontMetrics.stringWidth(step);
+                g.setColor(backgroundColor);
+                g.fillRect(i - stringWidth / 2 - 2, 7, stringWidth + 4, stringHeight + 2);
+                g.setColor(globalAxisColor);
+                g.drawString(step, i - stringWidth / 2, 7 + stringHeight);
+            }
+        }
+
+        // Y
+        int initialMajorY = context.cameraY - (context.cameraY % context.pixelsPerStep);
+        int endMajorY = context.cameraY + getHeight();
+        for (int i = initialMajorY; i < endMajorY; i += context.pixelsPerStep) {
+            // Major grid
+            if (drawGrid) {
+                g.setColor(majorGridColor);
+                g.drawLine(context.cameraX, i, context.cameraX + getWidth(), i);
+            }
+
+            // Step
+            if (i != 0 && context.drawAxisValues && drawSteps) {
+                g.setColor(globalAxisColor);
+                g.drawLine(-5, i, 5, i);
+                double stepValue = -(((double) i / context.pixelsPerStep) / (context.axisY.scale * context.zoom));
+                String step = context.axisY.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
+                int stringWidth = fontMetrics.stringWidth(step);
+                g.setColor(backgroundColor);
+                g.fillRect(-9 - stringWidth, i - stringHeight / 2, stringWidth + 4, stringHeight + 2);
+                g.setColor(globalAxisColor);
+                g.drawString(step, -7 - stringWidth, i + stringHeight / 2);
+            }
+        }
     }
 
     private String getFormattedDouble(double value) {

@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +21,12 @@ package com.vthmgnpipola.mcplot.ngui.components;
 import com.vthmgnpipola.mcplot.GraphUnit;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import javax.swing.text.DefaultFormatter;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.text.DefaultFormatter;
-import net.miginfocom.swing.MigLayout;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -53,14 +48,27 @@ public class PlottingPanelSettingsPanel extends JPanel {
         enableFuncLegends.setToolTipText(BUNDLE.getString("settings.plottingPanel.enableFuncLegends.tooltip"));
         enableFuncLegends.addActionListener(e -> context.setFunctionLegends(enableFuncLegends.isSelected()));
 
-        // Show decimal vales as fractions
+        // Show decimal values as fractions
         JCheckBox showDecAsFraction = new JCheckBox(BUNDLE.getString("settings.plottingPanel.showDecAsFractions"),
                 context.showDecAsFractions);
         add(showDecAsFraction, "span");
         showDecAsFraction.setToolTipText(BUNDLE.getString("settings.plottingPanel.showDecAsFractions.tooltip"));
         showDecAsFraction.addActionListener(e -> context.setShowDecAsFractions(showDecAsFraction.isSelected()));
 
+        // Show values in scientific notation if necessary
+//        JCheckBox showScientificNotation = new JCheckBox(
+//                BUNDLE.getString("settings.plottingPanel.showScientificNotation"),
+//                context.showScientificNotation);
+//        add(showScientificNotation, "span");
+//        showScientificNotation
+//                .setToolTipText(BUNDLE.getString("settings.plottingPanel.showScientificNotation.tooltip"));
+//        showScientificNotation.addActionListener(e ->
+//                context.setShowScientificNotation(showScientificNotation.isSelected()));
+
         // Draw grid
+        JCheckBox drawAxisOverFunc = new JCheckBox(
+                BUNDLE.getString("settings.plottingPanel.drawAxisOverFunc"),
+                context.drawAxisOverFunc);
         JCheckBox drawMinorGrid = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawMinorGrid"),
                 context.drawMinorGrid);
         JCheckBox drawAxisValues = new JCheckBox(BUNDLE.getString("settings.plottingPanel.drawAxisValues"),
@@ -92,6 +100,12 @@ public class PlottingPanelSettingsPanel extends JPanel {
             }
             context.setDrawGrid(drawGrid.isSelected());
         });
+
+        // Draw major grid over functions
+        add(drawAxisOverFunc, "span");
+        drawAxisOverFunc.setToolTipText(BUNDLE.getString("settings.plottingPanel.drawAxisOverFunc.tooltip"));
+        drawAxisOverFunc.addActionListener(e ->
+                context.setDrawAxisOverFunc(drawAxisOverFunc.isSelected()));
 
         // Draw minor grid
         add(drawMinorGrid, "span");

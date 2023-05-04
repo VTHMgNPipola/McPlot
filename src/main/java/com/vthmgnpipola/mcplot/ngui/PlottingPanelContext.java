@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +21,16 @@ package com.vthmgnpipola.mcplot.ngui;
 import com.vthmgnpipola.mcplot.GraphAxis;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import com.vthmgnpipola.mcplot.nmath.Plot;
-import java.awt.BasicStroke;
-import java.awt.Stroke;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.Serial;
 import java.io.Serializable;
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
 public class PlottingPanelContext implements Serializable {
     public static final int INITIAL_PIXELS_PER_STEP = 75;
     @Serial
-    private static final long serialVersionUID = 3754069167198513615L;
+    private static final long serialVersionUID = 8320578294132283362L;
     public int cameraX;
     public int cameraY;
     public int pixelsPerStep = INITIAL_PIXELS_PER_STEP;
@@ -47,6 +46,8 @@ public class PlottingPanelContext implements Serializable {
     public boolean antialias;
     public boolean functionLegends;
     public boolean showDecAsFractions;
+    public boolean showScientificNotation;
+    public boolean drawAxisOverFunc;
     public boolean drawMinorGrid;
     public boolean drawGrid;
     public boolean drawAxisValues;
@@ -69,6 +70,9 @@ public class PlottingPanelContext implements Serializable {
         traceWidth = 3;
         antialias = false;
         functionLegends = true;
+        showDecAsFractions = true;
+        showScientificNotation = true;
+        drawAxisOverFunc = false;
         drawMinorGrid = true;
         drawGrid = true;
         drawAxisValues = true;
@@ -121,6 +125,16 @@ public class PlottingPanelContext implements Serializable {
 
     public void setShowDecAsFractions(boolean showDecAsFractions) {
         this.showDecAsFractions = showDecAsFractions;
+        base.repaint();
+    }
+
+    public void setShowScientificNotation(boolean showScientificNotation) {
+        this.showScientificNotation = showScientificNotation;
+        base.repaint();
+    }
+
+    public void setDrawAxisOverFunc(boolean drawAxisOverFunc) {
+        this.drawAxisOverFunc = drawAxisOverFunc;
         base.repaint();
     }
 
