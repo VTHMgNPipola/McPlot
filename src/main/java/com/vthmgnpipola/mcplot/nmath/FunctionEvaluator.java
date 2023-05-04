@@ -170,9 +170,8 @@ public class FunctionEvaluator {
         double cameraStartX = context.cameraX / zoomX;
         double cameraEndX = cameraStartX + (owner.getWidth() / zoomX);
 
-        double step = Math.min(context.maxStep, (cameraEndX - cameraStartX) /
-                ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
-                        context.samplesPerCell));
+        double step = (cameraEndX - cameraStartX) / ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
+                context.samplesPerCell);
 
         double domainStart = cameraStartX - ((cameraEndX - cameraStartX) / 2) - step;
         double domainEnd = cameraEndX + ((cameraEndX - cameraStartX) / 2) + step;
@@ -190,9 +189,8 @@ public class FunctionEvaluator {
             double plotEndXDistance = plot.getEndX() - cameraEndX;
             if (force || (plotStartXDistance < step && cameraStartX >= domainStart) ||
                     (plotEndXDistance < step && cameraEndX <= domainEnd)) {
-                step = Math.min(context.maxStep, (domainEnd - domainStart) /
-                        ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
-                                context.samplesPerCell)); // Recalculate step, for if domain start or end values changed
+                step = (domainEnd - domainStart) / ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
+                        context.samplesPerCell); // Recalculate step, for if domain start or end values changed
                 MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
                         parent.getConstantValues());
             }

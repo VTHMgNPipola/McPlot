@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,20 +24,15 @@ import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
+import net.objecthunter.exp4j.Expression;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import net.objecthunter.exp4j.Expression;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -111,9 +106,8 @@ public abstract class ExportFunctionsDialog extends MDialog {
 
             double domainStart = function.getDomainStart().getActualValue();
             double domainEnd = function.getDomainEnd().getActualValue();
-            double step = Math.min(context.maxStep, (domainEnd - domainStart) /
-                    ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
-                            context.samplesPerCell));
+            double step = (domainEnd - domainStart) / ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
+                    context.samplesPerCell);
             Expression expression = FunctionEvaluator.processExpression(function, functionMap, constantValues);
 
             results.put(function, MathEvaluatorPool.getInstance().evaluateFunctionRaw(function, expression,

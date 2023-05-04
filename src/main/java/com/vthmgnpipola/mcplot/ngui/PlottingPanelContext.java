@@ -41,7 +41,6 @@ public class PlottingPanelContext implements Serializable {
     public GraphAxis axisX;
     public GraphAxis axisY;
     public int samplesPerCell;
-    public double maxStep;
     public int traceWidth;
     public boolean antialias;
     public boolean functionLegends;
@@ -66,7 +65,6 @@ public class PlottingPanelContext implements Serializable {
         axisX = new GraphAxis();
         axisY = new GraphAxis();
         samplesPerCell = 25;
-        maxStep = 0.5;
         traceWidth = 3;
         antialias = false;
         functionLegends = true;
@@ -84,11 +82,6 @@ public class PlottingPanelContext implements Serializable {
 
     public void setSamplesPerCell(int samplesPerCell) {
         this.samplesPerCell = samplesPerCell;
-        recalculateAllFunctions(true);
-    }
-
-    public void setMaxStep(double maxStep) {
-        this.maxStep = maxStep;
         recalculateAllFunctions(true);
     }
 

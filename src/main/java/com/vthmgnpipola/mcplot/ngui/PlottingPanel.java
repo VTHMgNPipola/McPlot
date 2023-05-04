@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.vthmgnpipola.mcplot.GraphUnit;
 import com.vthmgnpipola.mcplot.nmath.Plot;
 import com.vthmgnpipola.mcplot.nmath.ScientificNotationNumber;
 
@@ -425,7 +426,7 @@ public class PlottingPanel extends JPanel {
                     g.setColor(globalAxisColor);
                     g.drawLine(i, -5, i, 5);
                     double stepValue = (((double) i / context.pixelsPerStep) / (context.axisX.scale * context.zoom));
-                    String step = getStepString(stepValue);
+                    String step = getStepString(stepValue, context.axisX.unit);
 
                     int stringWidth = fontMetrics.stringWidth(step);
                     final int y = 7;
@@ -460,7 +461,7 @@ public class PlottingPanel extends JPanel {
                     g.setColor(globalAxisColor);
                     g.drawLine(-5, i, 5, i);
                     double stepValue = -(((double) i / context.pixelsPerStep) / (context.axisY.scale * context.zoom));
-                    String step = getStepString(stepValue);
+                    String step = getStepString(stepValue, context.axisY.unit);
                     int stringWidth = fontMetrics.stringWidth(step);
                     g.setColor(backgroundColor);
                     g.fillRect(-9 - stringWidth, i - stringHeight / 2, stringWidth + 4, stringHeight + 2);
@@ -471,16 +472,16 @@ public class PlottingPanel extends JPanel {
         }
     }
 
-    private String getStepString(double stepValue) {
+    private String getStepString(double stepValue, GraphUnit unit) {
         String step;
         double absStepValue = Math.abs(stepValue);
         if (context.showScientificNotation && (absStepValue >= 1000 || absStepValue < 0.01d)) {
             ScientificNotationNumber number = convertToScientificNotation(stepValue);
             String exponent = "×10" + toSuperscript(String.valueOf(number.exponent()));
-            step = context.axisX.unit.getScientificTransformedUnit(stepValue, getFormattedDouble(number.base()),
+            step = unit.getScientificTransformedUnit(stepValue, getFormattedDouble(number.base()),
                     exponent);
         } else {
-            step = context.axisX.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
+            step = unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
         }
         return step;
     }

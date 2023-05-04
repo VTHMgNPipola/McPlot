@@ -235,16 +235,6 @@ public class PlottingPanelSettingsPanel extends JPanel {
         enableCommitsOnValidEdit(samplesPerCell);
         samplesPerCell.addChangeListener(e -> context.setSamplesPerCell((int) samplesPerCell.getValue()));
 
-        // Maximum step
-        JLabel maxStepLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.maxStep"));
-        add(maxStepLabel);
-        JSpinner maxStep = new JSpinner(new SpinnerNumberModel(context.maxStep, 0.000000001,
-                1000000000d, 0.01));
-        add(maxStep, "growx, span 2, wrap");
-        maxStep.setToolTipText(BUNDLE.getString("settings.plottingPanel.maxStep.tooltip"));
-        enableCommitsOnValidEdit(maxStep);
-        maxStep.addChangeListener(e -> context.setMaxStep((double) maxStep.getValue()));
-
         // X Scale
         JLabel scaleXLabel = new JLabel(BUNDLE.getString("settings.plottingPanel.scaleX"));
         add(scaleXLabel);
