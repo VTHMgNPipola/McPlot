@@ -108,8 +108,8 @@ public class MathEventStreamer {
                         .filter(f -> f.getDefinition() != null)
                         .collect(Collectors.toMap(Function::getName, f -> f));
                 functionEvaluators.forEach(fe -> {
+                    fe.processExpression();
                     if (fe.getFunction().isVisible()) {
-                        fe.processExpression();
                         fe.evaluate(true);
                     }
                 });
