@@ -185,15 +185,17 @@ public class FunctionEvaluator {
             domainEnd = Math.min(domainEnd, function.getDomainEnd().getActualValue());
         }
 
-        double plotStartXDistance = cameraStartX - plot.getStartX();
-        double plotEndXDistance = plot.getEndX() - cameraEndX;
-        if (force || (plotStartXDistance < step && cameraStartX >= domainStart) ||
-                (plotEndXDistance < step && cameraEndX <= domainEnd)) {
-            step = Math.min(context.maxStep, (domainEnd - domainStart) /
-                    ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
-                            context.samplesPerCell)); // Recalculate step, for if domain start or end values changed
-            MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
-                    parent.getConstantValues());
+        if (plot != null) {
+            double plotStartXDistance = cameraStartX - plot.getStartX();
+            double plotEndXDistance = plot.getEndX() - cameraEndX;
+            if (force || (plotStartXDistance < step && cameraStartX >= domainStart) ||
+                    (plotEndXDistance < step && cameraEndX <= domainEnd)) {
+                step = Math.min(context.maxStep, (domainEnd - domainStart) /
+                        ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
+                                context.samplesPerCell)); // Recalculate step, for if domain start or end values changed
+                MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
+                        parent.getConstantValues());
+            }
         }
     }
 
