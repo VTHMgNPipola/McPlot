@@ -434,7 +434,7 @@ public class PlottingPanel extends JPanel {
         double absStepValue = Math.abs(stepValue);
         if (context.showScientificNotation && (absStepValue >= 1000 || absStepValue < 0.01d)) {
             ScientificNotationNumber number = convertToScientificNotation(stepValue);
-            String exponent = "\u00D710" + toSuperscript(String.valueOf(number.exponent()));
+            String exponent = "×10" + toSuperscript(String.valueOf(number.exponent()));
             step = context.axisX.unit.getScientificTransformedUnit(stepValue, getFormattedDouble(number.base()),
                     exponent);
         } else {
@@ -460,7 +460,7 @@ public class PlottingPanel extends JPanel {
                 BigDecimal denominator = BigDecimal.ONE.divide(difference, difference.scale() * 2,
                         RoundingMode.HALF_UP);
                 if (denominator.intValue() == denominator.doubleValue()) {
-                    sb.append("\u00B9\u2044").append(toSubscript(String.valueOf(denominator.intValue())));
+                    sb.append("¹⁄").append(toSubscript(String.valueOf(denominator.intValue())));
                 } else {
                     int divisor = 1;
                     BigDecimal result;
@@ -472,7 +472,7 @@ public class PlottingPanel extends JPanel {
                                 RoundingMode.HALF_UP);
                     } while (result.intValue() != result.doubleValue());
 
-                    sb.append(toSuperscript(String.valueOf(divisor))).append("\u2044")
+                    sb.append(toSuperscript(String.valueOf(divisor))).append("⁄")
                             .append(toSubscript(String.valueOf(result.intValue())));
                 }
             }
@@ -503,15 +503,15 @@ public class PlottingPanel extends JPanel {
 
     private String toSuperscript(String str) {
         final char[] replaced = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'};
-        final char[] replacement = new char[]{'\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076',
-                '\u2077', '\u2078', '\u2079', '\u207B'};
+        final char[] replacement = new char[]{'⁰', '¹', '²', '³', '⁴', '⁵', '⁶',
+                '⁷', '⁸', '⁹', '⁻'};
         return fastReplace(str, replaced, replacement);
     }
 
     private String toSubscript(String str) {
         final char[] replaced = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'};
-        final char[] replacement = new char[]{'\u2080', '\u2081', '\u2082', '\u2083', '\u2084', '\u2085', '\u2086',
-                '\u2086', '\u2088', '\u2089', '\u208B'};
+        final char[] replacement = new char[]{'₀', '₁', '₂', '₃', '₄', '₅', '₆',
+                '₇', '₈', '₉', '₋'};
         return fastReplace(str, replaced, replacement);
     }
 
