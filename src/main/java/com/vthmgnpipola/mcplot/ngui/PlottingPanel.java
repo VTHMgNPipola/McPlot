@@ -19,6 +19,7 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Plot;
+import com.vthmgnpipola.mcplot.nmath.ScientificNotationNumber;
 
 import javax.swing.*;
 import java.awt.*;
@@ -394,7 +395,7 @@ public class PlottingPanel extends JPanel {
                 g.setColor(globalAxisColor);
                 g.drawLine(i, -5, i, 5);
                 double stepValue = (((double) i / context.pixelsPerStep) / (context.axisX.scale * context.zoom));
-                String step = context.axisX.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
+                String step = getStepString(stepValue);
                 int stringWidth = fontMetrics.stringWidth(step);
                 g.setColor(backgroundColor);
                 g.fillRect(i - stringWidth / 2 - 2, 7, stringWidth + 4, stringHeight + 2);
@@ -418,7 +419,7 @@ public class PlottingPanel extends JPanel {
                 g.setColor(globalAxisColor);
                 g.drawLine(-5, i, 5, i);
                 double stepValue = -(((double) i / context.pixelsPerStep) / (context.axisY.scale * context.zoom));
-                String step = context.axisY.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
+                String step = getStepString(stepValue);
                 int stringWidth = fontMetrics.stringWidth(step);
                 g.setColor(backgroundColor);
                 g.fillRect(-9 - stringWidth, i - stringHeight / 2, stringWidth + 4, stringHeight + 2);
@@ -426,6 +427,20 @@ public class PlottingPanel extends JPanel {
                 g.drawString(step, -7 - stringWidth, i + stringHeight / 2);
             }
         }
+    }
+
+    private String getStepString(double stepValue) {
+        String step;
+        double absStepValue = Math.abs(stepValue);
+        if (context.showScientificNotation && (absStepValue >= 1000 || absStepValue < 0.01d)) {
+            ScientificNotationNumber number = convertToScientificNotation(stepValue);
+            String exponent = "\u00D710" + toSuperscript(String.valueOf(number.exponent()));
+            step = context.axisX.unit.getScientificTransformedUnit(stepValue, getFormattedDouble(number.base()),
+                    exponent);
+        } else {
+            step = context.axisX.unit.getTransformedUnit(stepValue, getFormattedDouble(stepValue));
+        }
+        return step;
     }
 
     private String getFormattedDouble(double value) {
@@ -468,17 +483,35 @@ public class PlottingPanel extends JPanel {
         }
     }
 
+    private ScientificNotationNumber convertToScientificNotation(double value) {
+        double absValue = Math.abs(value);
+        long exponent = 0;
+        if (absValue >= 1) {
+            while (absValue >= 10) {
+                absValue /= 10;
+                exponent++;
+            }
+        } else {
+            while (absValue < 1) {
+                absValue *= 10;
+                exponent--;
+            }
+        }
+        double base = value < 0 ? -absValue : absValue;
+        return new ScientificNotationNumber(base, exponent);
+    }
+
     private String toSuperscript(String str) {
-        final char[] replaced = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        final char[] replaced = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'};
         final char[] replacement = new char[]{'\u2070', '\u00B9', '\u00B2', '\u00B3', '\u2074', '\u2075', '\u2076',
-                '\u2077', '\u2078', '\u2079'};
+                '\u2077', '\u2078', '\u2079', '\u207B'};
         return fastReplace(str, replaced, replacement);
     }
 
     private String toSubscript(String str) {
-        final char[] replaced = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+        final char[] replaced = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'};
         final char[] replacement = new char[]{'\u2080', '\u2081', '\u2082', '\u2083', '\u2084', '\u2085', '\u2086',
-                '\u2086', '\u2088', '\u2089'};
+                '\u2086', '\u2088', '\u2089', '\u208B'};
         return fastReplace(str, replaced, replacement);
     }
 

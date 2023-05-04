@@ -70,7 +70,7 @@ public class PlottingPanelContext implements Serializable {
         traceWidth = 3;
         antialias = false;
         functionLegends = true;
-        showDecAsFractions = true;
+        showDecAsFractions = false;
         showScientificNotation = true;
         drawAxisOverFunc = false;
         drawMinorGrid = true;

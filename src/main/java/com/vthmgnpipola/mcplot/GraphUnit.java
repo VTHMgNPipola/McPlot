@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,8 @@ package com.vthmgnpipola.mcplot;
 
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.ConstantEvaluator;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serial;
-import java.io.Serializable;
+
+import java.io.*;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -106,6 +103,20 @@ public class GraphUnit implements Serializable {
             return "-" + symbol;
         } else {
             return text + symbol;
+        }
+    }
+
+    public String getScientificTransformedUnit(double value, String base, String exponent) {
+        if (symbol.isBlank() || unitValueEvaluator.getConstant().getActualValue() == null) {
+            return base + exponent;
+        }
+
+        if (value == 1) {
+            return symbol;
+        } else if (value == -1) {
+            return "-" + symbol;
+        } else {
+            return base + symbol + exponent;
         }
     }
 

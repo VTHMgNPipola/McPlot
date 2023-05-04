@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.GeneralSettingsPanel;
 import com.vthmgnpipola.mcplot.ngui.components.PlottingPanelSettingsPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.SwingUtilities;
+
+import javax.swing.*;
+import java.awt.*;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -44,6 +44,11 @@ public class SettingsDialog extends MDialog {
     public void init() {
         initContentPane();
         pack();
+        int displayHeight = getGraphicsConfiguration().getDevice().getDisplayMode().getHeight();
+        Dimension preferredDimension = new Dimension((int) getPreferredSize().getWidth(),
+                (int) Math.min(getPreferredSize().getHeight(), displayHeight - 150));
+        setPreferredSize(preferredDimension);
+        setSize(preferredDimension);
         setLocationRelativeTo(workspace);
     }
 

@@ -56,14 +56,14 @@ public class PlottingPanelSettingsPanel extends JPanel {
         showDecAsFraction.addActionListener(e -> context.setShowDecAsFractions(showDecAsFraction.isSelected()));
 
         // Show values in scientific notation if necessary
-//        JCheckBox showScientificNotation = new JCheckBox(
-//                BUNDLE.getString("settings.plottingPanel.showScientificNotation"),
-//                context.showScientificNotation);
-//        add(showScientificNotation, "span");
-//        showScientificNotation
-//                .setToolTipText(BUNDLE.getString("settings.plottingPanel.showScientificNotation.tooltip"));
-//        showScientificNotation.addActionListener(e ->
-//                context.setShowScientificNotation(showScientificNotation.isSelected()));
+        JCheckBox showScientificNotation = new JCheckBox(
+                BUNDLE.getString("settings.plottingPanel.showScientificNotation"),
+                context.showScientificNotation);
+        add(showScientificNotation, "span");
+        showScientificNotation
+                .setToolTipText(BUNDLE.getString("settings.plottingPanel.showScientificNotation.tooltip"));
+        showScientificNotation.addActionListener(e ->
+                context.setShowScientificNotation(showScientificNotation.isSelected()));
 
         // Draw grid
         JCheckBox drawAxisOverFunc = new JCheckBox(
