@@ -257,7 +257,10 @@ public class PlottingPanel extends JPanel {
             }
 
             // Major grid and steps
-            drawMajorGridAndSteps(g, true, !context.drawAxisOverFunc);
+            drawMajorGrid(g);
+            if (!context.drawAxisOverFunc) {
+                drawAxisValues(g);
+            }
         }
 
         // Global axis
@@ -291,7 +294,7 @@ public class PlottingPanel extends JPanel {
         if (context.drawAxisOverFunc) {
             g.setStroke(baseStroke);
             drawGlobalAxis(g);
-            drawMajorGridAndSteps(g, false, true);
+            drawAxisValues(g);
         }
 
         // Legends
@@ -383,91 +386,95 @@ public class PlottingPanel extends JPanel {
         }
     }
 
-    private void drawMajorGridAndSteps(Graphics2D g, boolean drawGrid, boolean drawSteps) {
-        // Constants
+    private void drawMajorGrid(Graphics2D g) {
         // X
+        // Constants
         int initialMajorX = context.cameraX - (context.cameraX % context.pixelsPerStep) - context.pixelsPerStep;
         int endMajorX = context.cameraX + getWidth() + context.pixelsPerStep;
 
+        // Graphics
+        for (int i = initialMajorX; i < endMajorX; i += context.pixelsPerStep) {
+            g.setColor(majorGridColor);
+            g.drawLine(i, context.cameraY, i, context.cameraY + getHeight());
+        }
+
         // Y
+        // Constants
         int initialMajorY = context.cameraY - (context.cameraY % context.pixelsPerStep) - context.pixelsPerStep;
         int endMajorY = context.cameraY + getHeight() + context.pixelsPerStep;
 
-        // Major grid
-        if (drawGrid) {
-            // X
-            for (int i = initialMajorX; i < endMajorX; i += context.pixelsPerStep) {
-                g.setColor(majorGridColor);
-                g.drawLine(i, context.cameraY, i, context.cameraY + getHeight());
-            }
+        // Graphics
+        for (int i = initialMajorY; i < endMajorY; i += context.pixelsPerStep) {
+            g.setColor(majorGridColor);
+            g.drawLine(context.cameraX, i, context.cameraX + getWidth(), i);
+        }
+    }
 
-            // Y
-            for (int i = initialMajorY; i < endMajorY; i += context.pixelsPerStep) {
-                g.setColor(majorGridColor);
-                g.drawLine(context.cameraX, i, context.cameraX + getWidth(), i);
+    private void drawAxisValues(Graphics2D g) {
+        // X
+        // Constants
+        int initialMajorX = context.cameraX - (context.cameraX % context.pixelsPerStep) - context.pixelsPerStep;
+        int endMajorX = context.cameraX + getWidth() + context.pixelsPerStep;
+
+        int stringHeight = fontMetrics.getAscent();
+        int rectHeight = stringHeight + 2;
+        int heightHalfHypotenuse = (int) (Math.sqrt(2 * (stringHeight * stringHeight)) / 2);
+        double deg45Radians = Math.toRadians(45);
+
+        AffineTransform rotatedRectangleTransform = new AffineTransform();
+        rotatedRectangleTransform.translate(-heightHalfHypotenuse, 7 + heightHalfHypotenuse);
+
+        // Graphics
+        for (int i = initialMajorX; i < endMajorX; i += context.pixelsPerStep) {
+            if (i != 0) {
+                g.setColor(globalAxisColor);
+                g.drawLine(i, -5, i, 5);
+                double stepValue = (((double) i / context.pixelsPerStep) / (context.axisX.scale * context.zoom));
+                String step = getStepString(stepValue, context.axisX.unit);
+
+                int stringWidth = fontMetrics.stringWidth(step);
+                final int y = 7;
+                int x = i - stringWidth / 2;
+                int rectWidth = stringWidth + 4;
+                if (stringWidth >= context.pixelsPerStep) { // Draw rotated string
+                    x = i;
+                    g.setFont(rotatedFont);
+                    g.setColor(backgroundColor);
+
+                    rotatedRectangleTransform.setToRotation(deg45Radians, x - 2, y);
+                    Rectangle stepRectangle = new Rectangle(x - 2, y, rectWidth, rectHeight);
+                    g.fill(rotatedRectangleTransform.createTransformedShape(stepRectangle));
+
+                    g.setColor(globalAxisColor);
+                    g.drawString(step, x - heightHalfHypotenuse, y + heightHalfHypotenuse);
+                    g.setFont(font);
+                } else { // Draw straight string
+                    g.setColor(backgroundColor);
+                    g.fillRect(x - 2, y, rectWidth, rectHeight);
+
+                    g.setColor(globalAxisColor);
+                    g.drawString(step, x, y + stringHeight);
+                }
             }
         }
 
-        // Steps
-        if (context.drawAxisValues && drawSteps) {
-            // X
-            // Constants
-            int stringHeight = fontMetrics.getAscent();
-            int rectHeight = stringHeight + 2;
-            int heightHalfHypotenuse = (int) (Math.sqrt(2 * (stringHeight * stringHeight)) / 2);
-            double deg45Radians = Math.toRadians(45);
+        // Y
+        // Constants
+        int initialMajorY = context.cameraY - (context.cameraY % context.pixelsPerStep) - context.pixelsPerStep;
+        int endMajorY = context.cameraY + getHeight() + context.pixelsPerStep;
 
-            AffineTransform rotatedRectangleTransform = new AffineTransform();
-            rotatedRectangleTransform.translate(-heightHalfHypotenuse, 7 + heightHalfHypotenuse);
-
-            // Graphics
-            for (int i = initialMajorX; i < endMajorX; i += context.pixelsPerStep) {
-                if (i != 0) {
-                    g.setColor(globalAxisColor);
-                    g.drawLine(i, -5, i, 5);
-                    double stepValue = (((double) i / context.pixelsPerStep) / (context.axisX.scale * context.zoom));
-                    String step = getStepString(stepValue, context.axisX.unit);
-
-                    int stringWidth = fontMetrics.stringWidth(step);
-                    final int y = 7;
-                    int x = i - stringWidth / 2;
-                    int rectWidth = stringWidth + 4;
-                    if (stringWidth >= context.pixelsPerStep) { // Draw rotated string
-                        x = i;
-                        g.setFont(rotatedFont);
-                        g.setColor(backgroundColor);
-
-                        rotatedRectangleTransform.setToRotation(deg45Radians, x - 2, y);
-                        Rectangle stepRectangle = new Rectangle(x - 2, y, rectWidth, rectHeight);
-                        g.fill(rotatedRectangleTransform.createTransformedShape(stepRectangle));
-
-                        g.setColor(globalAxisColor);
-                        g.drawString(step, x - heightHalfHypotenuse, y + heightHalfHypotenuse);
-                        g.setFont(font);
-                    } else { // Draw straight string
-                        g.setColor(backgroundColor);
-                        g.fillRect(x - 2, y, rectWidth, rectHeight);
-
-                        g.setColor(globalAxisColor);
-                        g.drawString(step, x, y + stringHeight);
-                    }
-                }
-            }
-
-            //  Y
-            // Graphics
-            for (int i = initialMajorY; i < endMajorY; i += context.pixelsPerStep) {
-                if (i != 0) {
-                    g.setColor(globalAxisColor);
-                    g.drawLine(-5, i, 5, i);
-                    double stepValue = -(((double) i / context.pixelsPerStep) / (context.axisY.scale * context.zoom));
-                    String step = getStepString(stepValue, context.axisY.unit);
-                    int stringWidth = fontMetrics.stringWidth(step);
-                    g.setColor(backgroundColor);
-                    g.fillRect(-9 - stringWidth, i - stringHeight / 2, stringWidth + 4, stringHeight + 2);
-                    g.setColor(globalAxisColor);
-                    g.drawString(step, -7 - stringWidth, i + stringHeight / 2);
-                }
+        // Graphics
+        for (int i = initialMajorY; i < endMajorY; i += context.pixelsPerStep) {
+            if (i != 0) {
+                g.setColor(globalAxisColor);
+                g.drawLine(-5, i, 5, i);
+                double stepValue = -(((double) i / context.pixelsPerStep) / (context.axisY.scale * context.zoom));
+                String step = getStepString(stepValue, context.axisY.unit);
+                int stringWidth = fontMetrics.stringWidth(step);
+                g.setColor(backgroundColor);
+                g.fillRect(-9 - stringWidth, i - stringHeight / 2, stringWidth + 4, stringHeight + 2);
+                g.setColor(globalAxisColor);
+                g.drawString(step, -7 - stringWidth, i + stringHeight / 2);
             }
         }
     }
