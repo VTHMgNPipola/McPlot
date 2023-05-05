@@ -26,6 +26,7 @@ import com.vthmgnpipola.mcplot.ngui.icons.FlatMoreSettingsIcon;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
+import com.vthmgnpipola.mcplot.plot.FunctionPlotParameters;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -55,19 +56,21 @@ public class FunctionCard extends JPanel {
         function = functionEvaluator.getFunction();
         function.setIndex(index);
 
+        FunctionPlotParameters parameters = functionEvaluator.getParameters();
+
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy, split 3");
         colorChooserButton.setToolTipText(BUNDLE.getString("functionCard.selectColor"));
-        if (function.getTraceColor() == null) {
+        if (parameters.getTrace().getColor() == null) {
             Color startingColor = new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
                     RANDOM.nextInt(255));
-            functionEvaluator.setTraceColor(startingColor);
+            parameters.getTrace().setColor(startingColor);
             colorChooserButton.setSelectedColor(startingColor);
         } else {
-            colorChooserButton.setSelectedColor(function.getTraceColor());
+            colorChooserButton.setSelectedColor(parameters.getTrace().getColor());
         }
         colorChooserButton.setMaximumSize(new Dimension(40, 40));
-        colorChooserButton.setColorChooserListener(functionEvaluator::setTraceColor);
+        colorChooserButton.setColorChooserListener(parameters.getTrace()::setColor);
 
         JButton otherSettings = new JButton(new FlatMoreSettingsIcon());
         add(otherSettings, "growy");
@@ -80,7 +83,7 @@ public class FunctionCard extends JPanel {
         });
 
         visible = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"),
-                function.isVisible());
+                parameters.isVisible());
         add(visible, "pushx, growx, wrap");
         visible.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisible.tooltip"));
         visible.addActionListener(e -> functionEvaluator.setVisible(visible.isSelected()));

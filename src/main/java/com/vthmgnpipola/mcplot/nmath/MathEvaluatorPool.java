@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
+import com.vthmgnpipola.mcplot.plot.FunctionPlot;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.operator.Operator;
@@ -190,7 +191,6 @@ public class MathEvaluatorPool {
 
                 if (hasPoints) {
                     plot.setPath(path);
-                    plot.loadFunction(function);
                 } else {
                     plot.setPath(null);
                 }

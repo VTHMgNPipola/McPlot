@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,30 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.mcplot.nmath;
+package com.vthmgnpipola.mcplot.plot;
 
-import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D;
-
-public interface Plot {
-    Path2D.Double getPath();
-
-    void setPath(Path2D.Double path);
-
-    String getLegend();
-
-    boolean isInvisible();
-
-    TraceType getTraceType();
-
-    Color getTraceColor();
-
-    void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context);
-
-    enum TraceType {
-        TRACE_TYPE_DEFAULT, TRACE_TYPE_DASHED, TRACE_TYPE_DOTTED, TRACE_TYPE_DASHED_DOTTED
-    }
+public enum TraceType {
+    TRACE_TYPE_DEFAULT, TRACE_TYPE_DASHED, TRACE_TYPE_DOTTED, TRACE_TYPE_DASHED_DOTTED
 }

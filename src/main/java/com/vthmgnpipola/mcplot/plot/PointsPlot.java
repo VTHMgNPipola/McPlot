@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.mcplot.nmath;
+package com.vthmgnpipola.mcplot.plot;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 
@@ -30,8 +30,7 @@ public class PointsPlot implements Plot {
     private Path2D.Double path;
     private String legend;
     private boolean visible = true;
-    private TraceType traceType;
-    private Color traceColor;
+    private Trace trace;
 
     @Override
     public Path2D.Double getPath() {
@@ -58,28 +57,19 @@ public class PointsPlot implements Plot {
     }
 
     @Override
-    public TraceType getTraceType() {
-        return traceType;
+    public Trace getTrace() {
+        return trace;
     }
 
-    public void setTraceType(TraceType traceType) {
-        this.traceType = traceType;
-    }
-
-    @Override
-    public Color getTraceColor() {
-        return traceColor;
-    }
-
-    public void setTraceColor(Color traceColor) {
-        this.traceColor = traceColor;
+    public void setTrace(Trace trace) {
+        this.trace = trace;
     }
 
     @Override
     public void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context) {
         if (path != null) {
-            g.setStroke(context.getStroke(traceType));
-            g.setColor(traceColor);
+            g.setStroke(trace.getStroke());
+            g.setColor(trace.getColor());
             g.draw(tx.createTransformedShape(path));
         }
     }

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.mcplot.nmath;
+package com.vthmgnpipola.mcplot.plot;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 
@@ -25,13 +25,17 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
 public class FunctionPlot implements Plot {
-    private final FunctionParameters parameters;
+    private final FunctionPlotParameters parameters;
     private Path2D.Double path;
     private double startX;
     private double endX;
 
     public FunctionPlot() {
-        parameters = new FunctionParameters();
+        parameters = new FunctionPlotParameters();
+    }
+
+    public FunctionPlotParameters getParameters() {
+        return parameters;
     }
 
     @Override
@@ -55,13 +59,8 @@ public class FunctionPlot implements Plot {
     }
 
     @Override
-    public TraceType getTraceType() {
-        return parameters.getTraceType();
-    }
-
-    @Override
-    public Color getTraceColor() {
-        return parameters.getTraceColor();
+    public Trace getTrace() {
+        return parameters.getTrace();
     }
 
     @Override
@@ -72,23 +71,15 @@ public class FunctionPlot implements Plot {
             fill.lineTo(getStartX(), 0);
             fill.closePath();
 
-            Color traceColor = parameters.getTraceColor();
+            Color traceColor = parameters.getTrace().getColor();
             Color fillColor = new Color(traceColor.getRed(), traceColor.getGreen(), traceColor.getBlue(),
                     (int) Math.min((context.fillTransparency * 2.55), 255));
             g.setColor(fillColor);
             g.fill(tx.createTransformedShape(fill));
         }
-        g.setStroke(context.getStroke(parameters.getTraceType()));
-        g.setColor(parameters.getTraceColor());
+        g.setStroke(parameters.getTrace().getStroke());
+        g.setColor(parameters.getTrace().getColor());
         g.draw(tx.createTransformedShape(path));
-    }
-
-    public void loadFunction(Function function) {
-        parameters.setLegend(function.getDefinition());
-        parameters.setVisible(function.isVisible());
-        parameters.setFilled(function.isFilled());
-        parameters.setTraceType(function.getTraceType());
-        parameters.setTraceColor(function.getTraceColor());
     }
 
     public double getStartX() {

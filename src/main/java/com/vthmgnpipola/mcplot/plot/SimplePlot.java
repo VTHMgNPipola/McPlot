@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.mcplot.nmath;
+package com.vthmgnpipola.mcplot.plot;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
-import java.awt.Color;
-import java.awt.Graphics2D;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
@@ -28,8 +28,7 @@ public class SimplePlot implements Plot {
     private Path2D.Double path;
     private String legend;
     private boolean visible;
-    private TraceType traceType;
-    private Color traceColor;
+    private Trace trace;
 
     @Override
     public Path2D.Double getPath() {
@@ -56,27 +55,18 @@ public class SimplePlot implements Plot {
     }
 
     @Override
-    public TraceType getTraceType() {
-        return traceType;
+    public Trace getTrace() {
+        return trace;
     }
 
-    public void setTraceType(TraceType traceType) {
-        this.traceType = traceType;
-    }
-
-    @Override
-    public Color getTraceColor() {
-        return traceColor;
-    }
-
-    public void setTraceColor(Color traceColor) {
-        this.traceColor = traceColor;
+    public void setTrace(Trace trace) {
+        this.trace = trace;
     }
 
     @Override
     public void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context) {
-        g.setStroke(context.getStroke(traceType));
-        g.setColor(traceColor);
+        g.setStroke(trace.getStroke());
+        g.setColor(trace.getColor());
         g.draw(tx.createTransformedShape(path));
     }
 

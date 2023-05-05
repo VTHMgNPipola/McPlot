@@ -19,8 +19,8 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.GraphUnit;
-import com.vthmgnpipola.mcplot.nmath.Plot;
 import com.vthmgnpipola.mcplot.nmath.ScientificNotationNumber;
+import com.vthmgnpipola.mcplot.plot.Plot;
 
 import javax.swing.*;
 import java.awt.*;
@@ -316,8 +316,8 @@ public class PlottingPanel extends JPanel {
                     continue;
                 }
 
-                g.setStroke(context.getStroke(plot.getTraceType()));
-                g.setColor(plot.getTraceColor());
+                g.setStroke(plot.getTrace().getStroke());
+                g.setColor(plot.getTrace().getColor());
                 int y = fontMetrics.getHeight() * i + fontMetrics.getHeight() / 2 + 10;
                 g.drawLine(10, y, 50, y);
 
@@ -356,7 +356,6 @@ public class PlottingPanel extends JPanel {
     void setContext(PlottingPanelContext context) {
         this.context = context;
         context.setBase(this);
-        context.updateTraces();
     }
 
     private void drawGlobalAxis(Graphics2D g) {

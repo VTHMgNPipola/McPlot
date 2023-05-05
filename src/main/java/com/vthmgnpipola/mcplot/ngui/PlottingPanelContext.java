@@ -20,10 +20,9 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.GraphAxis;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
-import com.vthmgnpipola.mcplot.nmath.Plot;
+import com.vthmgnpipola.mcplot.plot.Trace;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -52,7 +51,6 @@ public class PlottingPanelContext implements Serializable {
     public boolean drawAxisValues;
     public int minorGridDivisions;
     public double fillTransparency;
-    public transient Stroke defaultTraceStroke, dashedTraceStroke, dottedTraceStroke, dashedDottedTraceStroke;
     private transient PlottingPanel base;
 
     public PlottingPanelContext(PlottingPanel base) {
@@ -65,7 +63,7 @@ public class PlottingPanelContext implements Serializable {
         axisX = new GraphAxis();
         axisY = new GraphAxis();
         samplesPerCell = 25;
-        traceWidth = 3;
+        traceWidth = Trace.DEFAULT_TRACE_WIDTH;
         antialias = false;
         functionLegends = true;
         showDecAsFractions = false;
@@ -76,8 +74,6 @@ public class PlottingPanelContext implements Serializable {
         drawAxisValues = true;
         minorGridDivisions = 5;
         fillTransparency = 25;
-
-        updateTraces();
     }
 
     public void setSamplesPerCell(int samplesPerCell) {
@@ -90,19 +86,10 @@ public class PlottingPanelContext implements Serializable {
         base.repaint();
     }
 
-    public void updateTraces() {
-        defaultTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-        dashedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
-                new float[]{10f, 7f}, 0);
-        dottedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
-                new float[]{3f, 7f}, 0);
-        dashedDottedTraceStroke = new BasicStroke(traceWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f,
-                new float[]{10f, 7f, 3f, 7f}, 0);
-    }
-
     public void setTraceWidth(int traceWidth) {
         this.traceWidth = traceWidth;
-        updateTraces();
+        Trace.DEFAULT_TRACE_WIDTH = traceWidth;
+        base.getPlots().parallelStream().forEach(p -> p.getTrace().updateStroke());
         base.repaint();
     }
 
@@ -171,17 +158,5 @@ public class PlottingPanelContext implements Serializable {
 
     public void recalculateAllFunctions(boolean force) {
         MathEventStreamer.getInstance().functionUpdate(true, force);
-    }
-
-    public Stroke getStroke(Plot.TraceType traceType) {
-        if (traceType == null) {
-            return defaultTraceStroke;
-        }
-        return switch (traceType) {
-            case TRACE_TYPE_DOTTED -> dottedTraceStroke;
-            case TRACE_TYPE_DASHED -> dashedTraceStroke;
-            case TRACE_TYPE_DASHED_DOTTED -> dashedDottedTraceStroke;
-            default -> defaultTraceStroke;
-        };
     }
 }

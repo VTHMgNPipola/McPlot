@@ -18,7 +18,6 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
-import java.awt.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.regex.Pattern;
@@ -38,20 +37,12 @@ public class Function implements Serializable, Comparable<Function> {
     private transient int index;
     private transient String name, variableName, formationLaw;
 
-    private Plot.TraceType traceType;
-    private Color traceColor;
-    private Constant domainStart;
-    private Constant domainEnd;
-    private boolean filled;
-    private boolean visible = true;
+    private final Constant domainStart;
+    private final Constant domainEnd;
 
     public Function() {
         domainStart = new Constant();
         domainEnd = new Constant();
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     /**
@@ -72,30 +63,12 @@ public class Function implements Serializable, Comparable<Function> {
         doDecomposition();
     }
 
+    public int getIndex() {
+        return index;
+    }
+
     public void setIndex(int index) {
         this.index = index;
-    }
-
-    public Plot.TraceType getTraceType() {
-        return traceType;
-    }
-
-    public void setTraceType(Plot.TraceType traceType) {
-        this.traceType = traceType;
-    }
-
-    /**
-     * The trace color is the color used when plotting the function into the screen. The other variable, trace width,
-     * is defined in the graph settings for all functions at once.
-     *
-     * @return Return the current trace color.
-     */
-    public Color getTraceColor() {
-        return traceColor;
-    }
-
-    public void setTraceColor(Color traceColor) {
-        this.traceColor = traceColor;
     }
 
     /**
@@ -113,10 +86,6 @@ public class Function implements Serializable, Comparable<Function> {
         return domainStart;
     }
 
-    public void setDomainStart(Constant domainStart) {
-        this.domainStart = domainStart;
-    }
-
     /**
      * The domain end is the maximum value to be calculated for this function, if the range of the graph happens to
      * be higher than that. If you don't need to see anything after a certain value, for example you only need to see
@@ -130,37 +99,6 @@ public class Function implements Serializable, Comparable<Function> {
      */
     public Constant getDomainEnd() {
         return domainEnd;
-    }
-
-    public void setDomainEnd(Constant domainEnd) {
-        this.domainEnd = domainEnd;
-    }
-
-    /**
-     * If set, the whole area of the function (from 0 to every point in the function) will be filled using the trace
-     * color and a fill transparency defined in the graph settings.
-     *
-     * @return Returns if this function should be filled.
-     */
-    public boolean isFilled() {
-        return filled;
-    }
-
-    public void setFilled(boolean filled) {
-        this.filled = filled;
-    }
-
-    /**
-     * If not set this function won't be plotted on the graph.
-     *
-     * @return Returns if this function should be rendered.
-     */
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisible(boolean visible) {
-        this.visible = visible;
     }
 
     /**

@@ -16,16 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.mcplot.nmath;
+package com.vthmgnpipola.mcplot.plot;
 
-import java.awt.*;
-
-public class FunctionParameters {
+public class FunctionPlotParameters {
     private String legend;
     private boolean visible;
     private boolean filled;
-    private Plot.TraceType traceType;
-    private Color traceColor;
+    private Trace trace;
+
+    public FunctionPlotParameters() {
+        legend = null;
+        visible = true;
+        filled = false;
+        trace = new Trace();
+    }
 
     public String getLegend() {
         return legend;
@@ -35,6 +39,11 @@ public class FunctionParameters {
         this.legend = legend;
     }
 
+    /**
+     * If not set this function won't be plotted on the graph.
+     *
+     * @return Returns if this function should be rendered.
+     */
     public boolean isVisible() {
         return visible;
     }
@@ -43,6 +52,12 @@ public class FunctionParameters {
         this.visible = visible;
     }
 
+    /**
+     * If set, the whole area of the function (from 0 to every point in the function) will be filled using the trace
+     * color and a fill transparency defined in the graph settings.
+     *
+     * @return Returns if this function should be filled.
+     */
     public boolean isFilled() {
         return filled;
     }
@@ -51,19 +66,11 @@ public class FunctionParameters {
         this.filled = filled;
     }
 
-    public Plot.TraceType getTraceType() {
-        return traceType;
+    public Trace getTrace() {
+        return trace;
     }
 
-    public void setTraceType(Plot.TraceType traceType) {
-        this.traceType = traceType;
-    }
-
-    public Color getTraceColor() {
-        return traceColor;
-    }
-
-    public void setTraceColor(Color traceColor) {
-        this.traceColor = traceColor;
+    public void setTrace(Trace trace) {
+        this.trace = trace;
     }
 }

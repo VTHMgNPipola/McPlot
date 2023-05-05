@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2021  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,17 +19,12 @@
 package com.vthmgnpipola.mcplot.ngui.components;
 
 import com.vthmgnpipola.mcplot.nmath.Function;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import java.util.*;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -55,10 +50,11 @@ public class FunctionSelectionPanel extends JPanel {
             JCheckBox selectFunction = new JCheckBox();
             add(selectFunction);
             selectionBoxes.add(selectFunction);
-            selectFunction.setSelected(function.isVisible());
-            if (function.isVisible()) {
-                selectedFunctions.add(function);
-            }
+
+            // FIXME: Pass FunctionPlotParameters here somehow
+            selectFunction.setSelected(true);
+            selectedFunctions.add(function);
+
             selectFunction.addChangeListener(e -> {
                 if (selectFunction.isSelected()) {
                     selectedFunctions.add(function);
@@ -67,9 +63,9 @@ public class FunctionSelectionPanel extends JPanel {
                 }
             });
 
-            ColorPanel colorPanel = new ColorPanel();
-            add(colorPanel);
-            colorPanel.setBackground(function.getTraceColor());
+//            ColorPanel colorPanel = new ColorPanel();
+//            add(colorPanel);
+//            colorPanel.setBackground(function.getTraceColor());
 
             JLabel definition = new JLabel(function.getDefinition());
             add(definition, "grow, wrap");

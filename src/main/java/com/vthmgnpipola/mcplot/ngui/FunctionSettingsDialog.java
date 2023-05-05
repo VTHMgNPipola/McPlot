@@ -20,7 +20,8 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
-import com.vthmgnpipola.mcplot.nmath.Plot;
+import com.vthmgnpipola.mcplot.plot.FunctionPlotParameters;
+import com.vthmgnpipola.mcplot.plot.TraceType;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -33,14 +34,14 @@ import java.util.Objects;
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
 public class FunctionSettingsDialog extends MDialog {
-    private static final FunctionTraceType TRACE_DEFAULT = new FunctionTraceType(Plot.TraceType.TRACE_TYPE_DEFAULT,
+    private static final FunctionTraceType TRACE_DEFAULT = new FunctionTraceType(TraceType.TRACE_TYPE_DEFAULT,
             BUNDLE.getString("functionSettings.traceType.default"));
-    private static final FunctionTraceType TRACE_DASHED = new FunctionTraceType(Plot.TraceType.TRACE_TYPE_DASHED,
+    private static final FunctionTraceType TRACE_DASHED = new FunctionTraceType(TraceType.TRACE_TYPE_DASHED,
             BUNDLE.getString("functionSettings.traceType.dashed"));
-    private static final FunctionTraceType TRACE_DOTTED = new FunctionTraceType(Plot.TraceType.TRACE_TYPE_DOTTED,
+    private static final FunctionTraceType TRACE_DOTTED = new FunctionTraceType(TraceType.TRACE_TYPE_DOTTED,
             BUNDLE.getString("functionSettings.traceType.dotted"));
     private static final FunctionTraceType TRACE_DASHED_DOTTED = new FunctionTraceType(
-            Plot.TraceType.TRACE_TYPE_DASHED_DOTTED, BUNDLE.getString("functionSettings.traceType.dashedDotted"));
+            TraceType.TRACE_TYPE_DASHED_DOTTED, BUNDLE.getString("functionSettings.traceType.dashedDotted"));
     private static final FunctionTraceType[] TRACES = new FunctionTraceType[]{TRACE_DEFAULT, TRACE_DASHED,
             TRACE_DOTTED, TRACE_DASHED_DOTTED};
 
@@ -64,6 +65,7 @@ public class FunctionSettingsDialog extends MDialog {
 
     private void initContentPane() {
         Function function = functionEvaluator.getFunction();
+        FunctionPlotParameters plotParameters = functionEvaluator.getParameters();
 
         JPanel contentPane = new JPanel(new MigLayout("insets 15", "[]15",
                 "[]10"));
@@ -101,17 +103,17 @@ public class FunctionSettingsDialog extends MDialog {
         contentPane.add(traceTypeLabel);
         JComboBox<FunctionTraceType> traceType = new JComboBox<>(TRACES);
         contentPane.add(traceType, "growx, wrap");
-        traceType.setSelectedItem(getSelectedTraceType(function.getTraceType()));
-        traceType.addActionListener(e -> functionEvaluator
-                .setTraceType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType));
+        traceType.setSelectedItem(getSelectedTraceType(plotParameters.getTrace().getType()));
+        traceType.addActionListener(e -> plotParameters.getTrace()
+                .setType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType));
 
-        JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"), function.isFilled());
+        JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"), plotParameters.isFilled());
         contentPane.add(fillArea, "span");
         fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillArea.tooltip"));
         fillArea.addActionListener(e -> functionEvaluator.setFilled(fillArea.isSelected()));
     }
 
-    private FunctionTraceType getSelectedTraceType(Plot.TraceType traceType) {
+    private FunctionTraceType getSelectedTraceType(TraceType traceType) {
         if (traceType == null) {
             return TRACE_DEFAULT;
         }
@@ -123,7 +125,7 @@ public class FunctionSettingsDialog extends MDialog {
         };
     }
 
-    private record FunctionTraceType(Plot.TraceType traceType, String description) {
+    private record FunctionTraceType(TraceType traceType, String description) {
         @Override
         public String toString() {
             return description;

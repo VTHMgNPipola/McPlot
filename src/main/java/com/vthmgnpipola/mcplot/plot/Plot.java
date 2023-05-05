@@ -16,29 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.vthmgnpipola.mcplot.ngui;
+package com.vthmgnpipola.mcplot.plot;
 
-import com.vthmgnpipola.mcplot.plot.PointsPlot;
+import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 
 import java.awt.*;
-import java.text.MessageFormat;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
 
-import static com.vthmgnpipola.mcplot.Main.BUNDLE;
+public interface Plot {
+    Path2D.Double getPath();
 
-public class PointsPlotSettingsDialog extends MDialog {
-    private final PointsPlot plot;
+    void setPath(Path2D.Double path);
 
-    public PointsPlotSettingsDialog(PointsPlot plot, int index, Window owner) {
-        super(owner, MessageFormat.format(BUNDLE.getString("pointsPlotSettings.title"), index, plot.getLegend()),
-                ModalityType.APPLICATION_MODAL);
-        setResizable(true);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    String getLegend();
 
-        this.plot = plot;
-    }
+    boolean isInvisible();
 
-    @Override
-    public void init() {
+    Trace getTrace();
 
-    }
+    void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context);
 }

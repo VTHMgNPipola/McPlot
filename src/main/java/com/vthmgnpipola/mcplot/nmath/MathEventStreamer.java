@@ -109,7 +109,7 @@ public class MathEventStreamer {
                         .collect(Collectors.toMap(Function::getName, f -> f));
                 functionEvaluators.forEach(fe -> {
                     fe.processExpression();
-                    if (fe.getFunction().isVisible()) {
+                    if (fe.getParameters().isVisible()) {
                         fe.evaluate(true);
                     }
                 });
@@ -127,7 +127,7 @@ public class MathEventStreamer {
                 functionMap = functions.stream()
                         .collect(Collectors.toMap(Function::getName, f -> f));
                 functionEvaluators.forEach(fe -> {
-                    if (fe.getFunction().isVisible()) {
+                    if (fe.getParameters().isVisible()) {
                         if (processExpressions) {
                             fe.processExpression();
                         }

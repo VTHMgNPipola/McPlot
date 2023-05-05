@@ -20,10 +20,12 @@ package com.vthmgnpipola.mcplot.nmath;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
+import com.vthmgnpipola.mcplot.plot.FunctionPlot;
+import com.vthmgnpipola.mcplot.plot.FunctionPlotParameters;
+import com.vthmgnpipola.mcplot.plot.Trace;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
-import java.awt.*;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -47,6 +49,7 @@ public class FunctionEvaluator {
     private final ConstantEvaluator domainEndEvaluator;
 
     private final FunctionPlot plot;
+    private final FunctionPlotParameters parameters;
     private Expression expression;
 
     /**
@@ -68,7 +71,7 @@ public class FunctionEvaluator {
         domainEndEvaluator = new ConstantEvaluator(function.getDomainEnd());
 
         plot = new FunctionPlot();
-        plot.loadFunction(function);
+        parameters = plot.getParameters();
         owner.getPlots().add(plot);
     }
 
@@ -76,9 +79,13 @@ public class FunctionEvaluator {
         return function;
     }
 
+    public FunctionPlotParameters getParameters() {
+        return parameters;
+    }
+
     public void setDefinition(String definition) {
         function.setDefinition(definition);
-        plot.loadFunction(function);
+        parameters.setLegend(definition);
         parent.functionUpdate(true, true);
     }
 
@@ -104,21 +111,8 @@ public class FunctionEvaluator {
         domainEndEvaluator.setDefinition(domainEnd);
     }
 
-    public void setTraceType(Plot.TraceType traceType) {
-        function.setTraceType(traceType);
-        plot.loadFunction(function);
-        owner.repaint();
-    }
-
-    /**
-     * Sets a new trace color on the function bound to this function evaluator and repaints the plotting panel
-     * (doesn't recalculate any functions or constants while doing so).
-     *
-     * @param traceColor New trace color.
-     */
-    public void setTraceColor(Color traceColor) {
-        function.setTraceColor(traceColor);
-        plot.loadFunction(function);
+    public void setTrace(Trace trace) {
+        parameters.setTrace(trace);
         owner.repaint();
     }
 
@@ -130,8 +124,7 @@ public class FunctionEvaluator {
      *               false otherwise.
      */
     public void setFilled(boolean filled) {
-        function.setFilled(filled);
-        plot.loadFunction(function);
+        parameters.setFilled(filled);
         owner.repaint();
     }
 
@@ -142,8 +135,7 @@ public class FunctionEvaluator {
      * @param visible Set to true if the function should be calculated and displayed, false otherwise.
      */
     public void setVisible(boolean visible) {
-        function.setVisible(visible);
-        plot.loadFunction(function);
+        parameters.setVisible(visible);
         if (visible) {
             evaluate(true);
         }

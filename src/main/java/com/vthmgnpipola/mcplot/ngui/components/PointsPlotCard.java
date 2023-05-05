@@ -23,7 +23,7 @@ import com.vthmgnpipola.mcplot.ngui.PlotsPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import com.vthmgnpipola.mcplot.ngui.PointsPlotSettingsDialog;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatMoreSettingsIcon;
-import com.vthmgnpipola.mcplot.nmath.PointsPlot;
+import com.vthmgnpipola.mcplot.plot.PointsPlot;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -54,16 +54,16 @@ public class PointsPlotCard extends JPanel {
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy, split 3");
         colorChooserButton.setToolTipText(BUNDLE.getString("pointsPlotCard.selectColor"));
-        if (plot.getTraceColor() == null) {
+        if (plot.getTrace().getColor() == null) {
             Color startingColor = new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
                     RANDOM.nextInt(255));
-            plot.setTraceColor(startingColor);
+            plot.getTrace().setColor(startingColor);
             colorChooserButton.setSelectedColor(startingColor);
         } else {
-            colorChooserButton.setSelectedColor(plot.getTraceColor());
+            colorChooserButton.setSelectedColor(plot.getTrace().getColor());
         }
         colorChooserButton.setMaximumSize(new Dimension(40, 40));
-        colorChooserButton.setColorChooserListener(plot::setTraceColor);
+        colorChooserButton.setColorChooserListener(plot.getTrace()::setColor);
 
         JButton otherSettings = new JButton(new FlatMoreSettingsIcon());
         add(otherSettings, "growy");
