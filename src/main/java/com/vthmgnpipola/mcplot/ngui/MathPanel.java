@@ -25,8 +25,11 @@ import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.MathEvaluatorPool;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import java.awt.BorderLayout;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,29 +84,35 @@ public class MathPanel extends JPanel {
         MathSessionHelper.saveSession(functions, constants, context, true);
     }
 
+    public void open(Path path, PlottingPanel plottingPanel) {
+        MathSessionHelper.openSession(path, state -> applySession(state, plottingPanel));
+    }
+
     public void open(PlottingPanel plottingPanel) {
-        MathSessionHelper.openSession(state -> {
-            plottingPanel.getPlots().clear();
-            MathEventStreamer.getInstance().reset();
+        MathSessionHelper.openSession(state -> applySession(state, plottingPanel));
+    }
 
-            GraphUnit.CUSTOM_X_UNIT.setSymbol(state.customUnitX.getSymbol());
-            GraphUnit.CUSTOM_X_UNIT.setDefinition(state.customUnitX.getDefinition());
+    private void applySession(MathSessionHelper.McPlotState state, PlottingPanel plottingPanel) {
+        plottingPanel.getPlots().clear();
+        MathEventStreamer.getInstance().reset();
 
-            GraphUnit.CUSTOM_Y_UNIT.setSymbol(state.customUnitY.getSymbol());
-            GraphUnit.CUSTOM_Y_UNIT.setDefinition(state.customUnitY.getDefinition());
+        GraphUnit.CUSTOM_X_UNIT.setSymbol(state.customUnitX.getSymbol());
+        GraphUnit.CUSTOM_X_UNIT.setDefinition(state.customUnitX.getDefinition());
 
-            MathEventStreamer.getInstance().registerConstantEvaluator(GraphUnit.CUSTOM_X_UNIT.getUnitValueEvaluator());
-            MathEventStreamer.getInstance().registerConstantEvaluator(GraphUnit.CUSTOM_Y_UNIT.getUnitValueEvaluator());
+        GraphUnit.CUSTOM_Y_UNIT.setSymbol(state.customUnitY.getSymbol());
+        GraphUnit.CUSTOM_Y_UNIT.setDefinition(state.customUnitY.getDefinition());
 
-            init(plottingPanel, state.functions, state.constants);
-            context.getBase().setContext(state.context);
+        MathEventStreamer.getInstance().registerConstantEvaluator(GraphUnit.CUSTOM_X_UNIT.getUnitValueEvaluator());
+        MathEventStreamer.getInstance().registerConstantEvaluator(GraphUnit.CUSTOM_Y_UNIT.getUnitValueEvaluator());
 
-            context = state.context;
-            context.axisX.unit = GraphUnit.getUnit(state.unitX);
-            context.axisY.unit = GraphUnit.getUnit(state.unitY);
+        init(plottingPanel, state.functions, state.constants);
+        context.getBase().setContext(state.context);
 
-            updateUI();
-            MathEventStreamer.getInstance().constantUpdate();
-        });
+        context = state.context;
+        context.axisX.unit = GraphUnit.getUnit(state.unitX);
+        context.axisY.unit = GraphUnit.getUnit(state.unitY);
+
+        updateUI();
+        MathEventStreamer.getInstance().constantUpdate();
     }
 }

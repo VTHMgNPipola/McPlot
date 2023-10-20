@@ -72,6 +72,9 @@ public class FunctionEvaluator {
 
         plot = new FunctionPlot();
         parameters = plot.getParameters();
+        if (function.getDefinition() != null) {
+            setDefinition(function.getDefinition());
+        }
         owner.getPlots().add(plot);
     }
 

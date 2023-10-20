@@ -24,17 +24,26 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.vthmgnpipola.mcplot.ngui.Workspace;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
+import java.awt.Frame;
+import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.vthmgnpipola.mcplot.PreferencesHelper.*;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_DARK_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_LIGHT_LAF;
 
 /**
  * McPlot is a lightweight graphing calculator written in Java 17, free for anyone to use.
@@ -76,7 +85,7 @@ public class Main {
             FRAME_ICON = ImageIO
                     .read(Objects.requireNonNull(Main.class.getResourceAsStream("/mcplot-logo.png")));
         } catch (IOException e) {
-            System.err.println("Unable to find McPlot icon!");
+            System.err.println("Unable to find the McPlot icon!");
             e.printStackTrace();
         }
     }
@@ -95,6 +104,18 @@ public class Main {
         SwingUtilities.invokeLater(() -> {
             Workspace workspace = new Workspace();
             workspace.init();
+            for (String arg : args) {
+                Path sessionPath = null;
+                try {
+                    sessionPath = Path.of(arg);
+                } catch (Exception ignored) {
+                }
+
+                if (sessionPath != null && Files.exists(sessionPath)) {
+                    workspace.openSession(sessionPath);
+                    break;
+                }
+            }
             workspace.setVisible(true);
         });
     }

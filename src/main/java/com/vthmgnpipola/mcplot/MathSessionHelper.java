@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,10 @@ package com.vthmgnpipola.mcplot;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 import com.vthmgnpipola.mcplot.nmath.Constant;
 import com.vthmgnpipola.mcplot.nmath.Function;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -30,9 +34,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 
@@ -41,7 +42,7 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
  */
 public class MathSessionHelper {
     private static final JFileChooser FILE_CHOOSER = new JFileChooser();
-    private static final String EXTENSION = "mcp";
+    private static final String EXTENSION = "mcplot";
 
     private static String lastPath;
 
@@ -90,6 +91,19 @@ public class MathSessionHelper {
         }
     }
 
+    public static void openSession(Path path, Consumer<McPlotState> consumer) {
+        try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(path))) {
+            McPlotState state = (McPlotState) ois.readObject();
+            lastPath = path.toAbsolutePath().toString();
+
+            consumer.accept(state);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            JOptionPane.showMessageDialog(null, BUNDLE.getString("errors.open"),
+                    BUNDLE.getString("generics.errorDialog"), JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
     public static void openSession(Consumer<McPlotState> consumer) {
         String openDirectory = PreferencesHelper.PREFERENCES.get(PreferencesHelper.KEY_CURRENT_DIRECTORY_OPEN, null);
         if (openDirectory != null) {
@@ -101,16 +115,7 @@ public class MathSessionHelper {
             lastPath = null;
             String chosenPath = FILE_CHOOSER.getSelectedFile().getAbsolutePath();
             PreferencesHelper.PREFERENCES.put(PreferencesHelper.KEY_CURRENT_DIRECTORY_OPEN, chosenPath);
-            try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(Path.of(chosenPath)))) {
-                McPlotState state = (McPlotState) ois.readObject();
-                lastPath = chosenPath;
-
-                consumer.accept(state);
-            } catch (Throwable t) {
-                t.printStackTrace();
-                JOptionPane.showMessageDialog(null, BUNDLE.getString("errors.open"),
-                        BUNDLE.getString("generics.errorDialog"), JOptionPane.WARNING_MESSAGE);
-            }
+            openSession(Path.of(chosenPath), consumer);
         }
     }
 

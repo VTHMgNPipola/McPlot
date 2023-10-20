@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2022  VTHMgNPipola
+ * Copyright (C) 2023  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,7 @@ import com.vthmgnpipola.mcplot.ngui.icons.FlatPictureIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatSettingsIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatTextFileIcon;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.text.MessageFormat;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -38,6 +36,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.nio.file.Path;
+import java.text.MessageFormat;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 import static com.vthmgnpipola.mcplot.Main.VERSION;
@@ -68,6 +70,10 @@ public class Workspace extends MFrame {
         if (PREFERENCES.getBoolean(KEY_OPEN_MAXIMIZED, false)) {
             setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
         }
+    }
+
+    public void openSession(Path sessionPath) {
+        mathPanel.open(sessionPath, plottingPanel);
     }
 
     private void initMenu() {
