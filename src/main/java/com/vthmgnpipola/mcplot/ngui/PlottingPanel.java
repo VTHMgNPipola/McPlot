@@ -22,9 +22,20 @@ import com.vthmgnpipola.mcplot.GraphUnit;
 import com.vthmgnpipola.mcplot.nmath.ScientificNotationNumber;
 import com.vthmgnpipola.mcplot.plot.Plot;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import javax.swing.JPanel;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -34,7 +45,10 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.vthmgnpipola.mcplot.Main.EXECUTOR_THREAD;
-import static com.vthmgnpipola.mcplot.PreferencesHelper.*;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.KEY_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.PREFERENCES;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_DARK_LAF;
+import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_LIGHT_LAF;
 import static com.vthmgnpipola.mcplot.ngui.PlottingPanelContext.INITIAL_PIXELS_PER_STEP;
 
 public class PlottingPanel extends JPanel {
@@ -482,7 +496,7 @@ public class PlottingPanel extends JPanel {
         String step;
         double absStepValue = Math.abs(stepValue);
         if (context.showScientificNotation && (absStepValue >= 1000 || absStepValue < 0.01d)) {
-            ScientificNotationNumber number = convertToScientificNotation(stepValue);
+            ScientificNotationNumber number = ScientificNotationNumber.fromDouble(stepValue);
             String exponent = "×10" + toSuperscript(String.valueOf(number.exponent()));
             step = unit.getScientificTransformedUnit(stepValue, getFormattedDouble(number.base()),
                     exponent);
@@ -530,24 +544,6 @@ public class PlottingPanel extends JPanel {
         } else {
             return decimalFormat.format(value);
         }
-    }
-
-    private ScientificNotationNumber convertToScientificNotation(double value) {
-        double absValue = Math.abs(value);
-        long exponent = 0;
-        if (absValue >= 1) {
-            while (absValue >= 10) {
-                absValue /= 10;
-                exponent++;
-            }
-        } else {
-            while (absValue < 1) {
-                absValue *= 10;
-                exponent--;
-            }
-        }
-        double base = value < 0 ? -absValue : absValue;
-        return new ScientificNotationNumber(base, exponent);
     }
 
     private String toSuperscript(String str) {
