@@ -51,7 +51,6 @@ public class MathPanel extends JPanel {
     public void init(PlottingPanel plottingPanel, List<Function> functions, List<Constant> constants) {
         removeAll();
 
-        MathEventStreamer.getInstance().setPlottingPanel(plottingPanel);
         MathEvaluatorPool.getInstance().addFunctionsDoneTask(plottingPanel::repaint);
         context = plottingPanel.getContext();
 

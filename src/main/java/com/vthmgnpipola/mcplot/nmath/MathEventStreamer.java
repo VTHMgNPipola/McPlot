@@ -19,9 +19,12 @@
 package com.vthmgnpipola.mcplot.nmath;
 
 import com.vthmgnpipola.mcplot.Main;
-import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 public class MathEventStreamer {
@@ -32,7 +35,6 @@ public class MathEventStreamer {
 
     private List<Constant> constants;
     private List<Function> functions;
-    private PlottingPanel plottingPanel;
 
     private Map<String, Double> constantValues;
     private Map<String, Function> functionMap;
@@ -54,10 +56,6 @@ public class MathEventStreamer {
 
         constantValues = Collections.synchronizedSortedMap(new TreeMap<>());
         functionMap = Collections.synchronizedSortedMap(new TreeMap<>());
-    }
-
-    public void setPlottingPanel(PlottingPanel plottingPanel) {
-        this.plottingPanel = plottingPanel;
     }
 
     public void registerConstantEvaluator(ConstantEvaluator constantEvaluator) {
@@ -98,48 +96,36 @@ public class MathEventStreamer {
 
     public void constantUpdate() {
         Main.EXECUTOR_THREAD.execute(() -> {
-            try {
-                constantEvaluators.forEach(ConstantEvaluator::evaluate);
-                constantValues = constants.stream()
-                        .filter(c -> c.getActualValue() != null && c.getName() != null)
-                        .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
+            constantEvaluators.forEach(ConstantEvaluator::evaluate);
+            constantValues = constants.stream()
+                    .filter(c -> c.getActualValue() != null && c.getName() != null)
+                    .collect(Collectors.toMap(Constant::getName, Constant::getActualValue));
 
-                functionMap = functions.stream()
-                        .filter(f -> f.getDefinition() != null)
-                        .collect(Collectors.toMap(Function::getName, f -> f));
-                functionEvaluators.forEach(fe -> {
-                    fe.processExpression();
-                    if (fe.getParameters().isVisible()) {
-                        fe.evaluate(true);
-                    }
-                });
-            } finally {
-                if (plottingPanel != null) {
-                    plottingPanel.repaint();
+            functionMap = functions.stream()
+                    .filter(f -> f.getDefinition() != null)
+                    .collect(Collectors.toMap(Function::getName, f -> f));
+            functionEvaluators.forEach(fe -> {
+                fe.processExpression();
+                if (fe.getParameters().isVisible()) {
+                    fe.evaluate(true);
                 }
-            }
+            });
         });
     }
 
     public void functionUpdate(boolean processExpressions, boolean force) {
         Main.EXECUTOR_THREAD.submit(() -> {
-            try {
-                functionMap = functions.stream()
-                        .collect(Collectors.toMap(Function::getName, f -> f));
-                functionEvaluators.forEach(fe -> {
-                    if (fe.getParameters().isVisible()) {
-                        if (processExpressions) {
-                            fe.processExpression();
-                        }
-
-                        fe.evaluate(force);
+            functionMap = functions.stream()
+                    .collect(Collectors.toMap(Function::getName, f -> f));
+            functionEvaluators.forEach(fe -> {
+                if (fe.getParameters().isVisible()) {
+                    if (processExpressions) {
+                        fe.processExpression();
                     }
-                });
-            } finally {
-                if (plottingPanel != null) {
-                    plottingPanel.repaint();
+
+                    fe.evaluate(force);
                 }
-            }
+            });
         });
     }
 }
