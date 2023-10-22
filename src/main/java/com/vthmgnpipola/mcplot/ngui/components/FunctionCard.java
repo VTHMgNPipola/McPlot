@@ -29,8 +29,13 @@ import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import com.vthmgnpipola.mcplot.plot.FunctionPlotParameters;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -117,7 +122,7 @@ public class FunctionCard extends JPanel {
         add(remove);
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
-            functionEvaluator.removePlotFromOwner();
+            plottingPanel.getPlots().remove(functionEvaluator.getPlot());
             MathEventStreamer.getInstance().removeFunctionEvaluator(functionEvaluator);
 
             parent.removeFunctionCard(this);

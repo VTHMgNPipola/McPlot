@@ -18,8 +18,6 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
-import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
-import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 import com.vthmgnpipola.mcplot.plot.FunctionPlot;
 import com.vthmgnpipola.mcplot.plot.FunctionPlotParameters;
 import com.vthmgnpipola.mcplot.plot.Trace;
@@ -43,7 +41,7 @@ public class FunctionEvaluator {
 
     private final Function function;
     private final MathEventStreamer parent;
-    private final PlottingPanel owner;
+    private final EvaluationContext context;
 
     private final ConstantEvaluator domainStartEvaluator;
     private final ConstantEvaluator domainEndEvaluator;
@@ -52,17 +50,19 @@ public class FunctionEvaluator {
     private final FunctionPlotParameters parameters;
     private Expression expression;
 
+    private Runnable evaluationUpdateTask;
+
     /**
      * Creates a new FunctionEvaluator and binds it to a function, event streamer and plotting panel. Also registers
      * two constant evaluators in the parent event streamer for the domain start and domain end values.
      *
      * @param function Function this function evaluator "takes care" of.
-     * @param owner    Plotting panel where the function will be plotted.
+     * @param context  Settings for evaluating the expression
      */
-    public FunctionEvaluator(Function function, PlottingPanel owner) {
+    public FunctionEvaluator(Function function, EvaluationContext context) {
         this.function = function;
         this.parent = MathEventStreamer.getInstance();
-        this.owner = owner;
+        this.context = context;
 
         parent.registerFunctionEvaluator(this);
 
@@ -75,11 +75,14 @@ public class FunctionEvaluator {
         if (function.getDefinition() != null) {
             setDefinition(function.getDefinition());
         }
-        owner.getPlots().add(plot);
     }
 
     public Function getFunction() {
         return function;
+    }
+
+    public FunctionPlot getPlot() {
+        return plot;
     }
 
     public FunctionPlotParameters getParameters() {
@@ -116,7 +119,7 @@ public class FunctionEvaluator {
 
     public void setTrace(Trace trace) {
         parameters.setTrace(trace);
-        owner.repaint();
+        evaluationUpdateTask.run();
     }
 
     /**
@@ -128,7 +131,7 @@ public class FunctionEvaluator {
      */
     public void setFilled(boolean filled) {
         parameters.setFilled(filled);
-        owner.repaint();
+        evaluationUpdateTask.run();
     }
 
     /**
@@ -142,35 +145,31 @@ public class FunctionEvaluator {
         if (visible) {
             evaluate(true);
         }
-        owner.repaint();
+        evaluationUpdateTask.run();
     }
 
-    public void removePlotFromOwner() {
-        owner.getPlots().remove(plot);
+    public void setEvaluationUpdateTask(Runnable evaluationUpdateTask) {
+        this.evaluationUpdateTask = evaluationUpdateTask;
     }
 
     /**
-     * This method takes care of determining the exact domain start, domain end and step size values, and submitting
-     * the function that is bound to this function evaluator to be calculated on the {@link MathEvaluatorPool} that
-     * was also bound to this function evaluator.
+     * This method takes care of submitting the function that is bound to this function evaluator to be calculated on
+     * the {@link MathEvaluatorPool} that was also bound to this function evaluator.
      * <p>
      * Note that the domain start and end constants aren't calculated at this step, instead this method simply checks
-     * if they are defined. If so, it uses their values, otherwise it calculates them based on the camera position,
-     * graph width and zoom.
+     * if they are defined. If so, it uses their values, otherwise it uses the default values from the
+     * {@link EvaluationContext}.
      */
     public void evaluate(boolean force) {
-        PlottingPanelContext context = owner.getContext();
-        double zoomX = context.axisX.scale * context.pixelsPerStep * context.zoom *
-                context.axisX.unit.getScale();
-        double cameraStartX = context.cameraX / zoomX;
-        double cameraEndX = cameraStartX + (owner.getWidth() / zoomX);
+        if (context == null || plot == null || !getParameters().isVisible()) {
+            return;
+        }
 
-        double step = (cameraEndX - cameraStartX) / ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
-                context.samplesPerCell);
+        double defaultDomainStart = context.getDomainStart();
+        double defaultDomainEnd = context.getDomainEnd();
 
-        double domainStart = cameraStartX - ((cameraEndX - cameraStartX) / 2) - step;
-        double domainEnd = cameraEndX + ((cameraEndX - cameraStartX) / 2) + step;
-
+        double domainStart = defaultDomainStart;
+        double domainEnd = defaultDomainEnd;
         if (function.getDomainStart().getActualValue() != null) {
             domainStart = Math.max(domainStart, function.getDomainStart().getActualValue());
         }
@@ -179,16 +178,16 @@ public class FunctionEvaluator {
             domainEnd = Math.min(domainEnd, function.getDomainEnd().getActualValue());
         }
 
-        if (plot != null) {
-            double plotStartXDistance = cameraStartX - plot.getStartX();
-            double plotEndXDistance = plot.getEndX() - cameraEndX;
-            if (force || (plotStartXDistance < step && cameraStartX >= domainStart) ||
-                    (plotEndXDistance < step && cameraEndX <= domainEnd)) {
-                step = (domainEnd - domainStart) / ((double) (context.getBase().getWidth() / context.pixelsPerStep) *
-                        context.samplesPerCell); // Recalculate step, for if domain start or end values changed
-                MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd, step,
-                        parent.getConstantValues());
-            }
+        double step = context.getStep();
+        double viewportStart = context.getViewportStart();
+        double viewportEnd = context.getViewportEnd();
+
+        double plotStartXDistance = viewportStart - plot.getStartX();
+        double plotEndXDistance = plot.getEndX() - viewportEnd;
+        if (force || (plotStartXDistance < step && viewportStart >= domainStart) ||
+                (plotEndXDistance < step && viewportEnd <= domainEnd)) {
+            MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd,
+                    step, parent.getConstantValues());
         }
     }
 

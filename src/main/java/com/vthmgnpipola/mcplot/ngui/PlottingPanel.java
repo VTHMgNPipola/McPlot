@@ -19,6 +19,7 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.GraphUnit;
+import com.vthmgnpipola.mcplot.nmath.EvaluationContext;
 import com.vthmgnpipola.mcplot.nmath.ScientificNotationNumber;
 import com.vthmgnpipola.mcplot.plot.Plot;
 
@@ -56,6 +57,7 @@ public class PlottingPanel extends JPanel {
     private int previousWidth, previousHeight;
     private int flWidth = 0;
     private int flHeight = 0;
+    private final EvaluationContext evaluationContext;
     private PlottingPanelContext context;
     private final AffineTransform zoomTx;
     private final List<Plot> plots;
@@ -73,7 +75,9 @@ public class PlottingPanel extends JPanel {
         setDoubleBuffered(true);
         plots = Collections.synchronizedList(new ArrayList<>());
 
+        evaluationContext = new EvaluationContext();
         context = new PlottingPanelContext(this);
+        context.setEvaluationContext(evaluationContext);
         font = new Font("Monospaced", Font.PLAIN, 12);
         AffineTransform deg45Transform = new AffineTransform();
         deg45Transform.rotate(Math.toRadians(45));
@@ -131,6 +135,7 @@ public class PlottingPanel extends JPanel {
                     startPos[0] = currentMouseX;
                     startPos[1] = currentMouseY;
 
+                    context.updateEvaluationContext();
                     context.recalculateAllFunctions(false);
                     repaint();
                 } else if (dragging[0] == DRAGGING_LEGEND_PANEL) {
@@ -195,6 +200,7 @@ public class PlottingPanel extends JPanel {
 
             zoomTx.setToScale(context.axisX.scale * context.pixelsPerStep * context.zoom,
                     -context.axisY.scale * context.pixelsPerStep * context.zoom);
+            context.updateEvaluationContext();
             context.recalculateAllFunctions(true);
             repaint();
         }));
@@ -209,6 +215,7 @@ public class PlottingPanel extends JPanel {
                     previousWidth = e.getComponent().getWidth();
                     previousHeight = e.getComponent().getHeight();
 
+                    context.updateEvaluationContext();
                     context.recalculateAllFunctions(false);
                     repaint();
                 });
@@ -217,7 +224,7 @@ public class PlottingPanel extends JPanel {
     }
 
     public void init() {
-        context = new PlottingPanelContext(this);
+        context.reset(this);
 
         context.cameraX = -getWidth() / 2;
         context.cameraY = -getHeight() / 2;
@@ -363,6 +370,10 @@ public class PlottingPanel extends JPanel {
         return plots;
     }
 
+    public EvaluationContext getEvaluationContext() {
+        return evaluationContext;
+    }
+
     public PlottingPanelContext getContext() {
         return context;
     }
@@ -370,6 +381,7 @@ public class PlottingPanel extends JPanel {
     void setContext(PlottingPanelContext context) {
         this.context = context;
         context.setBase(this);
+        context.setEvaluationContext(evaluationContext);
     }
 
     private void drawGlobalAxis(Graphics2D g) {

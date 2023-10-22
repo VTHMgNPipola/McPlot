@@ -20,11 +20,13 @@ package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatAddIcon;
+import com.vthmgnpipola.mcplot.nmath.EvaluationContext;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,16 +39,19 @@ public class PlotsPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public PlotsPanel(List<Function> functions, PlottingPanel plottingPanel) {
+    public PlotsPanel(List<Function> functions, PlottingPanel plottingPanel, EvaluationContext context) {
         this.functions = functions;
 
         setLayout(new MigLayout());
         this.functionCards = new ArrayList<>();
         index = new AtomicInteger(1);
 
+        Runnable evaluationUpdateTask = plottingPanel::repaint;
         if (functions.size() != 0) {
             functions.forEach(f -> {
-                FunctionEvaluator functionEvaluator = new FunctionEvaluator(f, plottingPanel);
+                FunctionEvaluator functionEvaluator = new FunctionEvaluator(f, context);
+                functionEvaluator.setEvaluationUpdateTask(evaluationUpdateTask);
+                plottingPanel.getPlots().add(functionEvaluator.getPlot());
 
                 FunctionCard functionCard = new FunctionCard(functionEvaluator, plottingPanel,
                         this, index.getAndIncrement());
@@ -55,7 +60,9 @@ public class PlotsPanel extends JPanel {
             });
         } else {
             Function firstFunction = new Function();
-            FunctionEvaluator firstFunctionEvaluator = new FunctionEvaluator(firstFunction, plottingPanel);
+            FunctionEvaluator firstFunctionEvaluator = new FunctionEvaluator(firstFunction, context);
+            firstFunctionEvaluator.setEvaluationUpdateTask(evaluationUpdateTask);
+            plottingPanel.getPlots().add(firstFunctionEvaluator.getPlot());
 
             FunctionCard firstFunctionCard = new FunctionCard(firstFunctionEvaluator, plottingPanel,
                     this, index.getAndIncrement());
@@ -69,7 +76,9 @@ public class PlotsPanel extends JPanel {
         add(addFunctionCard, "pushx, span, growx");
         addFunctionCard.addActionListener(e -> {
             Function function = new Function();
-            FunctionEvaluator functionEvaluator = new FunctionEvaluator(function, plottingPanel);
+            FunctionEvaluator functionEvaluator = new FunctionEvaluator(function, context);
+            functionEvaluator.setEvaluationUpdateTask(evaluationUpdateTask);
+            plottingPanel.getPlots().add(functionEvaluator.getPlot());
 
             FunctionCard functionCard = new FunctionCard(functionEvaluator, plottingPanel, this,
                     index.getAndIncrement());

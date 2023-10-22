@@ -66,7 +66,7 @@ public class MathPanel extends JPanel {
             this.constants.addAll(constants);
         }
 
-        PlotsPanel plotsPanel = new PlotsPanel(this.functions, plottingPanel);
+        PlotsPanel plotsPanel = new PlotsPanel(this.functions, plottingPanel, plottingPanel.getEvaluationContext());
         tabbedPane.addTab(BUNDLE.getString("workspace.panels.functions"), new JScrollPane(plotsPanel));
 
         ConstantsPanel constantsPanel = new ConstantsPanel(this.constants);

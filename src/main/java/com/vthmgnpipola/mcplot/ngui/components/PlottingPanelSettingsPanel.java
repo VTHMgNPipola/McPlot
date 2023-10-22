@@ -23,7 +23,13 @@ import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.text.DefaultFormatter;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -139,6 +145,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         axisXUnit.setSelectedItem(context.axisX.unit);
         axisXUnit.addActionListener(e -> {
             context.axisX.unit = (GraphUnit) axisXUnit.getSelectedItem();
+            context.updateEvaluationContext();
             context.recalculateAllFunctions(true);
 
             if (axisXUnit.getSelectedItem() != GraphUnit.CUSTOM_X_UNIT) {
@@ -172,6 +179,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_X_UNIT.getUnitValueEvaluator().setDefinition(axisXUnitDefinition.getText());
+                context.updateEvaluationContext();
                 MathEventStreamer.getInstance().functionUpdate(false, true);
             }
         });
@@ -188,6 +196,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         axisYUnit.setSelectedItem(context.axisY.unit);
         axisYUnit.addActionListener(e -> {
             context.axisY.unit = (GraphUnit) axisYUnit.getSelectedItem();
+            context.updateEvaluationContext();
             context.recalculateAllFunctions(true);
 
             if (axisYUnit.getSelectedItem() != GraphUnit.CUSTOM_Y_UNIT) {
@@ -221,6 +230,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 GraphUnit.CUSTOM_Y_UNIT.getUnitValueEvaluator().setDefinition(axisYUnitDefinition.getText());
+                context.updateEvaluationContext();
                 MathEventStreamer.getInstance().functionUpdate(false, true);
             }
         });
@@ -244,6 +254,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         enableCommitsOnValidEdit(scaleX);
         scaleX.addChangeListener(e -> {
             context.axisX.scale = (double) scaleX.getValue();
+            context.updateEvaluationContext();
             context.recalculateAllFunctions(true);
         });
         JLabel scaleXUnit = new JLabel("x");
@@ -258,6 +269,7 @@ public class PlottingPanelSettingsPanel extends JPanel {
         enableCommitsOnValidEdit(scaleY);
         scaleY.addChangeListener(e -> {
             context.axisY.scale = (double) scaleY.getValue();
+            context.updateEvaluationContext();
             context.recalculateAllFunctions(true);
         });
         JLabel scaleYUnit = new JLabel("x");

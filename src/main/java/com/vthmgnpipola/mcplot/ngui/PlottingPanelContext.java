@@ -19,10 +19,12 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.GraphAxis;
+import com.vthmgnpipola.mcplot.nmath.EvaluationContext;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import com.vthmgnpipola.mcplot.plot.Trace;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -52,8 +54,13 @@ public class PlottingPanelContext implements Serializable {
     public int minorGridDivisions;
     public double fillTransparency;
     private transient PlottingPanel base;
+    private transient EvaluationContext evaluationContext;
 
     public PlottingPanelContext(PlottingPanel base) {
+        reset(base);
+    }
+
+    public void reset(PlottingPanel base) {
         this.base = base;
 
         zoom = 1;
@@ -78,6 +85,7 @@ public class PlottingPanelContext implements Serializable {
 
     public void setSamplesPerCell(int samplesPerCell) {
         this.samplesPerCell = samplesPerCell;
+        updateEvaluationContext();
         recalculateAllFunctions(true);
     }
 
@@ -154,6 +162,16 @@ public class PlottingPanelContext implements Serializable {
 
     void setBase(PlottingPanel base) {
         this.base = base;
+        updateEvaluationContext();
+    }
+
+    void setEvaluationContext(EvaluationContext evaluationContext) {
+        this.evaluationContext = evaluationContext;
+        updateEvaluationContext();
+    }
+
+    public void updateEvaluationContext() {
+        evaluationContext.update(this);
     }
 
     public void recalculateAllFunctions(boolean force) {
