@@ -24,7 +24,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.operator.Operator;
 import net.objecthunter.exp4j.operator.Operators;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.awt.geom.Path2D;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -150,6 +150,9 @@ public class MathEvaluatorPool {
                     plot.setPath(null);
 
                     runningFunctions--;
+                    if (runningFunctions == 0) {
+                        functionsDoneTasks.forEach(Runnable::run);
+                    }
                     return;
                 }
 
@@ -157,7 +160,12 @@ public class MathEvaluatorPool {
                 expression.setVariables(constants);
                 expression.setVariable(variableName, domainStart);
                 if (!expression.validate(true).isValid()) {
+                    plot.setPath(null);
+
                     runningFunctions--;
+                    if (runningFunctions == 0) {
+                        functionsDoneTasks.forEach(Runnable::run);
+                    }
                     return;
                 }
 
@@ -173,6 +181,10 @@ public class MathEvaluatorPool {
                 for (double i = domainStart; i <= domainEnd; i += step) {
                     if (lastI < 0 && i > 0) {
                         i = 0;
+                    }
+
+                    if (i + step > domainEnd) {
+                        i = domainEnd;
                     }
 
                     expression.setVariable(variableName, i);
