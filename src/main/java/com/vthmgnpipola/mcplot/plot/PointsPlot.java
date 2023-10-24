@@ -20,7 +20,7 @@ package com.vthmgnpipola.mcplot.plot;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
@@ -31,16 +31,6 @@ public class PointsPlot implements Plot {
     private String legend;
     private boolean visible = true;
     private Trace trace;
-
-    @Override
-    public Path2D.Double getPath() {
-        return path;
-    }
-
-    @Override
-    public void setPath(Path2D.Double path) {
-        throw new UnsupportedOperationException("The path from a PointsPlot cannot be overridden!");
-    }
 
     @Override
     public String getLegend() {
@@ -54,6 +44,11 @@ public class PointsPlot implements Plot {
     @Override
     public boolean isInvisible() {
         return !visible;
+    }
+
+    @Override
+    public boolean isInvalid() {
+        return path == null;
     }
 
     @Override

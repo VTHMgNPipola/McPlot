@@ -300,7 +300,7 @@ public class PlottingPanel extends JPanel {
         int visibleFunctions = 0;
         int longestPlot = 0;
         for (Plot plot : plots) {
-            if (plot == null || plot.getPath() == null || plot.isInvisible()) {
+            if (plot == null || plot.isInvalid() || plot.isInvisible()) {
                 continue;
             }
 
@@ -333,7 +333,7 @@ public class PlottingPanel extends JPanel {
             g.translate(context.flPositionX, context.flPositionY);
             int i = 0;
             for (Plot plot : plots) {
-                if (plot == null || plot.getPath() == null || plot.isInvisible()) {
+                if (plot == null || plot.isInvalid() || plot.isInvisible()) {
                     continue;
                 }
 

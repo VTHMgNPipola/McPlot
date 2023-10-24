@@ -18,14 +18,12 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
-import com.vthmgnpipola.mcplot.plot.FunctionPlot;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.operator.Operator;
 import net.objecthunter.exp4j.operator.Operators;
 
 import javax.swing.JOptionPane;
-import java.awt.geom.Path2D;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -140,14 +138,15 @@ public class MathEvaluatorPool {
         });
     }
 
-    public void evaluateFunction(Function function, Expression expression, FunctionPlot plot,
+    public void evaluateFunction(Function function, Expression expression,
+                                 EvaluationResultConsumer<Double, Double> resultConsumer,
                                  double domainStart, double domainEnd, double step,
                                  Map<String, Double> constants) {
         runningFunctions++;
         executor.submit(() -> {
             try {
                 if (function == null || expression == null || domainEnd < domainStart) {
-                    plot.setPath(null);
+                    resultConsumer.invalidate();
 
                     runningFunctions--;
                     if (runningFunctions == 0) {
@@ -160,7 +159,7 @@ public class MathEvaluatorPool {
                 expression.setVariables(constants);
                 expression.setVariable(variableName, domainStart);
                 if (!expression.validate(true).isValid()) {
-                    plot.setPath(null);
+                    resultConsumer.invalidate();
 
                     runningFunctions--;
                     if (runningFunctions == 0) {
@@ -169,14 +168,8 @@ public class MathEvaluatorPool {
                     return;
                 }
 
-                plot.setStartX(domainStart);
-                plot.setEndX(domainEnd);
+                resultConsumer.start();
 
-                Path2D.Double path = new Path2D.Double(Path2D.WIND_NON_ZERO, (int) ((domainEnd - domainStart) / step));
-                path.reset();
-
-                boolean moving = true;
-                boolean hasPoints = false;
                 double lastI = domainStart;
                 for (double i = domainStart; i <= domainEnd; i += step) {
                     if (lastI < 0 && i > 0) {
@@ -189,23 +182,11 @@ public class MathEvaluatorPool {
 
                     expression.setVariable(variableName, i);
                     double value = expression.evaluate();
-                    if (Double.isNaN(value)) {
-                        moving = true;
-                    } else if (moving) {
-                        path.moveTo(i, value);
-                        moving = false;
-                    } else {
-                        hasPoints = true;
-                        path.lineTo(i, value);
-                    }
+                    resultConsumer.accept(i, value);
                     lastI = i;
                 }
 
-                if (hasPoints) {
-                    plot.setPath(path);
-                } else {
-                    plot.setPath(null);
-                }
+                resultConsumer.complete();
 
                 runningFunctions--;
                 if (runningFunctions == 0) {
@@ -213,7 +194,7 @@ public class MathEvaluatorPool {
                 }
             } catch (Throwable t) {
                 runningFunctions--;
-                plot.setPath(null);
+                resultConsumer.invalidate();
             }
         });
     }

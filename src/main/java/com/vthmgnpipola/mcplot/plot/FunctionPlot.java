@@ -19,16 +19,21 @@
 package com.vthmgnpipola.mcplot.plot;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
+import com.vthmgnpipola.mcplot.nmath.EvaluationResultConsumer;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 
-public class FunctionPlot implements Plot {
+public class FunctionPlot implements Plot, EvaluationResultConsumer<Double, Double> {
     private final FunctionPlotParameters parameters;
-    private Path2D.Double path;
+    private Path2D.Double path, pathBuffer;
     private double startX;
     private double endX;
+
+    private boolean moving, hasPoints;
+    private double lastInput;
 
     public FunctionPlot() {
         parameters = new FunctionPlotParameters();
@@ -39,16 +44,6 @@ public class FunctionPlot implements Plot {
     }
 
     @Override
-    public Path2D.Double getPath() {
-        return path;
-    }
-
-    @Override
-    public void setPath(Path2D.Double path) {
-        this.path = path;
-    }
-
-    @Override
     public String getLegend() {
         return parameters.getLegend();
     }
@@ -56,6 +51,11 @@ public class FunctionPlot implements Plot {
     @Override
     public boolean isInvisible() {
         return !parameters.isVisible();
+    }
+
+    @Override
+    public boolean isInvalid() {
+        return path == null;
     }
 
     @Override
@@ -86,15 +86,61 @@ public class FunctionPlot implements Plot {
         return startX;
     }
 
-    public void setStartX(double startX) {
-        this.startX = startX;
-    }
-
     public double getEndX() {
         return endX;
     }
 
-    public void setEndX(double endX) {
-        this.endX = endX;
+    @Override
+    public void accept(Double input, Double result) throws IllegalStateException {
+        if (pathBuffer != null) {
+            if (!Double.isNaN(startX)) {
+                startX = input;
+            }
+
+            if (Double.isNaN(result)) {
+                moving = true;
+            } else if (moving) {
+                pathBuffer.moveTo(input, result);
+                moving = false;
+            } else {
+                hasPoints = true;
+                pathBuffer.lineTo(input, result);
+            }
+
+            lastInput = input;
+        } else {
+            throw new IllegalStateException("There is no ongoing consumer session to accept results!");
+        }
+    }
+
+    @Override
+    public void complete() throws IllegalStateException {
+        if (pathBuffer != null) {
+            path = hasPoints ? pathBuffer : null;
+            pathBuffer = null;
+            endX = lastInput;
+        } else {
+            throw new IllegalStateException("There is no ongoing consumer session to complete!");
+        }
+    }
+
+    @Override
+    public void start() {
+        pathBuffer = new Path2D.Double();
+        lastInput = Double.NaN;
+        startX = Double.NaN;
+        endX = Double.NaN;
+
+        moving = true;
+        hasPoints = false;
+    }
+
+    @Override
+    public void invalidate() {
+        path = null;
+        pathBuffer = null;
+        lastInput = Double.NaN;
+        startX = Double.NaN;
+        endX = Double.NaN;
     }
 }

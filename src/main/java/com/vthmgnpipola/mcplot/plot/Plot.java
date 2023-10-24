@@ -20,18 +20,15 @@ package com.vthmgnpipola.mcplot.plot;
 
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 
-import java.awt.*;
+import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Path2D;
 
 public interface Plot {
-    Path2D.Double getPath();
-
-    void setPath(Path2D.Double path);
-
     String getLegend();
 
     boolean isInvisible();
+
+    boolean isInvalid();
 
     Trace getTrace();
 
