@@ -47,6 +47,7 @@ public class PlottingPanelContext implements Serializable {
     public boolean functionLegends;
     public boolean showDecAsFractions;
     public boolean showScientificNotation;
+    public boolean showEngineeringNotation;
     public boolean drawAxisOverFunc;
     public boolean drawMinorGrid;
     public boolean drawGrid;
@@ -75,6 +76,7 @@ public class PlottingPanelContext implements Serializable {
         functionLegends = true;
         showDecAsFractions = false;
         showScientificNotation = true;
+        showEngineeringNotation = false;
         drawAxisOverFunc = false;
         drawMinorGrid = true;
         drawGrid = true;
@@ -118,6 +120,11 @@ public class PlottingPanelContext implements Serializable {
 
     public void setShowScientificNotation(boolean showScientificNotation) {
         this.showScientificNotation = showScientificNotation;
+        base.repaint();
+    }
+
+    public void setShowEngineeringNotation(boolean showEngineeringNotation) {
+        this.showEngineeringNotation = showEngineeringNotation;
         base.repaint();
     }
 

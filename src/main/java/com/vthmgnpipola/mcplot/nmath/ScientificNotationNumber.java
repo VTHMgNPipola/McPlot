@@ -19,18 +19,21 @@
 package com.vthmgnpipola.mcplot.nmath;
 
 public record ScientificNotationNumber(double base, long exponent) {
-    public static ScientificNotationNumber fromDouble(double value) {
+    public static ScientificNotationNumber fromDouble(double value, boolean engineeringNotation) {
+        int multiplier = engineeringNotation ? 1000 : 10;
+        int exponentIncrement = engineeringNotation ? 3 : 1;
+
         double absValue = Math.abs(value);
         long exponent = 0;
         if (absValue >= 1) {
-            while (absValue >= 10) {
-                absValue /= 10;
-                exponent++;
+            while (absValue >= multiplier) {
+                absValue /= multiplier;
+                exponent += exponentIncrement;
             }
         } else {
             while (absValue < 1) {
-                absValue *= 10;
-                exponent--;
+                absValue *= multiplier;
+                exponent -= exponentIncrement;
             }
         }
         double base = value < 0 ? -absValue : absValue;

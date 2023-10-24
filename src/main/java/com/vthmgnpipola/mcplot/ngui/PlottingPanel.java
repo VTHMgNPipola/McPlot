@@ -508,7 +508,7 @@ public class PlottingPanel extends JPanel {
         String step;
         double absStepValue = Math.abs(stepValue);
         if (context.showScientificNotation && (absStepValue >= 1000 || absStepValue < 0.01d)) {
-            ScientificNotationNumber number = ScientificNotationNumber.fromDouble(stepValue);
+            ScientificNotationNumber number = ScientificNotationNumber.fromDouble(stepValue, context.showEngineeringNotation);
             String exponent = "×10" + toSuperscript(String.valueOf(number.exponent()));
             step = unit.getScientificTransformedUnit(stepValue, getFormattedDouble(number.base()),
                     exponent);

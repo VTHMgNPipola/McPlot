@@ -61,6 +61,15 @@ public class PlottingPanelSettingsPanel extends JPanel {
         showDecAsFraction.setToolTipText(BUNDLE.getString("settings.plottingPanel.showDecAsFractions.tooltip"));
         showDecAsFraction.addActionListener(e -> context.setShowDecAsFractions(showDecAsFraction.isSelected()));
 
+        // Show values in engineering notation if necessary
+        JCheckBox showEngineeringNotation = new JCheckBox(
+                BUNDLE.getString("settings.plottingPanel.showEngineeringNotation"),
+                context.showEngineeringNotation);
+        showEngineeringNotation
+                .setToolTipText(BUNDLE.getString("settings.plottingPanel.showEngineeringNotation.tooltip"));
+        showEngineeringNotation.addActionListener(e ->
+                context.setShowEngineeringNotation(showEngineeringNotation.isSelected()));
+
         // Show values in scientific notation if necessary
         JCheckBox showScientificNotation = new JCheckBox(
                 BUNDLE.getString("settings.plottingPanel.showScientificNotation"),
@@ -68,8 +77,13 @@ public class PlottingPanelSettingsPanel extends JPanel {
         add(showScientificNotation, "span");
         showScientificNotation
                 .setToolTipText(BUNDLE.getString("settings.plottingPanel.showScientificNotation.tooltip"));
-        showScientificNotation.addActionListener(e ->
-                context.setShowScientificNotation(showScientificNotation.isSelected()));
+        showScientificNotation.addActionListener(e -> {
+            showEngineeringNotation.setEnabled(showScientificNotation.isSelected());
+            context.setShowScientificNotation(showScientificNotation.isSelected());
+        });
+
+        // Add engineering notation toggle after the scientific notation toggle
+        add(showEngineeringNotation, "span, gapbefore 20");
 
         // Draw grid
         JCheckBox drawAxisOverFunc = new JCheckBox(
