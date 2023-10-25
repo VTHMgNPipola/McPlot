@@ -24,9 +24,8 @@ import com.vthmgnpipola.mcplot.ngui.PlotsPanel;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatMoreSettingsIcon;
 import com.vthmgnpipola.mcplot.nmath.Function;
-import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
-import com.vthmgnpipola.mcplot.plot.FunctionPlotParameters;
+import com.vthmgnpipola.mcplot.plot.FunctionPlotter;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.BorderFactory;
@@ -52,46 +51,44 @@ public class FunctionCard extends JPanel {
     private final JCheckBox visible;
     private final Function function;
 
-    public FunctionCard(FunctionEvaluator functionEvaluator, PlottingPanel plottingPanel, PlotsPanel parent,
+    public FunctionCard(FunctionPlotter functionPlotter, PlottingPanel plottingPanel, PlotsPanel parent,
                         int index) {
         setLayout(new MigLayout());
 
         setIndex(index);
 
-        function = functionEvaluator.getFunction();
+        function = functionPlotter.getEvaluator().getFunction();
         function.setIndex(index);
-
-        FunctionPlotParameters parameters = functionEvaluator.getParameters();
 
         ColorChooserButton colorChooserButton = new ColorChooserButton();
         add(colorChooserButton, "growy, split 3");
         colorChooserButton.setToolTipText(BUNDLE.getString("functionCard.selectColor"));
-        if (parameters.getTrace().getColor() == null) {
+        if (functionPlotter.getPlot().getTrace().getColor() == null) {
             Color startingColor = new Color(RANDOM.nextInt(255), RANDOM.nextInt(255),
                     RANDOM.nextInt(255));
-            parameters.getTrace().setColor(startingColor);
+            functionPlotter.getPlot().getTrace().setColor(startingColor);
             colorChooserButton.setSelectedColor(startingColor);
         } else {
-            colorChooserButton.setSelectedColor(parameters.getTrace().getColor());
+            colorChooserButton.setSelectedColor(functionPlotter.getPlot().getTrace().getColor());
         }
         colorChooserButton.setMaximumSize(new Dimension(40, 40));
-        colorChooserButton.setColorChooserListener(parameters.getTrace()::setColor);
+        colorChooserButton.setColorChooserListener(functionPlotter.getPlot().getTrace()::setColor);
 
         JButton otherSettings = new JButton(new FlatMoreSettingsIcon());
         add(otherSettings, "growy");
         otherSettings.setToolTipText(BUNDLE.getString("functionCard.otherSettings.tooltip"));
         otherSettings.addActionListener(e -> {
-            FunctionSettingsDialog functionSettingsDialog = new FunctionSettingsDialog(functionEvaluator, index,
+            FunctionSettingsDialog functionSettingsDialog = new FunctionSettingsDialog(functionPlotter, index,
                     SwingUtilities.getWindowAncestor(this));
             functionSettingsDialog.init();
             functionSettingsDialog.setVisible(true);
         });
 
         visible = new JCheckBox(BUNDLE.getString("functionCard.settings.functionVisible"),
-                parameters.isVisible());
+                !functionPlotter.getPlot().isInvisible());
         add(visible, "pushx, growx, wrap");
         visible.setToolTipText(BUNDLE.getString("functionCard.settings.functionVisible.tooltip"));
-        visible.addActionListener(e -> functionEvaluator.setVisible(visible.isSelected()));
+        visible.addActionListener(e -> functionPlotter.setVisible(visible.isSelected()));
 
         JLabeledTextField functionField = new JLabeledTextField();
         add(functionField, "pushx, growx");
@@ -103,8 +100,8 @@ public class FunctionCard extends JPanel {
             @Override
             public void focusLost(FocusEvent e) {
                 if (!Objects.equals(function.getDefinition(), functionField.getText())) {
-                    functionEvaluator.setDefinition(functionField.getText());
-                    plottingPanel.repaint();
+                    functionPlotter.getEvaluator().setDefinition(functionField.getText());
+                    functionPlotter.setLegend(functionField.getText());
                 }
             }
         });
@@ -112,8 +109,8 @@ public class FunctionCard extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 if (!Objects.equals(function.getDefinition(), functionField.getText())) {
-                    functionEvaluator.setDefinition(functionField.getText());
-                    plottingPanel.repaint();
+                    functionPlotter.getEvaluator().setDefinition(functionField.getText());
+                    functionPlotter.setLegend(functionField.getText());
                 }
             }
         });
@@ -122,8 +119,8 @@ public class FunctionCard extends JPanel {
         add(remove);
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
-            plottingPanel.getPlots().remove(functionEvaluator.getPlot());
-            MathEventStreamer.getInstance().removeFunctionEvaluator(functionEvaluator);
+            plottingPanel.getPlots().remove(functionPlotter.getPlot());
+            MathEventStreamer.getInstance().removeFunctionEvaluator(functionPlotter.getEvaluator());
 
             parent.removeFunctionCard(this);
         });

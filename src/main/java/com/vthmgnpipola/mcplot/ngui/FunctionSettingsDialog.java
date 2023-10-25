@@ -19,13 +19,17 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Function;
-import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
-import com.vthmgnpipola.mcplot.plot.FunctionPlotParameters;
+import com.vthmgnpipola.mcplot.plot.FunctionLinePlot;
+import com.vthmgnpipola.mcplot.plot.FunctionPlotter;
 import com.vthmgnpipola.mcplot.plot.TraceType;
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.MessageFormat;
@@ -45,15 +49,15 @@ public class FunctionSettingsDialog extends MDialog {
     private static final FunctionTraceType[] TRACES = new FunctionTraceType[]{TRACE_DEFAULT, TRACE_DASHED,
             TRACE_DOTTED, TRACE_DASHED_DOTTED};
 
-    private final FunctionEvaluator functionEvaluator;
+    private final FunctionPlotter functionPlotter;
 
-    public FunctionSettingsDialog(FunctionEvaluator functionEvaluator, int index, Window owner) {
+    public FunctionSettingsDialog(FunctionPlotter functionPlotter, int index, Window owner) {
         super(owner, MessageFormat.format(BUNDLE.getString("functionSettings.title"), index),
                 ModalityType.APPLICATION_MODAL);
         setResizable(true);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        this.functionEvaluator = functionEvaluator;
+        this.functionPlotter = functionPlotter;
     }
 
     @Override
@@ -64,8 +68,7 @@ public class FunctionSettingsDialog extends MDialog {
     }
 
     private void initContentPane() {
-        Function function = functionEvaluator.getFunction();
-        FunctionPlotParameters plotParameters = functionEvaluator.getParameters();
+        Function function = functionPlotter.getEvaluator().getFunction();
 
         JPanel contentPane = new JPanel(new MigLayout("insets 15", "[]15",
                 "[]10"));
@@ -81,7 +84,7 @@ public class FunctionSettingsDialog extends MDialog {
             @Override
             public void keyReleased(KeyEvent e) {
                 String text = domainStart.getText().trim();
-                functionEvaluator.setDomainStart(text.equals("*") ? null : text);
+                functionPlotter.getEvaluator().setDomainStart(text.equals("*") ? null : text);
             }
         });
 
@@ -95,7 +98,7 @@ public class FunctionSettingsDialog extends MDialog {
             @Override
             public void keyReleased(KeyEvent e) {
                 String text = domainEnd.getText().trim();
-                functionEvaluator.setDomainEnd(text.equals("*") ? null : text);
+                functionPlotter.getEvaluator().setDomainEnd(text.equals("*") ? null : text);
             }
         });
 
@@ -103,14 +106,16 @@ public class FunctionSettingsDialog extends MDialog {
         contentPane.add(traceTypeLabel);
         JComboBox<FunctionTraceType> traceType = new JComboBox<>(TRACES);
         contentPane.add(traceType, "growx, wrap");
-        traceType.setSelectedItem(getSelectedTraceType(plotParameters.getTrace().getType()));
-        traceType.addActionListener(e -> plotParameters.getTrace()
+        traceType.setSelectedItem(getSelectedTraceType(functionPlotter.getPlot().getTrace().getType()));
+        traceType.addActionListener(e -> functionPlotter.getPlot().getTrace()
                 .setType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType));
 
-        JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"), plotParameters.isFilled());
+        JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"),
+                functionPlotter.getPlot().getPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE));
         contentPane.add(fillArea, "span");
         fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillArea.tooltip"));
-        fillArea.addActionListener(e -> functionEvaluator.setFilled(fillArea.isSelected()));
+        fillArea.addActionListener(e -> functionPlotter
+                .setPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE, fillArea.isSelected()));
     }
 
     private FunctionTraceType getSelectedTraceType(TraceType traceType) {

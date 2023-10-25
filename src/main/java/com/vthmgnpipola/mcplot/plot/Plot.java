@@ -26,11 +26,19 @@ import java.awt.geom.AffineTransform;
 public interface Plot {
     String getLegend();
 
+    void setLegend(String legend);
+
     boolean isInvisible();
+
+    void setVisible(boolean visible);
 
     boolean isInvalid();
 
     Trace getTrace();
+
+    void setPlottingParameter(String key, boolean value);
+
+    boolean getPlottingParameter(String key);
 
     void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context);
 }

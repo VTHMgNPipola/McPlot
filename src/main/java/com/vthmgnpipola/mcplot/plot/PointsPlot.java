@@ -56,8 +56,13 @@ public class PointsPlot implements Plot {
         return trace;
     }
 
-    public void setTrace(Trace trace) {
-        this.trace = trace;
+    @Override
+    public void setPlottingParameter(String key, boolean value) {
+    }
+
+    @Override
+    public boolean getPlottingParameter(String key) {
+        return false;
     }
 
     @Override

@@ -18,9 +18,6 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
-import com.vthmgnpipola.mcplot.plot.FunctionPlot;
-import com.vthmgnpipola.mcplot.plot.FunctionPlotParameters;
-import com.vthmgnpipola.mcplot.plot.Trace;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -46,11 +43,8 @@ public class FunctionEvaluator {
     private final ConstantEvaluator domainStartEvaluator;
     private final ConstantEvaluator domainEndEvaluator;
 
-    private final FunctionPlot plot;
-    private final FunctionPlotParameters parameters;
+    private final EvaluationResultConsumer<Double, Double> resultConsumer;
     private Expression expression;
-
-    private Runnable evaluationUpdateTask;
 
     /**
      * Creates a new FunctionEvaluator and binds it to a function, event streamer and plotting panel. Also registers
@@ -59,7 +53,8 @@ public class FunctionEvaluator {
      * @param function Function this function evaluator "takes care" of.
      * @param context  Settings for evaluating the expression
      */
-    public FunctionEvaluator(Function function, EvaluationContext context) {
+    public FunctionEvaluator(Function function, EvaluationContext context,
+                             EvaluationResultConsumer<Double, Double> resultConsumer) {
         this.function = function;
         this.parent = MathEventStreamer.getInstance();
         this.context = context;
@@ -70,8 +65,7 @@ public class FunctionEvaluator {
 
         domainEndEvaluator = new ConstantEvaluator(function.getDomainEnd());
 
-        plot = new FunctionPlot();
-        parameters = plot.getParameters();
+        this.resultConsumer = resultConsumer;
         if (function.getDefinition() != null) {
             setDefinition(function.getDefinition());
         }
@@ -81,18 +75,21 @@ public class FunctionEvaluator {
         return function;
     }
 
-    public FunctionPlot getPlot() {
-        return plot;
+    public EvaluationResultConsumer<Double, Double> getResultConsumer() {
+        return resultConsumer;
     }
 
-    public FunctionPlotParameters getParameters() {
-        return parameters;
+    public EvaluationContext getContext() {
+        return context;
     }
 
     public void setDefinition(String definition) {
         function.setDefinition(definition);
-        parameters.setLegend(definition);
         parent.functionUpdate(true, true);
+    }
+
+    public Double getDomainStart() {
+        return function.getDomainStart().getActualValue();
     }
 
     /**
@@ -106,6 +103,10 @@ public class FunctionEvaluator {
         domainStartEvaluator.setDefinition(domainStart);
     }
 
+    public Double getDomainEnd() {
+        return function.getDomainEnd().getActualValue();
+    }
+
     /**
      * Defines the definition string for the domain end constant. Doing so will trigger a constant update event on
      * the event streamer bound to this function evaluator, which will recalculate every constant and function
@@ -117,41 +118,6 @@ public class FunctionEvaluator {
         domainEndEvaluator.setDefinition(domainEnd);
     }
 
-    public void setTrace(Trace trace) {
-        parameters.setTrace(trace);
-        evaluationUpdateTask.run();
-    }
-
-    /**
-     * Defines if the function bound to this function evaluator will be filled by the plotting panel or not, and
-     * repaints it to apply the modification.
-     *
-     * @param filled Set to true if the function should be filled while rendering the graph in the plotting panel,
-     *               false otherwise.
-     */
-    public void setFilled(boolean filled) {
-        parameters.setFilled(filled);
-        evaluationUpdateTask.run();
-    }
-
-    /**
-     * Defines if the function bound to this function evaluator should be calculated and displayed on the plotting
-     * panel. If set to false, the function will never be recalculated or displayed on the plotting panel.
-     *
-     * @param visible Set to true if the function should be calculated and displayed, false otherwise.
-     */
-    public void setVisible(boolean visible) {
-        parameters.setVisible(visible);
-        if (visible) {
-            evaluate(true);
-        }
-        evaluationUpdateTask.run();
-    }
-
-    public void setEvaluationUpdateTask(Runnable evaluationUpdateTask) {
-        this.evaluationUpdateTask = evaluationUpdateTask;
-    }
-
     /**
      * This method takes care of submitting the function that is bound to this function evaluator to be calculated on
      * the {@link MathEvaluatorPool} that was also bound to this function evaluator.
@@ -160,35 +126,26 @@ public class FunctionEvaluator {
      * if they are defined. If so, it uses their values, otherwise it uses the default values from the
      * {@link EvaluationContext}.
      */
-    public void evaluate(boolean force) {
-        if (context == null || plot == null || !getParameters().isVisible()) {
+    public void evaluate(boolean forceDomain) {
+        if (context == null || resultConsumer == null) {
             return;
         }
 
-        double defaultDomainStart = context.getDomainStart();
-        double defaultDomainEnd = context.getDomainEnd();
+        double domainStart = context.getDomainStart();
+        double domainEnd = context.getDomainEnd();
 
-        double domainStart = defaultDomainStart;
-        double domainEnd = defaultDomainEnd;
-        if (function.getDomainStart().getActualValue() != null) {
-            domainStart = Math.max(domainStart, function.getDomainStart().getActualValue());
+        Double definedDomainStart = function.getDomainStart().getActualValue();
+        if (definedDomainStart != null && (domainStart < definedDomainStart || forceDomain)) {
+            domainStart = Math.max(domainStart, definedDomainStart);
         }
 
-        if (function.getDomainEnd().getActualValue() != null) {
-            domainEnd = Math.min(domainEnd, function.getDomainEnd().getActualValue());
+        Double definedDomainEnd = function.getDomainEnd().getActualValue();
+        if (definedDomainEnd != null && (domainEnd > definedDomainEnd || forceDomain)) {
+            domainEnd = Math.min(domainEnd, definedDomainEnd);
         }
 
-        double step = context.getStep();
-        double viewportStart = context.getViewportStart();
-        double viewportEnd = context.getViewportEnd();
-
-        double plotStartXDistance = viewportStart - plot.getStartX();
-        double plotEndXDistance = plot.getEndX() - viewportEnd;
-        if (force || (plotStartXDistance < step && viewportStart >= domainStart) ||
-                (plotEndXDistance < step && viewportEnd <= domainEnd)) {
-            MathEvaluatorPool.getInstance().evaluateFunction(function, expression, plot, domainStart, domainEnd,
-                    step, parent.getConstantValues());
-        }
+        MathEvaluatorPool.getInstance().evaluateFunction(function, expression, resultConsumer, domainStart,
+                domainEnd, context.getStep(), parent.getConstantValues());
     }
 
     public static Expression processExpression(Function function, Map<String, Function> functionMap,
