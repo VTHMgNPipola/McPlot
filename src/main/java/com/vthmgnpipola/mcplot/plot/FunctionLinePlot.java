@@ -26,12 +26,13 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class FunctionLinePlot implements FunctionPlot {
-    public static final String KEY_FILLED_SHAPE = "filled.shape";
+    public static final String KEY_FILLED_SHAPE = "key.filled.shape";
+    public static final String VALUE_FILL_DISABLE = "value.disable.fill";
+    public static final String VALUE_FILL_SOLID = "value.solid.fill";
 
-    private final Map<String, Boolean> parameters;
+    private final Map<String, String> parameters;
     private String legend;
     private boolean visible;
     private final Trace trace;
@@ -84,18 +85,24 @@ public class FunctionLinePlot implements FunctionPlot {
     }
 
     @Override
-    public void setPlottingParameter(String key, boolean value) {
+    public void setPlottingParameter(String key, String value) {
         parameters.put(key, value);
     }
 
     @Override
-    public boolean getPlottingParameter(String key) {
-        return Objects.requireNonNullElse(parameters.get(key), false);
+    public String getPlottingParameter(String key) {
+        return parameters.get(key);
+    }
+
+    @Override
+    public boolean hasPlottingParameter(String key, String value) {
+        String plottingParameter = getPlottingParameter(key);
+        return plottingParameter != null && plottingParameter.equals(value);
     }
 
     @Override
     public void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context) {
-        if (getPlottingParameter(KEY_FILLED_SHAPE)) {
+        if (hasPlottingParameter(KEY_FILLED_SHAPE, VALUE_FILL_SOLID)) {
             Color traceColor = getTrace().getColor();
             Color fillColor = new Color(traceColor.getRed(), traceColor.getGreen(), traceColor.getBlue(),
                     (int) Math.min((context.fillTransparency * 2.55), 255));

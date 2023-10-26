@@ -57,11 +57,16 @@ public class PointsPlot implements Plot {
     }
 
     @Override
-    public void setPlottingParameter(String key, boolean value) {
+    public void setPlottingParameter(String key, String value) {
     }
 
     @Override
-    public boolean getPlottingParameter(String key) {
+    public String getPlottingParameter(String key) {
+        return null;
+    }
+
+    @Override
+    public boolean hasPlottingParameter(String key, String value) {
         return false;
     }
 

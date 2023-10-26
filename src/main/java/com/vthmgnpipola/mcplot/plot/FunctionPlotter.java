@@ -23,8 +23,8 @@ import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
 
 public class FunctionPlotter {
-    private final FunctionPlot plot;
     private final FunctionEvaluator evaluator;
+    private FunctionPlot plot;
 
     private Runnable updateEvent;
 
@@ -35,6 +35,12 @@ public class FunctionPlotter {
 
     public void setUpdateEvent(Runnable updateEvent) {
         this.updateEvent = updateEvent;
+    }
+
+    public void setPlot(FunctionPlot plot) {
+        this.plot = plot;
+        evaluator.setResultConsumer(plot);
+        updateEvent.run();
     }
 
     public FunctionPlot getPlot() {
@@ -55,7 +61,7 @@ public class FunctionPlotter {
         updateEvent.run();
     }
 
-    public void setPlottingParameter(String key, boolean value) {
+    public void setPlottingParameter(String key, String value) {
         plot.setPlottingParameter(key, value);
         updateEvent.run();
     }

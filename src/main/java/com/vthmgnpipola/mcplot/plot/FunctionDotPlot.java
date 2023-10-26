@@ -21,10 +21,20 @@ package com.vthmgnpipola.mcplot.plot;
 import com.vthmgnpipola.mcplot.ngui.PlottingPanelContext;
 
 import java.awt.Graphics2D;
+import java.awt.Polygon;
 import java.awt.geom.AffineTransform;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FunctionDotPlot implements FunctionPlot {
+    public static final String KEY_DOT_SHAPE = "key.dot.shape";
+    public static final String VALUE_DOT_SHAPE_SQUARE = "value.dot.shape.square";
+    public static final String VALUE_DOT_SHAPE_CIRCLE = "value.dot.shape.circle";
+    public static final String VALUE_DOT_SHAPE_TRIANGLE = "value.dot.shape.triangle";
+    public static final String VALUE_DOT_SHAPE_DIAMOND = "value.dot.shape.diamond";
+
+    private final Map<String, String> parameters;
     private String legend;
     private boolean visible;
     private boolean valid;
@@ -43,6 +53,8 @@ public class FunctionDotPlot implements FunctionPlot {
     private int sessionPoints;
 
     public FunctionDotPlot() {
+        parameters = new HashMap<>();
+
         legend = null;
         visible = true;
         valid = false;
@@ -153,12 +165,19 @@ public class FunctionDotPlot implements FunctionPlot {
     }
 
     @Override
-    public void setPlottingParameter(String key, boolean value) {
+    public void setPlottingParameter(String key, String value) {
+        parameters.put(key, value);
     }
 
     @Override
-    public boolean getPlottingParameter(String key) {
-        return false;
+    public String getPlottingParameter(String key) {
+        return parameters.get(key);
+    }
+
+    @Override
+    public boolean hasPlottingParameter(String key, String value) {
+        String plottingParameter = getPlottingParameter(key);
+        return plottingParameter != null && plottingParameter.equals(value);
     }
 
     @Override
@@ -167,8 +186,41 @@ public class FunctionDotPlot implements FunctionPlot {
         g.setColor(getTrace().getColor());
 
         int size = context.traceWidth;
-        for (int i = 0; i < points; i++) {
-            g.fillOval((int) ((xpoints[i] * tx.getScaleX()) - (size / 2)), (int) ((ypoints[i] * tx.getScaleY()) - (size / 2)), size, size);
+        // Copied for loops so the switch wouldn't happen at every point, even though I don't know if this makes any
+        // difference
+        switch (getPlottingParameter(KEY_DOT_SHAPE)) {
+            default -> { // VALUE_DOT_SHAPE_CIRCLE
+                for (int i = 0; i < points; i++) {
+                    g.fillOval((int) ((xpoints[i] * tx.getScaleX()) - (size / 2)),
+                            (int) ((ypoints[i] * tx.getScaleY()) - (size / 2)), size, size);
+                }
+            }
+            case VALUE_DOT_SHAPE_SQUARE -> {
+                for (int i = 0; i < points; i++) {
+                    g.fillRect((int) ((xpoints[i] * tx.getScaleX()) - (size / 2)),
+                            (int) ((ypoints[i] * tx.getScaleY()) - (size / 2)), size, size);
+                }
+            }
+            case VALUE_DOT_SHAPE_TRIANGLE -> {
+                AffineTransform shapeTransform = new AffineTransform();
+                int[] triangleX = new int[]{-(size / 2), 0, (size / 2)};
+                int[] triangleY = new int[]{(size / 2), -(size / 2), (size / 2)};
+                Polygon triangle = new Polygon(triangleX, triangleY, 3);
+                for (int i = 0; i < points; i++) {
+                    shapeTransform.setToTranslation(xpoints[i] * tx.getScaleX(), ypoints[i] * tx.getScaleY());
+                    g.fill(shapeTransform.createTransformedShape(triangle));
+                }
+            }
+            case VALUE_DOT_SHAPE_DIAMOND -> {
+                AffineTransform shapeTransform = new AffineTransform();
+                int[] triangleX = new int[]{-(size / 2), 0, (size / 2), 0};
+                int[] triangleY = new int[]{0, -(size / 2), 0, (size / 2)};
+                Polygon rect = new Polygon(triangleX, triangleY, 4);
+                for (int i = 0; i < points; i++) {
+                    shapeTransform.setToTranslation(xpoints[i] * tx.getScaleX(), ypoints[i] * tx.getScaleY());
+                    g.fill(shapeTransform.createTransformedShape(rect));
+                }
+            }
         }
     }
 }

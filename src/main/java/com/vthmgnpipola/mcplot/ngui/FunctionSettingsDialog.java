@@ -19,7 +19,9 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.nmath.Function;
+import com.vthmgnpipola.mcplot.plot.FunctionDotPlot;
 import com.vthmgnpipola.mcplot.plot.FunctionLinePlot;
+import com.vthmgnpipola.mcplot.plot.FunctionPlot;
 import com.vthmgnpipola.mcplot.plot.FunctionPlotter;
 import com.vthmgnpipola.mcplot.plot.TraceType;
 import net.miginfocom.swing.MigLayout;
@@ -49,6 +51,11 @@ public class FunctionSettingsDialog extends MDialog {
     private static final FunctionTraceType[] TRACES = new FunctionTraceType[]{TRACE_DEFAULT, TRACE_DASHED,
             TRACE_DOTTED, TRACE_DASHED_DOTTED};
 
+    private static final String PLOT_LINE = BUNDLE.getString("functionSettings.plotType.line");
+    private static final String PLOT_DOT = BUNDLE.getString("functionSettings.plotType.dot");
+
+    private static final String[] PLOTS = new String[]{PLOT_LINE, PLOT_DOT};
+
     private final FunctionPlotter functionPlotter;
 
     public FunctionSettingsDialog(FunctionPlotter functionPlotter, int index, Window owner) {
@@ -74,6 +81,7 @@ public class FunctionSettingsDialog extends MDialog {
                 "[]10"));
         setContentPane(contentPane);
 
+        // Domain start
         JLabel domainStartLabel = new JLabel(BUNDLE.getString("functionSettings.domainStart"));
         contentPane.add(domainStartLabel);
         JTextField domainStart = new JTextField(function.getDomainStart().getActualValue() != null ?
@@ -88,6 +96,7 @@ public class FunctionSettingsDialog extends MDialog {
             }
         });
 
+        // Domain end
         JLabel domainEndLabel = new JLabel(BUNDLE.getString("functionSettings.domainEnd"));
         contentPane.add(domainEndLabel);
         JTextField domainEnd = new JTextField(function.getDomainEnd().getActualValue() != null ?
@@ -102,6 +111,7 @@ public class FunctionSettingsDialog extends MDialog {
             }
         });
 
+        // Trace type
         JLabel traceTypeLabel = new JLabel(BUNDLE.getString("functionSettings.traceType"));
         contentPane.add(traceTypeLabel);
         JComboBox<FunctionTraceType> traceType = new JComboBox<>(TRACES);
@@ -110,12 +120,31 @@ public class FunctionSettingsDialog extends MDialog {
         traceType.addActionListener(e -> functionPlotter.getPlot().getTrace()
                 .setType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType));
 
+        // Plot type TODO
+        JLabel plotTypeLabel = new JLabel(BUNDLE.getString("functionSettings.plotType"));
+        //contentPane.add(plotTypeLabel);
+        JComboBox<String> plotType = new JComboBox<>(PLOTS);
+        //contentPane.add(plotType, "growx, wrap");
+        plotType.setSelectedItem(getSelectedPlot(functionPlotter.getPlot()));
+        plotType.addActionListener(e -> {
+            String type = String.valueOf(plotType.getSelectedItem());
+            if (type.equals(PLOT_DOT)) {
+                functionPlotter.setPlot(new FunctionDotPlot());
+            } else {
+                functionPlotter.setPlot(new FunctionLinePlot());
+            }
+        });
+
         JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"),
-                functionPlotter.getPlot().getPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE));
+                functionPlotter.getPlot()
+                        .hasPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE, FunctionLinePlot.VALUE_FILL_SOLID));
         contentPane.add(fillArea, "span");
         fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillArea.tooltip"));
-        fillArea.addActionListener(e -> functionPlotter
-                .setPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE, fillArea.isSelected()));
+        fillArea.addActionListener(e -> {
+            String plottingParameter =
+                    fillArea.isSelected() ? FunctionLinePlot.VALUE_FILL_SOLID : FunctionLinePlot.VALUE_FILL_DISABLE;
+            functionPlotter.setPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE, plottingParameter);
+        });
     }
 
     private FunctionTraceType getSelectedTraceType(TraceType traceType) {
@@ -128,6 +157,19 @@ public class FunctionSettingsDialog extends MDialog {
             case TRACE_TYPE_DASHED_DOTTED -> TRACE_DASHED_DOTTED;
             default -> TRACE_DEFAULT;
         };
+    }
+
+    private String getSelectedPlot(FunctionPlot plot) {
+        if (plot == null) {
+            return PLOT_LINE;
+        }
+        if (plot instanceof FunctionLinePlot) {
+            return PLOT_LINE;
+        } else if (plot instanceof FunctionDotPlot) {
+            return PLOT_DOT;
+        }
+
+        return PLOT_LINE;
     }
 
     private record FunctionTraceType(TraceType traceType, String description) {

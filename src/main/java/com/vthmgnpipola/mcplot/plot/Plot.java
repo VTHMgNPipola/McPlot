@@ -36,9 +36,11 @@ public interface Plot {
 
     Trace getTrace();
 
-    void setPlottingParameter(String key, boolean value);
+    void setPlottingParameter(String key, String value);
 
-    boolean getPlottingParameter(String key);
+    String getPlottingParameter(String key);
+
+    boolean hasPlottingParameter(String key, String value);
 
     void plot(Graphics2D g, AffineTransform tx, PlottingPanelContext context);
 }

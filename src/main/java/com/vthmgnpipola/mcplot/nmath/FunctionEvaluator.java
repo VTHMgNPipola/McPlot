@@ -43,7 +43,7 @@ public class FunctionEvaluator {
     private final ConstantEvaluator domainStartEvaluator;
     private final ConstantEvaluator domainEndEvaluator;
 
-    private final EvaluationResultConsumer<Double, Double> resultConsumer;
+    private EvaluationResultConsumer<Double, Double> resultConsumer;
     private Expression expression;
 
     /**
@@ -73,6 +73,10 @@ public class FunctionEvaluator {
 
     public Function getFunction() {
         return function;
+    }
+
+    public void setResultConsumer(EvaluationResultConsumer<Double, Double> resultConsumer) {
+        this.resultConsumer = resultConsumer;
     }
 
     public EvaluationResultConsumer<Double, Double> getResultConsumer() {
