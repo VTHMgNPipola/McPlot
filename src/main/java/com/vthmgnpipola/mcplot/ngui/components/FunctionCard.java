@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,15 @@
 package com.vthmgnpipola.mcplot.ngui.components;
 
 import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
+import com.vthmgnpipola.mcplot.messaging.MessagePublisher;
+import com.vthmgnpipola.mcplot.messaging.MessageRouter;
 import com.vthmgnpipola.mcplot.ngui.FunctionSettingsDialog;
 import com.vthmgnpipola.mcplot.ngui.PlotsPanel;
-import com.vthmgnpipola.mcplot.ngui.PlottingPanel;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatMoreSettingsIcon;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 import com.vthmgnpipola.mcplot.plot.FunctionPlotter;
+import com.vthmgnpipola.mcplot.plot.PlotRemovalMessage;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.BorderFactory;
@@ -51,8 +53,11 @@ public class FunctionCard extends JPanel {
     private final JCheckBox visible;
     private final Function function;
 
-    public FunctionCard(FunctionPlotter functionPlotter, PlottingPanel plottingPanel, PlotsPanel parent,
-                        int index) {
+    private final MessagePublisher messagePublisher;
+
+    public FunctionCard(FunctionPlotter functionPlotter, PlotsPanel parent, int index) {
+        messagePublisher = MessageRouter.publisher();
+
         setLayout(new MigLayout());
 
         setIndex(index);
@@ -119,7 +124,7 @@ public class FunctionCard extends JPanel {
         add(remove);
         remove.setToolTipText(BUNDLE.getString("generics.remove"));
         remove.addActionListener(e -> {
-            plottingPanel.getPlots().remove(functionPlotter.getPlot());
+            messagePublisher.publish(new PlotRemovalMessage(functionPlotter.getPlot()));
             MathEventStreamer.getInstance().removeFunctionEvaluator(functionPlotter.getEvaluator());
 
             parent.removeFunctionCard(this);

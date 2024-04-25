@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,15 @@
 package com.vthmgnpipola.mcplot.ngui;
 
 import com.vthmgnpipola.mcplot.GraphUnit;
+import com.vthmgnpipola.mcplot.messaging.Message;
+import com.vthmgnpipola.mcplot.messaging.MessageConsumer;
+import com.vthmgnpipola.mcplot.messaging.MessageRouter;
 import com.vthmgnpipola.mcplot.nmath.EvaluationContext;
 import com.vthmgnpipola.mcplot.nmath.ScientificNotationNumber;
 import com.vthmgnpipola.mcplot.plot.Plot;
+import com.vthmgnpipola.mcplot.plot.PlotRegistrationMessage;
+import com.vthmgnpipola.mcplot.plot.PlotRemovalMessage;
+import com.vthmgnpipola.mcplot.plot.PlotUpdateMessage;
 
 import javax.swing.JPanel;
 import java.awt.Color;
@@ -52,7 +58,7 @@ import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_DARK_LAF;
 import static com.vthmgnpipola.mcplot.PreferencesHelper.VALUE_LIGHT_LAF;
 import static com.vthmgnpipola.mcplot.ngui.PlottingPanelContext.INITIAL_PIXELS_PER_STEP;
 
-public class PlottingPanel extends JPanel {
+public class PlottingPanel extends JPanel implements MessageConsumer {
     private final int[] zoomArray = new int[]{1, 2, 5};
     private int previousWidth, previousHeight;
     private int flWidth = 0;
@@ -221,6 +227,8 @@ public class PlottingPanel extends JPanel {
                 });
             }
         });
+
+        MessageRouter.registerConsumer(this);
     }
 
     public void init() {
@@ -582,5 +590,16 @@ public class PlottingPanel extends JPanel {
             }
         }
         return new String(cs);
+    }
+
+    @Override
+    public void receive(Message message) {
+        if (message instanceof PlotRegistrationMessage plotRegistrationMessage) {
+            plots.add(plotRegistrationMessage.plot());
+        } else if (message instanceof PlotUpdateMessage) {
+            repaint();
+        } else if (message instanceof PlotRemovalMessage plotRemovalMessage) {
+            plots.remove(plotRemovalMessage.plot());
+        }
     }
 }

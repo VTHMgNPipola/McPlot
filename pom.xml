@@ -1,6 +1,6 @@
 <!--
   ~ McPlot - a reliable, powerful, lightweight and free graphing calculator
-  ~ Copyright (C) 2023  VTHMgNPipola
+  ~ Copyright (C) 2024  VTHMgNPipola
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -37,13 +37,13 @@
         <dependency>
             <groupId>com.miglayout</groupId>
             <artifactId>miglayout-swing</artifactId>
-            <version>11.0</version>
+            <version>11.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.formdev</groupId>
             <artifactId>flatlaf</artifactId>
-            <version>3.0</version>
+            <version>3.4.1</version>
         </dependency>
 
         <!-- If unstable, due to not being production ready as I'm adding the dependency, use another
@@ -63,7 +63,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.2.2</version>
+            <version>5.2.5</version>
         </dependency>
     </dependencies>
 

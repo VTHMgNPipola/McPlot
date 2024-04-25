@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,14 @@
 
 package com.vthmgnpipola.mcplot.ngui;
 
+import com.vthmgnpipola.mcplot.messaging.MessagePublisher;
+import com.vthmgnpipola.mcplot.messaging.MessageRouter;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.plot.FunctionDotPlot;
 import com.vthmgnpipola.mcplot.plot.FunctionLinePlot;
 import com.vthmgnpipola.mcplot.plot.FunctionPlot;
 import com.vthmgnpipola.mcplot.plot.FunctionPlotter;
+import com.vthmgnpipola.mcplot.plot.PlotUpdateMessage;
 import com.vthmgnpipola.mcplot.plot.TraceType;
 import net.miginfocom.swing.MigLayout;
 
@@ -57,6 +60,8 @@ public class FunctionSettingsDialog extends MDialog {
     private static final String[] PLOTS = new String[]{PLOT_LINE, PLOT_DOT};
 
     private final FunctionPlotter functionPlotter;
+
+    private final MessagePublisher messagePublisher = MessageRouter.publisher();
 
     public FunctionSettingsDialog(FunctionPlotter functionPlotter, int index, Window owner) {
         super(owner, MessageFormat.format(BUNDLE.getString("functionSettings.title"), index),
@@ -93,6 +98,7 @@ public class FunctionSettingsDialog extends MDialog {
             public void keyReleased(KeyEvent e) {
                 String text = domainStart.getText().trim();
                 functionPlotter.getEvaluator().setDomainStart(text.equals("*") ? null : text);
+                messagePublisher.publish(new PlotUpdateMessage());
             }
         });
 
@@ -108,6 +114,7 @@ public class FunctionSettingsDialog extends MDialog {
             public void keyReleased(KeyEvent e) {
                 String text = domainEnd.getText().trim();
                 functionPlotter.getEvaluator().setDomainEnd(text.equals("*") ? null : text);
+                messagePublisher.publish(new PlotUpdateMessage());
             }
         });
 
@@ -117,8 +124,11 @@ public class FunctionSettingsDialog extends MDialog {
         JComboBox<FunctionTraceType> traceType = new JComboBox<>(TRACES);
         contentPane.add(traceType, "growx, wrap");
         traceType.setSelectedItem(getSelectedTraceType(functionPlotter.getPlot().getTrace().getType()));
-        traceType.addActionListener(e -> functionPlotter.getPlot().getTrace()
-                .setType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType));
+        traceType.addActionListener(e -> {
+            functionPlotter.getPlot().getTrace()
+                    .setType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType);
+            messagePublisher.publish(new PlotUpdateMessage());
+        });
 
         // Plot type TODO
         JLabel plotTypeLabel = new JLabel(BUNDLE.getString("functionSettings.plotType"));
@@ -144,6 +154,7 @@ public class FunctionSettingsDialog extends MDialog {
             String plottingParameter =
                     fillArea.isSelected() ? FunctionLinePlot.VALUE_FILL_SOLID : FunctionLinePlot.VALUE_FILL_DISABLE;
             functionPlotter.setPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE, plottingParameter);
+            messagePublisher.publish(new PlotUpdateMessage());
         });
     }
 

@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 
 package com.vthmgnpipola.mcplot.plot;
 
+import com.vthmgnpipola.mcplot.messaging.MessagePublisher;
+import com.vthmgnpipola.mcplot.messaging.MessageRouter;
 import com.vthmgnpipola.mcplot.nmath.EvaluationContext;
 import com.vthmgnpipola.mcplot.nmath.Function;
 import com.vthmgnpipola.mcplot.nmath.FunctionEvaluator;
@@ -26,21 +28,20 @@ public class FunctionPlotter {
     private final FunctionEvaluator evaluator;
     private FunctionPlot plot;
 
-    private Runnable updateEvent;
+    private final MessagePublisher messagePublisher;
 
-    public FunctionPlotter(Function function, EvaluationContext context, FunctionPlot plot) {
-        this.plot = plot;
+    public FunctionPlotter(Function function, EvaluationContext context) {
+        this.plot = new FunctionLinePlot();
         evaluator = new FunctionEvaluator(function, context, plot);
-    }
 
-    public void setUpdateEvent(Runnable updateEvent) {
-        this.updateEvent = updateEvent;
+        messagePublisher = MessageRouter.publisher();
+        messagePublisher.publish(new PlotRegistrationMessage(plot));
     }
 
     public void setPlot(FunctionPlot plot) {
         this.plot = plot;
         evaluator.setResultConsumer(plot);
-        updateEvent.run();
+        messagePublisher.publish(new PlotUpdateMessage());
     }
 
     public FunctionPlot getPlot() {
@@ -53,17 +54,17 @@ public class FunctionPlotter {
 
     public void setLegend(String legend) {
         plot.setLegend(legend);
-        updateEvent.run();
+        messagePublisher.publish(new PlotUpdateMessage());
     }
 
     public void setVisible(boolean visible) {
         plot.setVisible(visible);
-        updateEvent.run();
+        messagePublisher.publish(new PlotUpdateMessage());
     }
 
     public void setPlottingParameter(String key, String value) {
         plot.setPlottingParameter(key, value);
-        updateEvent.run();
+        messagePublisher.publish(new PlotUpdateMessage());
     }
 
     public void evaluate(boolean force) {

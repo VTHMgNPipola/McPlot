@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
+import com.vthmgnpipola.mcplot.messaging.MessagePublisher;
+import com.vthmgnpipola.mcplot.messaging.MessageRouter;
+import com.vthmgnpipola.mcplot.plot.PlotUpdateMessage;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.operator.Operator;
@@ -26,8 +29,6 @@ import net.objecthunter.exp4j.operator.Operators;
 import javax.swing.JOptionPane;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,8 +40,9 @@ public class MathEvaluatorPool {
     private static final MathEvaluatorPool INSTANCE = new MathEvaluatorPool();
 
     private final ExecutorService executor;
-    private final List<Runnable> functionsDoneTasks;
     private int runningFunctions;
+
+    private final MessagePublisher messagePublisher;
 
     private MathEvaluatorPool() {
         try {
@@ -82,17 +84,13 @@ public class MathEvaluatorPool {
                     BUNDLE.getString("generics.errorDialog"), JOptionPane.ERROR_MESSAGE);
         }
 
-        functionsDoneTasks = new ArrayList<>();
+        messagePublisher = MessageRouter.publisher();
         executor = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
         runningFunctions = 0;
     }
 
     public static MathEvaluatorPool getInstance() {
         return INSTANCE;
-    }
-
-    public void addFunctionsDoneTask(Runnable functionsDoneTask) {
-        functionsDoneTasks.add(functionsDoneTask);
     }
 
     public Future<Double> evaluateConstant(String definition, Map<String, Double> constants) {
@@ -150,7 +148,7 @@ public class MathEvaluatorPool {
 
                     runningFunctions--;
                     if (runningFunctions == 0) {
-                        functionsDoneTasks.forEach(Runnable::run);
+                        messagePublisher.publish(new PlotUpdateMessage());
                     }
                     return;
                 }
@@ -163,7 +161,7 @@ public class MathEvaluatorPool {
 
                     runningFunctions--;
                     if (runningFunctions == 0) {
-                        functionsDoneTasks.forEach(Runnable::run);
+                        messagePublisher.publish(new PlotUpdateMessage());
                     }
                     return;
                 }
@@ -190,7 +188,7 @@ public class MathEvaluatorPool {
 
                 runningFunctions--;
                 if (runningFunctions == 0) {
-                    functionsDoneTasks.forEach(Runnable::run);
+                    messagePublisher.publish(new PlotUpdateMessage());
                 }
             } catch (Throwable t) {
                 runningFunctions--;

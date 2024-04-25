@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@ import com.vthmgnpipola.mcplot.ngui.components.FunctionCard;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatAddIcon;
 import com.vthmgnpipola.mcplot.nmath.EvaluationContext;
 import com.vthmgnpipola.mcplot.nmath.Function;
-import com.vthmgnpipola.mcplot.plot.FunctionLinePlot;
-import com.vthmgnpipola.mcplot.plot.FunctionPlot;
 import com.vthmgnpipola.mcplot.plot.FunctionPlotter;
 import net.miginfocom.swing.MigLayout;
 
@@ -41,35 +39,27 @@ public class PlotsPanel extends JPanel {
 
     private AtomicInteger index;
 
-    public PlotsPanel(List<Function> functions, PlottingPanel plottingPanel, EvaluationContext context) {
+    public PlotsPanel(List<Function> functions, EvaluationContext context) {
         this.functions = functions;
 
         setLayout(new MigLayout());
         this.functionCards = new ArrayList<>();
         index = new AtomicInteger(1);
 
-        Runnable evaluationUpdateEvent = plottingPanel::repaint;
-        if (functions.size() != 0) {
+        if (!functions.isEmpty()) {
             functions.forEach(f -> {
-                FunctionPlot plot = new FunctionLinePlot();
-                FunctionPlotter functionPlotter = new FunctionPlotter(f, context, plot);
-                functionPlotter.setUpdateEvent(evaluationUpdateEvent);
-                plottingPanel.getPlots().add(plot);
+                FunctionPlotter functionPlotter = new FunctionPlotter(f, context);
 
-                FunctionCard functionCard = new FunctionCard(functionPlotter, plottingPanel,
-                        this, index.getAndIncrement());
+                FunctionCard functionCard = new FunctionCard(functionPlotter, this, index.getAndIncrement());
                 add(functionCard, "pushx, span, growx");
                 functionCards.add(functionCard);
             });
         } else {
             Function firstFunction = new Function();
-            FunctionPlot plot = new FunctionLinePlot();
-            FunctionPlotter firstFunctionPlotter = new FunctionPlotter(firstFunction, context, plot);
-            firstFunctionPlotter.setUpdateEvent(evaluationUpdateEvent);
-            plottingPanel.getPlots().add(plot);
+            FunctionPlotter firstFunctionPlotter = new FunctionPlotter(firstFunction, context);
 
-            FunctionCard firstFunctionCard = new FunctionCard(firstFunctionPlotter, plottingPanel,
-                    this, index.getAndIncrement());
+            FunctionCard firstFunctionCard = new FunctionCard(firstFunctionPlotter, this,
+                    index.getAndIncrement());
             add(firstFunctionCard, "pushx, span, growx");
             functions.add(firstFunction);
             functionCards.add(firstFunctionCard);
@@ -80,13 +70,9 @@ public class PlotsPanel extends JPanel {
         add(addFunctionCard, "pushx, span, growx");
         addFunctionCard.addActionListener(e -> {
             Function function = new Function();
-            FunctionPlot plot = new FunctionLinePlot();
-            FunctionPlotter functionPlotter = new FunctionPlotter(function, context, plot);
-            functionPlotter.setUpdateEvent(evaluationUpdateEvent);
-            plottingPanel.getPlots().add(plot);
+            FunctionPlotter functionPlotter = new FunctionPlotter(function, context);
 
-            FunctionCard functionCard = new FunctionCard(functionPlotter, plottingPanel, this,
-                    index.getAndIncrement());
+            FunctionCard functionCard = new FunctionCard(functionPlotter, this, index.getAndIncrement());
             add(functionCard, "pushx, span, growx", getComponentCount() - 1);
             functions.add(function);
             functionCards.add(functionCard);
