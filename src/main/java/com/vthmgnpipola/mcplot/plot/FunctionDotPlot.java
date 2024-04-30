@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ public class FunctionDotPlot implements FunctionPlot {
     private boolean valid;
 
     private final Trace trace;
-    private final double startInput;
-    private final double endInput;
+    private double startInput;
+    private double endInput;
 
     private double[] xpoints;
     private double[] ypoints;
@@ -78,6 +78,11 @@ public class FunctionDotPlot implements FunctionPlot {
             if (Double.isNaN(input) || Double.isNaN(result)) {
                 return;
             }
+
+            if (Double.isNaN(startInput)) {
+                startInput = input;
+            }
+            endInput = input;
 
             if (sessionPoints >= sessionXPoints.length) {
                 sessionXPoints = Arrays.copyOf(sessionXPoints, sessionPoints + 5);
@@ -116,6 +121,9 @@ public class FunctionDotPlot implements FunctionPlot {
     public void start() {
         sessionPoints = 0;
         sessionActive = true;
+
+        startInput = Double.NaN;
+        endInput = Double.NaN;
     }
 
     @Override

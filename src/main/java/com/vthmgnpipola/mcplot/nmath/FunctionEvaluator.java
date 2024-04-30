@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 
 package com.vthmgnpipola.mcplot.nmath;
 
+import com.vthmgnpipola.mcplot.plot.FunctionPlot;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -88,8 +89,20 @@ public class FunctionEvaluator {
     }
 
     public void setDefinition(String definition) {
+        String oldName = null;
+        String oldFormationLaw = null;
+        boolean hasDefinition = function.getDefinition() != null;
+        if (hasDefinition) {
+            oldName = function.getName();
+            oldFormationLaw = function.getFormationLaw();
+        }
+
         function.setDefinition(definition);
-        parent.functionUpdate(true, true);
+        String newName = function.getName();
+        String newFormationLaw = function.getFormationLaw();
+        if (!hasDefinition || (!Objects.equals(oldName, newName) || !oldFormationLaw.equals(newFormationLaw))) {
+            parent.functionUpdate(true, true);
+        }
     }
 
     public Double getDomainStart() {
@@ -130,7 +143,7 @@ public class FunctionEvaluator {
      * if they are defined. If so, it uses their values, otherwise it uses the default values from the
      * {@link EvaluationContext}.
      */
-    public void evaluate(boolean forceDomain) {
+    public void evaluate(boolean force) {
         if (context == null || resultConsumer == null) {
             return;
         }
@@ -138,14 +151,26 @@ public class FunctionEvaluator {
         double domainStart = context.getDomainStart();
         double domainEnd = context.getDomainEnd();
 
+        boolean startContained = false;
         Double definedDomainStart = function.getDomainStart().getActualValue();
-        if (definedDomainStart != null && (domainStart < definedDomainStart || forceDomain)) {
-            domainStart = Math.max(domainStart, definedDomainStart);
+        if (definedDomainStart != null && definedDomainStart > domainStart) {
+            domainStart = definedDomainStart;
+            startContained = true;
         }
 
+        boolean endContained = false;
         Double definedDomainEnd = function.getDomainEnd().getActualValue();
-        if (definedDomainEnd != null && (domainEnd > definedDomainEnd || forceDomain)) {
-            domainEnd = Math.min(domainEnd, definedDomainEnd);
+        if (definedDomainEnd != null && definedDomainEnd < domainEnd) {
+            domainEnd = definedDomainEnd;
+            endContained = true;
+        }
+
+        if (!force && resultConsumer instanceof FunctionPlot functionPlot &&
+                (functionPlot.getStartInput() <= context.getViewportStart() ||
+                        (startContained && domainStart >= functionPlot.getStartInput())) &&
+                (functionPlot.getEndInput() >= context.getViewportEnd() ||
+                        (endContained && domainEnd <= functionPlot.getEndInput()))) {
+            return;
         }
 
         MathEvaluatorPool.getInstance().evaluateFunction(function, expression, resultConsumer, domainStart,

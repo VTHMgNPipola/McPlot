@@ -594,12 +594,29 @@ public class PlottingPanel extends JPanel implements MessageConsumer {
 
     @Override
     public void receive(Message message) {
+        /*if (message instanceof ConfigurationChangeMessage ccMessage &&
+                getClass().getTypeName().equals(ccMessage.target())) {
+            try {
+                String setterName = "set" + Character.toUpperCase(ccMessage.name().charAt(0))
+                        + ccMessage.name().substring(1);
+                Method[] methods = PlottingPanelContext.class.getMethods();
+                for (Method method : methods) {
+                    if (method.getName().equals(setterName)) {
+                        method.invoke(context, ccMessage.value());
+                    }
+                }
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        } else*/
         if (message instanceof PlotRegistrationMessage plotRegistrationMessage) {
             plots.add(plotRegistrationMessage.plot());
+            repaint();
         } else if (message instanceof PlotUpdateMessage) {
             repaint();
         } else if (message instanceof PlotRemovalMessage plotRemovalMessage) {
             plots.remove(plotRemovalMessage.plot());
+            repaint();
         }
     }
 }

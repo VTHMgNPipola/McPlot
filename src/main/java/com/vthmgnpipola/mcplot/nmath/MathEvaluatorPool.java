@@ -30,6 +30,8 @@ import javax.swing.JOptionPane;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -40,7 +42,7 @@ public class MathEvaluatorPool {
     private static final MathEvaluatorPool INSTANCE = new MathEvaluatorPool();
 
     private final ExecutorService executor;
-    private int runningFunctions;
+    private final Set<Function> runningFunctions;
 
     private final MessagePublisher messagePublisher;
 
@@ -86,7 +88,7 @@ public class MathEvaluatorPool {
 
         messagePublisher = MessageRouter.publisher();
         executor = Executors.newWorkStealingPool(Runtime.getRuntime().availableProcessors());
-        runningFunctions = 0;
+        runningFunctions = ConcurrentHashMap.newKeySet();
     }
 
     public static MathEvaluatorPool getInstance() {
@@ -140,14 +142,17 @@ public class MathEvaluatorPool {
                                  EvaluationResultConsumer<Double, Double> resultConsumer,
                                  double domainStart, double domainEnd, double step,
                                  Map<String, Double> constants) {
-        runningFunctions++;
+        if (!runningFunctions.add(function)) {
+            return;
+        }
+
         executor.submit(() -> {
             try {
                 if (function == null || expression == null || domainEnd < domainStart) {
                     resultConsumer.invalidate();
 
-                    runningFunctions--;
-                    if (runningFunctions == 0) {
+                    runningFunctions.remove(function);
+                    if (runningFunctions.isEmpty()) {
                         messagePublisher.publish(new PlotUpdateMessage());
                     }
                     return;
@@ -159,8 +164,8 @@ public class MathEvaluatorPool {
                 if (!expression.validate(true).isValid()) {
                     resultConsumer.invalidate();
 
-                    runningFunctions--;
-                    if (runningFunctions == 0) {
+                    runningFunctions.remove(function);
+                    if (runningFunctions.isEmpty()) {
                         messagePublisher.publish(new PlotUpdateMessage());
                     }
                     return;
@@ -186,12 +191,12 @@ public class MathEvaluatorPool {
 
                 resultConsumer.complete();
 
-                runningFunctions--;
-                if (runningFunctions == 0) {
+                runningFunctions.remove(function);
+                if (runningFunctions.isEmpty()) {
                     messagePublisher.publish(new PlotUpdateMessage());
                 }
             } catch (Throwable t) {
-                runningFunctions--;
+                runningFunctions.remove(function);
                 resultConsumer.invalidate();
             }
         });
