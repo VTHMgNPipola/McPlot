@@ -21,8 +21,6 @@ package com.vthmgnpipola.mcplot.ngui;
 import com.vthmgnpipola.mcplot.messaging.MessagePublisher;
 import com.vthmgnpipola.mcplot.messaging.MessageRouter;
 import com.vthmgnpipola.mcplot.nmath.Function;
-import com.vthmgnpipola.mcplot.plot.FunctionDotPlot;
-import com.vthmgnpipola.mcplot.plot.FunctionLinePlot;
 import com.vthmgnpipola.mcplot.plot.FunctionPlot;
 import com.vthmgnpipola.mcplot.plot.FunctionPlotter;
 import com.vthmgnpipola.mcplot.plot.PlotUpdateMessage;
@@ -31,9 +29,13 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.text.DefaultFormatter;
 import java.awt.Window;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -41,6 +43,20 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 import static com.vthmgnpipola.mcplot.Main.BUNDLE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.KEY_DOT_SHAPE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.KEY_DOT_SIZE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.KEY_FILLED_SHAPE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.KEY_TRACE_TYPE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_DOT_SHAPE_CIRCLE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_DOT_SHAPE_DIAMOND;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_DOT_SHAPE_DISABLED;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_DOT_SHAPE_SQUARE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_DOT_SHAPE_TRIANGLE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_DOT_SIZE_FOLLOWS_TRACE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_FILL_DISABLE;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_FILL_SOLID;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_TRACE_TYPE_DEFAULT;
+import static com.vthmgnpipola.mcplot.plot.SingleVariableFunctionPlot.VALUE_TRACE_TYPE_DISABLED;
 
 public class FunctionSettingsDialog extends MDialog {
     private static final FunctionTraceType TRACE_DEFAULT = new FunctionTraceType(TraceType.TRACE_TYPE_DEFAULT,
@@ -51,13 +67,23 @@ public class FunctionSettingsDialog extends MDialog {
             BUNDLE.getString("functionSettings.traceType.dotted"));
     private static final FunctionTraceType TRACE_DASHED_DOTTED = new FunctionTraceType(
             TraceType.TRACE_TYPE_DASHED_DOTTED, BUNDLE.getString("functionSettings.traceType.dashedDotted"));
+    private static final FunctionTraceType TRACE_DISABLED = new FunctionTraceType(
+            null, BUNDLE.getString("functionSettings.traceType.disabled"));
     private static final FunctionTraceType[] TRACES = new FunctionTraceType[]{TRACE_DEFAULT, TRACE_DASHED,
-            TRACE_DOTTED, TRACE_DASHED_DOTTED};
+            TRACE_DOTTED, TRACE_DASHED_DOTTED, TRACE_DISABLED};
 
-    private static final String PLOT_LINE = BUNDLE.getString("functionSettings.plotType.line");
-    private static final String PLOT_DOT = BUNDLE.getString("functionSettings.plotType.dot");
-
-    private static final String[] PLOTS = new String[]{PLOT_LINE, PLOT_DOT};
+    private static final StringDescriptionPair DOT_SHAPE_DISABLED = new StringDescriptionPair(VALUE_DOT_SHAPE_DISABLED,
+            BUNDLE.getString("functionSettings.dotShape.disabled"));
+    private static final StringDescriptionPair DOT_SHAPE_CIRCLE = new StringDescriptionPair(VALUE_DOT_SHAPE_CIRCLE,
+            BUNDLE.getString("functionSettings.dotShape.circle"));
+    private static final StringDescriptionPair DOT_SHAPE_SQUARE = new StringDescriptionPair(VALUE_DOT_SHAPE_SQUARE,
+            BUNDLE.getString("functionSettings.dotShape.square"));
+    private static final StringDescriptionPair DOT_SHAPE_TRIANGLE = new StringDescriptionPair(VALUE_DOT_SHAPE_TRIANGLE,
+            BUNDLE.getString("functionSettings.dotShape.triangle"));
+    private static final StringDescriptionPair DOT_SHAPE_DIAMOND = new StringDescriptionPair(VALUE_DOT_SHAPE_DIAMOND,
+            BUNDLE.getString("functionSettings.dotShape.diamond"));
+    private static final StringDescriptionPair[] DOT_SHAPES = {DOT_SHAPE_DISABLED, DOT_SHAPE_CIRCLE, DOT_SHAPE_SQUARE,
+            DOT_SHAPE_TRIANGLE, DOT_SHAPE_DIAMOND};
 
     private final FunctionPlotter functionPlotter;
 
@@ -125,35 +151,82 @@ public class FunctionSettingsDialog extends MDialog {
         contentPane.add(traceType, "growx, wrap");
         traceType.setSelectedItem(getSelectedTraceType(functionPlotter.getPlot().getTrace().getType()));
         traceType.addActionListener(e -> {
-            functionPlotter.getPlot().getTrace()
-                    .setType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType);
+            FunctionTraceType functionTraceType = (FunctionTraceType) traceType.getSelectedItem();
+            if (functionTraceType == TRACE_DISABLED) {
+                functionPlotter.getPlot().setPlottingParameter(KEY_TRACE_TYPE, VALUE_TRACE_TYPE_DISABLED);
+            } else {
+                functionPlotter.getPlot().setPlottingParameter(KEY_TRACE_TYPE, VALUE_TRACE_TYPE_DEFAULT);
+                functionPlotter.getPlot().getTrace()
+                        .setType(((FunctionTraceType) Objects.requireNonNull(traceType.getSelectedItem())).traceType);
+            }
             messagePublisher.publish(new PlotUpdateMessage());
         });
 
-        // Plot type TODO
-        JLabel plotTypeLabel = new JLabel(BUNDLE.getString("functionSettings.plotType"));
-        //contentPane.add(plotTypeLabel);
-        JComboBox<String> plotType = new JComboBox<>(PLOTS);
-        //contentPane.add(plotType, "growx, wrap");
-        plotType.setSelectedItem(getSelectedPlot(functionPlotter.getPlot()));
-        plotType.addActionListener(e -> {
-            String type = String.valueOf(plotType.getSelectedItem());
-            if (type.equals(PLOT_DOT)) {
-                functionPlotter.setPlot(new FunctionDotPlot());
-            } else {
-                functionPlotter.setPlot(new FunctionLinePlot());
+        // Dot shape
+        JLabel dotShapeLabel = new JLabel(BUNDLE.getString("functionSettings.dotShape"));
+        contentPane.add(dotShapeLabel);
+        JComboBox<StringDescriptionPair> dotShape = new JComboBox<>(DOT_SHAPES);
+        contentPane.add(dotShape, "growx, wrap");
+        dotShape.setToolTipText(BUNDLE.getString("functionSettings.dotShape.tooltip"));
+        dotShape.setSelectedItem(getSelectedDotShape(functionPlotter.getPlot()));
+        dotShape.addActionListener(e -> {
+            StringDescriptionPair item = (StringDescriptionPair) dotShape.getSelectedItem();
+            if (item != null) {
+                functionPlotter.getPlot().setPlottingParameter(KEY_DOT_SHAPE, item.value);
+                messagePublisher.publish(new PlotUpdateMessage());
             }
         });
 
+        boolean dotSizeFollowsTraceValue = functionPlotter.getPlot()
+                .hasPlottingParameter(KEY_DOT_SIZE, VALUE_DOT_SIZE_FOLLOWS_TRACE, true);
+        int dotSizeValue;
+        final int DEFAULT_DOT_SIZE_VALUE = 10;
+        if (dotSizeFollowsTraceValue) {
+            dotSizeValue = DEFAULT_DOT_SIZE_VALUE;
+        } else {
+            try {
+                dotSizeValue = Integer.parseInt(functionPlotter.getPlot().getPlottingParameter(KEY_DOT_SIZE));
+            } catch (Throwable t) {
+                dotSizeValue = DEFAULT_DOT_SIZE_VALUE;
+            }
+        }
+        JSpinner dotSize = new JSpinner(new SpinnerNumberModel(dotSizeValue, 1, 50, 1));
+        dotSize.setEnabled(!dotSizeFollowsTraceValue);
+
+        // Dot size follows trace width
+        JCheckBox dotSizeFollowsTrace = new JCheckBox(BUNDLE.getString("functionSettings.dotSizeFollowsTrace"),
+                dotSizeFollowsTraceValue);
+        contentPane.add(dotSizeFollowsTrace, "span");
+        dotSizeFollowsTrace.addActionListener(e -> {
+            if (dotSizeFollowsTrace.isSelected()) {
+                functionPlotter.getPlot().setPlottingParameter(KEY_DOT_SIZE, VALUE_DOT_SIZE_FOLLOWS_TRACE);
+                dotSize.setEnabled(false);
+            } else {
+                dotSize.setEnabled(true);
+                functionPlotter.getPlot().setPlottingParameter(KEY_DOT_SIZE, String.valueOf(dotSize.getValue()));
+            }
+            messagePublisher.publish(new PlotUpdateMessage());
+        });
+
+        JLabel dotSizeLabel = new JLabel(BUNDLE.getString("functionSettings.dotSize"));
+        contentPane.add(dotSizeLabel);
+        contentPane.add(dotSize, "growx, wrap");
+        dotSize.setToolTipText(BUNDLE.getString("functionSettings.dotSize.tooltip"));
+        JFormattedTextField field = (JFormattedTextField) dotSize.getEditor().getComponent(0);
+        DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
+        formatter.setCommitsOnValidEdit(true);
+        dotSize.addChangeListener(e -> {
+            functionPlotter.getPlot().setPlottingParameter(KEY_DOT_SIZE, String.valueOf(dotSize.getValue()));
+            messagePublisher.publish(new PlotUpdateMessage());
+        });
+
         JCheckBox fillArea = new JCheckBox(BUNDLE.getString("functionSettings.fillArea"),
-                functionPlotter.getPlot()
-                        .hasPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE, FunctionLinePlot.VALUE_FILL_SOLID));
+                functionPlotter.getPlot().hasPlottingParameter(KEY_FILLED_SHAPE, VALUE_FILL_SOLID, false));
         contentPane.add(fillArea, "span");
         fillArea.setToolTipText(BUNDLE.getString("functionSettings.fillArea.tooltip"));
         fillArea.addActionListener(e -> {
-            String plottingParameter =
-                    fillArea.isSelected() ? FunctionLinePlot.VALUE_FILL_SOLID : FunctionLinePlot.VALUE_FILL_DISABLE;
-            functionPlotter.setPlottingParameter(FunctionLinePlot.KEY_FILLED_SHAPE, plottingParameter);
+            String plottingParameter = fillArea.isSelected() ? VALUE_FILL_SOLID : VALUE_FILL_DISABLE;
+            functionPlotter.setPlottingParameter(KEY_FILLED_SHAPE, plottingParameter);
             messagePublisher.publish(new PlotUpdateMessage());
         });
     }
@@ -170,20 +243,27 @@ public class FunctionSettingsDialog extends MDialog {
         };
     }
 
-    private String getSelectedPlot(FunctionPlot plot) {
-        if (plot == null) {
-            return PLOT_LINE;
+    private StringDescriptionPair getSelectedDotShape(FunctionPlot plot) {
+        if (plot == null || plot.getPlottingParameter(KEY_DOT_SHAPE) == null) {
+            return DOT_SHAPE_DISABLED;
         }
-        if (plot instanceof FunctionLinePlot) {
-            return PLOT_LINE;
-        } else if (plot instanceof FunctionDotPlot) {
-            return PLOT_DOT;
-        }
-
-        return PLOT_LINE;
+        return switch (plot.getPlottingParameter(KEY_DOT_SHAPE)) {
+            case VALUE_DOT_SHAPE_CIRCLE -> DOT_SHAPE_CIRCLE;
+            case VALUE_DOT_SHAPE_SQUARE -> DOT_SHAPE_SQUARE;
+            case VALUE_DOT_SHAPE_TRIANGLE -> DOT_SHAPE_TRIANGLE;
+            case VALUE_DOT_SHAPE_DIAMOND -> DOT_SHAPE_DIAMOND;
+            default -> DOT_SHAPE_DISABLED;
+        };
     }
 
     private record FunctionTraceType(TraceType traceType, String description) {
+        @Override
+        public String toString() {
+            return description;
+        }
+    }
+
+    private record StringDescriptionPair(String value, String description) {
         @Override
         public String toString() {
             return description;

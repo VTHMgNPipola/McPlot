@@ -1,6 +1,6 @@
 /*
  * McPlot - a reliable, powerful, lightweight and free graphing calculator
- * Copyright (C) 2023  VTHMgNPipola
+ * Copyright (C) 2024  VTHMgNPipola
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -66,7 +66,7 @@ public class PointsPlot implements Plot {
     }
 
     @Override
-    public boolean hasPlottingParameter(String key, String value) {
+    public boolean hasPlottingParameter(String key, String value, boolean defaultValue) {
         return false;
     }
 

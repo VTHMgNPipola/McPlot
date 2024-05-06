@@ -31,7 +31,7 @@ public class FunctionPlotter {
     private final MessagePublisher messagePublisher;
 
     public FunctionPlotter(Function function, EvaluationContext context) {
-        this.plot = new FunctionLinePlot();
+        this.plot = new SingleVariableFunctionPlot();
         evaluator = new FunctionEvaluator(function, context, plot);
 
         messagePublisher = MessageRouter.publisher();
