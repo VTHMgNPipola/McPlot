@@ -24,6 +24,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>mcplot-app</module>
+        <module>mcplot-math</module>
     </modules>
 
     <properties>
