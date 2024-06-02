@@ -21,51 +21,15 @@
     <groupId>com.vthmgnpipola</groupId>
     <artifactId>mcplot</artifactId>
     <version>0.4-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>mcplot-app</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>net.objecthunter</groupId>
-            <artifactId>exp4j</artifactId>
-            <version>0.4.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.miglayout</groupId>
-            <artifactId>miglayout-swing</artifactId>
-            <version>11.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.formdev</groupId>
-            <artifactId>flatlaf</artifactId>
-            <version>3.4.1</version>
-        </dependency>
-
-        <!-- If unstable, due to not being production ready as I'm adding the dependency, use another
-        OpenDocument producer -->
-        <dependency>
-            <groupId>com.github.jferard</groupId>
-            <artifactId>fastods</artifactId>
-            <version>0.8.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>de.siegmar</groupId>
-            <artifactId>fastcsv</artifactId>
-            <version>2.2.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>5.2.5</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>
@@ -74,8 +38,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <source>18</source>
-                    <target>18</target>
+                    <source>21</source>
+                    <target>21</target>
                 </configuration>
             </plugin>
 
