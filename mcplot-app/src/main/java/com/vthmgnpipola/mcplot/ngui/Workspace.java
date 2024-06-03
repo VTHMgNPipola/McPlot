@@ -23,11 +23,15 @@ import com.formdev.flatlaf.icons.FlatFileViewFloppyDriveIcon;
 import com.formdev.flatlaf.icons.FlatTabbedPaneCloseIcon;
 import com.formdev.flatlaf.icons.FlatTreeOpenIcon;
 import com.vthmgnpipola.mcplot.PreferencesHelper;
+import com.vthmgnpipola.mcplot.ngui.controllers.TransactionalController;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatAddFileIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatHelpIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatPictureIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatSettingsIcon;
 import com.vthmgnpipola.mcplot.ngui.icons.FlatTextFileIcon;
+import com.vthmgnpipola.mcplot.ngui.models.PlottingModel;
+import com.vthmgnpipola.mcplot.ngui.views.PlottingView;
+import com.vthmgnpipola.mcplot.ngui.views.SidebarControlsView;
 import com.vthmgnpipola.mcplot.nmath.MathEventStreamer;
 
 import javax.swing.JMenu;
@@ -46,8 +50,8 @@ import static com.vthmgnpipola.mcplot.Main.BUNDLE;
 import static com.vthmgnpipola.mcplot.Main.VERSION;
 
 public class Workspace extends MFrame {
-    private MathPanel mathPanel;
-    private PlottingPanel plottingPanel;
+    private SidebarControlsView sidebarControlsView;
+    private PlottingView plottingView;
     private JSplitPane splitPane;
 
     public Workspace() {
@@ -64,7 +68,7 @@ public class Workspace extends MFrame {
         setLocationRelativeTo(null);
 
         splitPane.setDividerLocation(0.3);
-        plottingPanel.init();
+        plottingView.init();
 
         if (PreferencesHelper.PREFERENCES.getBoolean(PreferencesHelper.KEY_OPEN_MAXIMIZED, false)) {
             setExtendedState(getExtendedState() | MAXIMIZED_BOTH);
@@ -72,7 +76,7 @@ public class Workspace extends MFrame {
     }
 
     public void openSession(Path sessionPath) {
-        mathPanel.open(sessionPath, plottingPanel);
+//        mathPanel.open(sessionPath, plottingView);
     }
 
     private void initMenu() {
@@ -111,7 +115,7 @@ public class Workspace extends MFrame {
                 new FlatTreeOpenIcon());
         file.add(open);
         open.setAccelerator(KeyStroke.getKeyStroke("control O"));
-        open.addActionListener(e -> mathPanel.open(plottingPanel));
+        open.addActionListener(e -> mathPanel.open(plottingView));
 
         file.addSeparator();
 
@@ -127,7 +131,7 @@ public class Workspace extends MFrame {
             ExportSpreadsheetDialog exportSpreadsheetFrame = new ExportSpreadsheetDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
-                    plottingPanel.getContext());
+                    plottingView.getContext());
             exportSpreadsheetFrame.init();
             exportSpreadsheetFrame.setVisible(true);
         });
@@ -140,7 +144,7 @@ public class Workspace extends MFrame {
             ExportTextFileDialog exportTextFileFrame = new ExportTextFileDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
-                    plottingPanel.getContext());
+                    plottingView.getContext());
             exportTextFileFrame.init();
             exportTextFileFrame.setVisible(true);
         });
@@ -156,7 +160,7 @@ public class Workspace extends MFrame {
             ExportImageFileDialog exportImageFileFrame = new ExportImageFileDialog(
                     MathEventStreamer.getInstance().getFunctionMap(), MathEventStreamer.getInstance().getConstants(),
                     MathEventStreamer.getInstance().getConstantValues(),
-                    plottingPanel.getContext());
+                    plottingView.getContext());
             exportImageFileFrame.init();
             exportImageFileFrame.setVisible(true);
         });
@@ -167,7 +171,7 @@ public class Workspace extends MFrame {
         file.add(settings);
         settings.setAccelerator(KeyStroke.getKeyStroke("control alt S"));
         settings.addActionListener(e -> {
-            SettingsDialog settingsDialog = new SettingsDialog(plottingPanel.getContext(), this);
+            SettingsDialog settingsDialog = new SettingsDialog(plottingView.getContext(), this);
             settingsDialog.init();
             settingsDialog.setVisible(true);
         });
@@ -202,17 +206,22 @@ public class Workspace extends MFrame {
         splitPane.setContinuousLayout(false);
         splitPane.setDividerLocation(0.3);
 
-        plottingPanel = new PlottingPanel();
-        splitPane.setRightComponent(plottingPanel);
+        PlottingModel model = new PlottingModel();
+        TransactionalController controller = new TransactionalController();
+        controller.addModel(model);
 
-        mathPanel = new MathPanel();
-        splitPane.setLeftComponent(mathPanel);
-        mathPanel.init(plottingPanel);
+        plottingView = new PlottingView(model, controller);
+        controller.addView(plottingView);
+        splitPane.setRightComponent(plottingView);
+
+        sidebarControlsView = new SidebarControlsView(model, controller);
+        splitPane.setLeftComponent(sidebarControlsView);
+        sidebarControlsView.init();
     }
 
     @Override
     public void validate() {
         super.validate();
-        plottingPanel.resetColors();
+        plottingView.resetColors();
     }
 }
